@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "GastoClaro"
+  },
+  "nav": {
+    "label": "Navegación principal",
+    "skipToContent": "Saltar al contenido",
+    "dashboard": "Inicio",
+    "login": "Iniciar sesión",
+    "register": "Crear cuenta",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "passwordConfirmation": "Repetir contraseña",
+    "name": "Nombre",
+    "passwordHint": "Al menos {{count}} caracteres."
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "submit": "Ingresar",
+    "noAccount": "¿No tenés cuenta?",
+    "goToRegister": "Creá una"
+  },
+  "register": {
+    "title": "Crear cuenta",
+    "submit": "Registrarme",
+    "hasAccount": "¿Ya tenés cuenta?",
+    "goToLogin": "Iniciá sesión"
+  },
+  "dashboard": {
+    "title": "Mis gastos",
+    "emptyTitle": "Todavía no hay gastos",
+    "emptyDescription": "Cuando cargues tu primer gasto, lo vas a ver acá."
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La dirección que buscás no existe.",
+    "goHome": "Volver al inicio"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "required": "obligatorio"
+  },
+  "errors": {
+    "generic": "Ocurrió un error inesperado. Probá de nuevo.",
+    "network": "No pudimos conectarnos con el servidor. Revisá tu conexión."
+  }
+}
