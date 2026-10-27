@@ -16,7 +16,7 @@ export default function RegisterPage() {
     <section className="page page--narrow">
       <h1>{t('register.title')}</h1>
       <form className="form" onSubmit={handleSubmit}>
-        <FormField label={t('auth.name')} name="name" autoComplete="name" required />
+        <FormField label={t('auth.user')} name="user" autoComplete="username" required />
         <FormField
           label={t('auth.email')}
           name="email"

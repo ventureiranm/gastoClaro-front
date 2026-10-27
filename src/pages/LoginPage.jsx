@@ -16,13 +16,7 @@ export default function LoginPage() {
     <section className="page page--narrow">
       <h1>{t('login.title')}</h1>
       <form className="form" onSubmit={handleSubmit}>
-        <FormField
-          label={t('auth.email')}
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-        />
+        <FormField label={t('auth.user')} name="user" autoComplete="username" required />
         <FormField
           label={t('auth.password')}
           name="password"

@@ -11,10 +11,10 @@
     "logout": "Cerrar sesión"
   },
   "auth": {
+    "user": "Usuario",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "passwordConfirmation": "Repetir contraseña",
-    "name": "Nombre",
     "passwordHint": "Al menos {{count}} caracteres."
   },
   "login": {
