@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { ROUTES } from './config/constants';
+import GuestRoute from './components/GuestRoute';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
@@ -11,9 +12,11 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        {/* Rutas públicas */}
-        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        {/* Rutas públicas: con sesión redirigen adentro */}
+        <Route element={<GuestRoute />}>
+          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        </Route>
 
         {/* Rutas protegidas: sin sesión redirigen al login */}
         <Route element={<ProtectedRoute />}>
