@@ -32,8 +32,17 @@ function splitSubmitError(error, fieldNames, apiFields, t) {
 // - validate(values) devuelve { campo: [mensajes] } con lo que se puede chequear sin el servidor.
 // - onSubmit(values) hace el pedido.
 // - apiFields traduce nombres de campo de la API a los del formulario.
+// - resetOnSuccess vuelve los valores a initialValues después de un envío exitoso.
 // Después de un error, el foco va al aviso general (alertRef) o al primer campo con problema.
-export function useForm({ initialValues, validate, onSubmit, apiFields = {} }) {
+// Después de un envío exitoso, `succeeded` queda en true hasta que se edita un campo, y el foco va
+// a la confirmación (successRef) para que se anuncie.
+export function useForm({
+  initialValues,
+  validate,
+  onSubmit,
+  apiFields = {},
+  resetOnSuccess = false,
+}) {
   const { t } = useTranslation();
   const [values, setValues] = useState(initialValues);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -41,15 +50,22 @@ export function useForm({ initialValues, validate, onSubmit, apiFields = {} }) {
   const [isNetworkError, setIsNetworkError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  const [succeeded, setSucceeded] = useState(false);
+  const [successfulSubmits, setSuccessfulSubmits] = useState(0);
   const submittingRef = useRef(false);
   const formRef = useRef(null);
   const alertRef = useRef(null);
+  const successRef = useRef(null);
 
   useEffect(() => {
     if (failedAttempts === 0) return;
     const target = alertRef.current ?? formRef.current?.querySelector('[aria-invalid="true"]');
     target?.focus();
   }, [failedAttempts]);
+
+  useEffect(() => {
+    if (successfulSubmits > 0) successRef.current?.focus();
+  }, [successfulSubmits]);
 
   function showErrors(errors) {
     setFieldErrors(errors.fieldErrors);
@@ -59,8 +75,10 @@ export function useForm({ initialValues, validate, onSubmit, apiFields = {} }) {
   }
 
   function handleChange(event) {
-    const { name, value } = event.target;
+    const { name, type, checked } = event.target;
+    const value = type === 'checkbox' ? checked : event.target.value;
     setValues((current) => ({ ...current, [name]: value }));
+    setSucceeded(false);
     // Al corregir un campo, su error deja de mostrarse.
     setFieldErrors((current) => {
       const next = { ...current };
@@ -71,6 +89,7 @@ export function useForm({ initialValues, validate, onSubmit, apiFields = {} }) {
 
   async function submit() {
     if (submittingRef.current) return;
+    setSucceeded(false);
 
     const clientErrors = validate?.(values) ?? {};
     if (Object.keys(clientErrors).length > 0) {
@@ -85,6 +104,9 @@ export function useForm({ initialValues, validate, onSubmit, apiFields = {} }) {
     setIsNetworkError(false);
     try {
       await onSubmit(values);
+      if (resetOnSuccess) setValues(initialValues);
+      setSucceeded(true);
+      setSuccessfulSubmits((count) => count + 1);
     } catch (error) {
       showErrors(splitSubmitError(error, Object.keys(initialValues), apiFields, t));
     } finally {
@@ -104,10 +126,12 @@ export function useForm({ initialValues, validate, onSubmit, apiFields = {} }) {
     formErrors,
     isNetworkError,
     isSubmitting,
+    succeeded,
     handleChange,
     handleSubmit,
     retry: submit,
     formRef,
     alertRef,
+    successRef,
   };
 }

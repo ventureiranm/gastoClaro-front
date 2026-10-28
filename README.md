@@ -39,6 +39,7 @@ src/
   components/   componentes reutilizables; no saben de dónde viene el dato
   config/       constantes con nombre
   validation/   validaciones de formularios que no necesitan al servidor
+  utils/        formato para mostrar (montos, fechas) y manejo de fechas, sin React
   locales/      todos los textos
 ```
 
