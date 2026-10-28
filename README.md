@@ -38,6 +38,7 @@ src/
   pages/        las pantallas
   components/   componentes reutilizables; no saben de dónde viene el dato
   config/       constantes con nombre
+  validation/   validaciones de formularios que no necesitan al servidor
   locales/      todos los textos
 ```
 

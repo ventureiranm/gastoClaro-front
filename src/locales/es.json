@@ -15,17 +15,26 @@
     "email": "Correo electrónico",
     "password": "Contraseña",
     "passwordConfirmation": "Repetir contraseña",
-    "passwordHint": "Al menos {{count}} caracteres."
+    "passwordHint": "Al menos {{count}} caracteres.",
+    "sessionExpired": "Tu sesión venció. Iniciá sesión de nuevo."
+  },
+  "validation": {
+    "required": "Completá este campo.",
+    "email": "Ingresá un correo electrónico válido.",
+    "passwordMinLength": "Tiene que tener al menos {{count}} caracteres.",
+    "passwordMismatch": "Las contraseñas no coinciden."
   },
   "login": {
     "title": "Iniciar sesión",
     "submit": "Ingresar",
+    "submitting": "Ingresando…",
     "noAccount": "¿No tenés cuenta?",
     "goToRegister": "Creá una"
   },
   "register": {
     "title": "Crear cuenta",
     "submit": "Registrarme",
+    "submitting": "Creando tu cuenta…",
     "hasAccount": "¿Ya tenés cuenta?",
     "goToLogin": "Iniciá sesión"
   },
@@ -41,6 +50,7 @@
   },
   "common": {
     "loading": "Cargando…",
+    "retry": "Reintentar",
     "required": "obligatorio"
   },
   "errors": {
