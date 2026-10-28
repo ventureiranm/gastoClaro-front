@@ -5,7 +5,7 @@ API REST en Ruby on Rails, que vive en otro repositorio.
 
 ## Requisitos
 
-- Node.js 20.19 o superior (probado con Node 24)
+- Node.js 22.22 o superior (probado con Node 24). Con `nvm use` se toma la versión de `.nvmrc`.
 
 ## Puesta en marcha
 
@@ -38,6 +38,7 @@ src/
   pages/        las pantallas
   components/   componentes reutilizables; no saben de dónde viene el dato
   config/       constantes con nombre
+  validation/   validaciones de formularios que no necesitan al servidor
   locales/      todos los textos
 ```
 

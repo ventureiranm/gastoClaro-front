@@ -9,5 +9,7 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.js',
     css: false,
+    // Las pruebas simulan fetch; la URL solo tiene que existir.
+    env: { VITE_API_URL: 'http://api.test/api/v1' },
   },
 });

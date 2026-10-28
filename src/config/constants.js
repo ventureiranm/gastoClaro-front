@@ -23,5 +23,10 @@ export const NETWORK_ERROR_STATUS = 0;
 
 export const REQUEST_TIMEOUT_MS = 15000;
 
+// Validar la sesión guardada con GET /me al arrancar la app. Se activa (true) cuando el endpoint
+// exista en el back-end: hoy todavía no está. Mientras tanto, la sesión se considera activa si hay
+// token guardado, y si se cayó se detecta con el manejo del 401 del cliente de la API.
+export const VALIDATE_SESSION_ON_START = false;
+
 // Deben coincidir con las validaciones del back-end.
 export const PASSWORD_MIN_LENGTH = 8;

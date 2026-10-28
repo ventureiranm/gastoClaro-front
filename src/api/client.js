@@ -48,13 +48,27 @@ function buildSignal(signal) {
   return signal ? AbortSignal.any([signal, timeout]) : timeout;
 }
 
-export async function request(path, { method = 'GET', body, headers, signal } = {}) {
+// Quién se entera cuando la sesión se cae (lo registra SessionProvider). Vive acá para que ninguna
+// pantalla tenga que revisar el 401 por su cuenta. Devuelve la función que lo da de baja.
+let unauthorizedHandler = null;
+
+export function setUnauthorizedHandler(handler) {
+  unauthorizedHandler = handler;
+  return () => {
+    if (unauthorizedHandler === handler) unauthorizedHandler = null;
+  };
+}
+
+// `token` permite mandar uno explícito; por defecto se usa el guardado.
+export async function request(
+  path,
+  { method = 'GET', body, headers, signal, token = getToken() } = {},
+) {
   if (!API_BASE_URL) {
     throw new Error('Falta VITE_API_URL: copiá .env.example a .env.');
   }
 
   const finalHeaders = { ...DEFAULT_HEADERS, ...headers };
-  const token = getToken();
   if (token) finalHeaders.Authorization = `Bearer ${token}`;
 
   let response;
@@ -73,7 +87,11 @@ export async function request(path, { method = 'GET', body, headers, signal } = 
 
   const data = await parseBody(response);
   if (!response.ok) {
-    throw new ApiError(response.status, Array.isArray(data?.errors) ? data.errors : []);
+    const error = new ApiError(response.status, Array.isArray(data?.errors) ? data.errors : []);
+    // Un 401 a un pedido hecho con el token guardado significa que la sesión se cayó. Si no se
+    // mandó token (login con clave incorrecta) o ya no es el guardado (logout, sesión nueva), no.
+    if (error.isUnauthorized && token && token === getToken()) unauthorizedHandler?.(error);
+    throw error;
   }
   return data;
 }

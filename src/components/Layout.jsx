@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from '../config/constants';
 import { useSession } from '../hooks/useSession';
@@ -9,6 +9,13 @@ const MAIN_CONTENT_ID = 'main-content';
 export default function Layout() {
   const { t } = useTranslation();
   const { isAuthenticated, logout } = useSession();
+  const navigate = useNavigate();
+
+  // logout() borra la sesión local al instante; el aviso al servidor sigue en segundo plano.
+  function handleLogout() {
+    logout();
+    navigate(ROUTES.LOGIN);
+  }
 
   return (
     <>
@@ -25,7 +32,7 @@ export default function Layout() {
                   <NavLink to={ROUTES.DASHBOARD}>{t('nav.dashboard')}</NavLink>
                 </li>
                 <li>
-                  <Button variant="link" onClick={logout}>
+                  <Button variant="link" onClick={handleLogout}>
                     {t('nav.logout')}
                   </Button>
                 </li>
