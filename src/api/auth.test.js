@@ -1,4 +1,4 @@
-import { jsonResponse, mockFetch, TEST_TOKEN } from '../test/api';
+import { fetchCall, jsonResponse, mockFetch, TEST_TOKEN } from '../test/api';
 import { login, register } from './auth';
 
 const USER = { id: 5, user: 'nico', email: 'nico@example.com', admin: false };
@@ -26,5 +26,28 @@ describe('auth', () => {
     });
 
     expect(session).toEqual({ token: TEST_TOKEN, user: USER });
+  });
+
+  it('recorta los espacios de usuario y email pero no los de la contraseña', async () => {
+    const fetchMock = mockFetch(
+      jsonResponse(201, { token: TEST_TOKEN, user: 'nico' }),
+      jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }),
+    );
+
+    await register({
+      user: '  nico  ',
+      email: ' nico@example.com ',
+      password: ' clave1234 ',
+      passwordConfirmation: ' clave1234 ',
+    });
+    await login({ user: 'nico  ', password: ' clave1234 ' });
+
+    expect(fetchCall(fetchMock, 0).body).toEqual({
+      user: 'nico',
+      email: 'nico@example.com',
+      password: ' clave1234 ',
+      password_confirmation: ' clave1234 ',
+    });
+    expect(fetchCall(fetchMock, 1).body).toEqual({ user: 'nico', password: ' clave1234 ' });
   });
 });

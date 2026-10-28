@@ -24,16 +24,18 @@ function normalizeSession({ token, user }) {
   return { token, user: normalizeUser(user) };
 }
 
+// Usuario y email viajan sin espacios en los extremos; la contraseña va tal cual se escribió.
+
 // Devuelve { token, user }.
 export async function login({ user, password }) {
-  return normalizeSession(await api.post(ENDPOINTS.LOGIN, { user, password }));
+  return normalizeSession(await api.post(ENDPOINTS.LOGIN, { user: user.trim(), password }));
 }
 
 // Devuelve { token, user }.
 export async function register({ user, email, password, passwordConfirmation }) {
   const session = await api.post(ENDPOINTS.REGISTER, {
-    user,
-    email,
+    user: user.trim(),
+    email: email.trim(),
     password,
     password_confirmation: passwordConfirmation,
   });
