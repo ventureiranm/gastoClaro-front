@@ -1,10 +1,19 @@
 import { act, screen } from '@testing-library/react';
+import { useNavigate } from 'react-router';
 import { api } from '../api/client';
 import { getToken, saveToken } from '../api/tokenStorage';
 import { ROUTES } from '../config/constants';
 import es from '../locales/es.json';
 import { apiErrors, fetchCall, jsonResponse, mockFetch, TEST_TOKEN } from '../test/api';
 import { renderApp } from '../test/renderApp';
+
+const BACK = 'atrás';
+
+// Simula el botón "atrás" del navegador.
+function BackButton() {
+  const navigate = useNavigate();
+  return <button onClick={() => navigate(-1)}>{BACK}</button>;
+}
 
 describe('Sesión', () => {
   it('logout llama a la API, limpia el token y vuelve al login', async () => {
@@ -20,6 +29,20 @@ describe('Sesión', () => {
     expect(call.url).toMatch(/\/logout$/);
     expect(call.method).toBe('DELETE');
     expect(call.headers.Authorization).toBe(`Bearer ${TEST_TOKEN}`);
+  });
+
+  it('después del logout, volver atrás no muestra la pantalla protegida', async () => {
+    saveToken(TEST_TOKEN);
+    mockFetch(jsonResponse(204));
+    const { user } = renderApp(ROUTES.DASHBOARD, { extra: <BackButton /> });
+
+    await user.click(screen.getByRole('button', { name: es.nav.logout }));
+    expect(await screen.findByRole('heading', { name: es.login.title })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: BACK }));
+
+    expect(await screen.findByRole('heading', { name: es.login.title })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: es.dashboard.title })).not.toBeInTheDocument();
   });
 
   it('logout cierra la sesión local aunque el servidor falle', async () => {
