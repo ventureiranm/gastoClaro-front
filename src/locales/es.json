@@ -42,7 +42,29 @@
     "goToLogin": "Iniciá sesión"
   },
   "dashboard": {
-    "title": "Mis gastos"
+    "title": "Mis gastos",
+    "summary": {
+      "title": "Resumen del mes",
+      "loading": "Cargando el resumen…",
+      "loadError": "No pudimos cargar el resumen del mes.",
+      "income": "Ingresos",
+      "consumption": "Consumo",
+      "savings": "Ahorro",
+      "savingsGoal": "Meta de ahorro: {{percentage}} de los ingresos",
+      "emptyTitle": "Todavía no hay movimientos en {{period}}",
+      "emptyDescription": "Cuando cargues ingresos o gastos de este mes, vas a ver el resumen acá.",
+      "byCategory": {
+        "title": "Consumo por categoría",
+        "share": "Parte del consumo",
+        "empty": "Todavía no hay gastos en {{period}}."
+      },
+      "monthly": {
+        "title": "Últimos 6 meses",
+        "hint": "El ahorro acumulado suma el de estos 6 meses, no el de toda la historia.",
+        "month": "Mes",
+        "accumulated": "Ahorro acumulado"
+      }
+    }
   },
   "expenses": {
     "fields": {

@@ -1,9 +1,11 @@
 import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCategories } from '../hooks/useCategories';
+import { useDashboard } from '../hooks/useDashboard';
 import { useExpenses } from '../hooks/useExpenses';
 import { currentPeriod, isValidPeriod, periodOf } from '../utils/dates';
 import { formatPeriod } from '../utils/format';
+import DashboardSummary from '../components/dashboard/DashboardSummary';
 import ExpenseForm from '../components/expenses/ExpenseForm';
 import ExpenseTable from '../components/expenses/ExpenseTable';
 import Button from '../components/ui/Button';
@@ -19,6 +21,7 @@ function loadErrorMessage(error, messageKey, t) {
 
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const summaryTitleId = useId();
   const listTitleId = useId();
   const formTitleId = useId();
   const dateFieldRef = useRef(null);
@@ -28,16 +31,32 @@ export default function DashboardPage() {
   const [periodInput, setPeriodInput] = useState(period);
   const expenses = useExpenses(period);
   const categories = useCategories();
+  const dashboard = useDashboard();
 
   function changePeriod(value) {
     setPeriodInput(value);
     if (isValidPeriod(value)) setPeriod(value);
   }
 
-  // Si el gasto es de otro mes, el filtro pasa a ese mes para que se vea dónde quedó.
+  // Si el gasto es de otro mes, el filtro pasa a ese mes para que se vea dónde quedó. El resumen se
+  // vuelve a pedir siempre: un gasto de un mes anterior también cambia la evolución de los 6 meses.
   async function handleCreate(newExpense) {
     const expense = await expenses.create(newExpense);
+    dashboard.retry();
     if (periodOf(expense.date) !== period) changePeriod(periodOf(expense.date));
+  }
+
+  function renderSummary() {
+    if (dashboard.isLoading) return <LoadingIndicator label={t('dashboard.summary.loading')} />;
+    if (dashboard.error) {
+      return (
+        <FormAlert
+          messages={loadErrorMessage(dashboard.error, 'dashboard.summary.loadError', t)}
+          onRetry={dashboard.retry}
+        />
+      );
+    }
+    return <DashboardSummary summary={dashboard.summary} />;
   }
 
   function renderList() {
@@ -95,6 +114,10 @@ export default function DashboardPage() {
   return (
     <section className="page">
       <h1>{t('dashboard.title')}</h1>
+      <section aria-labelledby={summaryTitleId} className="dashboard-summary">
+        <h2 id={summaryTitleId}>{t('dashboard.summary.title')}</h2>
+        {renderSummary()}
+      </section>
       <div className="dashboard">
         <section aria-labelledby={listTitleId}>
           <h2 id={listTitleId}>{t('expenses.list.title')}</h2>
