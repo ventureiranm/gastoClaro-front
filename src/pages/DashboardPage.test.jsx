@@ -4,6 +4,7 @@ import { ROUTES } from '../config/constants';
 import i18n from '../i18n';
 import es from '../locales/es.json';
 import {
+  apiDashboard,
   apiErrors,
   emptyDashboardRoutes,
   fetchCallsTo,
@@ -15,7 +16,7 @@ import {
 import { BACK, BackButton } from '../test/BackButton';
 import { renderApp } from '../test/renderApp';
 import { currentPeriod, todayISO } from '../utils/dates';
-import { formatPeriod } from '../utils/format';
+import { formatPercentage, formatPeriod } from '../utils/format';
 
 const CATEGORIES = [
   { id: 3, name: 'Servicios', parent_id: null, tracks_installments: null },
@@ -330,12 +331,163 @@ describe('Nuevo gasto', () => {
   });
 });
 
+// Un mes con ingresos y gastos, y un mes anterior en el que se gastó más de lo que entró.
+function activeDashboard() {
+  return apiDashboard({
+    income: '450000.0',
+    consumption: '38101.0',
+    savings: '411899.0',
+    savings_goal_percentage: 10,
+    consumption_by_category: [
+      { category: 'Supermercado', total: '13101.0' },
+      { category: 'Limpieza', total: '25000.0' },
+    ],
+    monthly_savings: [
+      {
+        month: PAST_PERIOD,
+        income: '0.0',
+        consumption: '1000.0',
+        savings: '-1000.0',
+        accumulated: '-1000.0',
+      },
+      {
+        month: currentPeriod(),
+        income: '450000.0',
+        consumption: '38101.0',
+        savings: '411899.0',
+        accumulated: '410899.0',
+      },
+    ],
+  });
+}
+
+function findSummary() {
+  return screen.findByRole('region', { name: es.dashboard.summary.title });
+}
+
+// El término de uno de los totales (ingresos, consumo o ahorro). La tabla de los últimos meses
+// repite esos nombres como encabezados, por eso se busca solo entre los términos.
+function findTotal(summary, label) {
+  return within(summary).findByText(label, { selector: 'dt' });
+}
+
+// El monto que acompaña a uno de los totales.
+async function totalOf(summary, label) {
+  return (await findTotal(summary, label)).nextElementSibling;
+}
+
+describe('Resumen del mes', () => {
+  it('muestra ingreso, consumo y ahorro, el consumo por categoría y los últimos meses', async () => {
+    const { fetchMock } = renderDashboard({
+      'GET /dashboard': jsonResponse(200, activeDashboard()),
+    });
+
+    expect(await screen.findByText(es.dashboard.summary.loading)).toBeInTheDocument();
+    const summary = await findSummary();
+
+    expect(await totalOf(summary, es.dashboard.summary.income)).toHaveTextContent('$ 450.000,00');
+    expect(await totalOf(summary, es.dashboard.summary.consumption)).toHaveTextContent(
+      '$ 38.101,00',
+    );
+    expect(await totalOf(summary, es.dashboard.summary.savings)).toHaveTextContent('$ 411.899,00');
+    expect(
+      within(summary).getByText(formatPeriod(currentPeriod()), { selector: 'p' }),
+    ).toBeVisible();
+    expect(summary).toHaveTextContent(
+      i18n.t('dashboard.summary.savingsGoal', { percentage: formatPercentage(0.1) }),
+    );
+
+    // De la categoría en la que más se gastó a la que menos.
+    const byCategory = screen.getByRole('table', { name: es.dashboard.summary.byCategory.title });
+    const [, first, second] = within(byCategory).getAllByRole('row');
+    expect(first).toHaveTextContent('Limpieza');
+    expect(first).toHaveTextContent('$ 25.000,00');
+    expect(first).toHaveTextContent(formatPercentage(25000 / 38101));
+    expect(second).toHaveTextContent('Supermercado');
+
+    const monthly = screen.getByRole('table', { name: es.dashboard.summary.monthly.title });
+    expect(monthly).toHaveAccessibleDescription(es.dashboard.summary.monthly.hint);
+    const [, past, current] = within(monthly).getAllByRole('row');
+    expect(past).toHaveTextContent(formatPeriod(PAST_PERIOD));
+    expect(past).toHaveTextContent('-$ 1.000,00');
+    expect(current).toHaveTextContent('$ 410.899,00');
+
+    expect(fetchCallsTo(fetchMock, 'GET /dashboard')).toHaveLength(1);
+  });
+
+  it('si el mes no tuvo movimientos, lo dice en lugar de mostrar todo en cero', async () => {
+    renderDashboard();
+    const summary = await findSummary();
+
+    expect(
+      await within(summary).findByRole('heading', {
+        name: i18n.t('dashboard.summary.emptyTitle', { period: formatPeriod(currentPeriod()) }),
+      }),
+    ).toBeInTheDocument();
+    expect(within(summary).queryByText(es.dashboard.summary.income)).not.toBeInTheDocument();
+    expect(within(summary).queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  it('si el mes tiene ingresos pero no gastos, lo aclara en el consumo por categoría', async () => {
+    renderDashboard({
+      'GET /dashboard': jsonResponse(
+        200,
+        apiDashboard({ income: '450000.0', savings: '450000.0' }),
+      ),
+    });
+    const summary = await findSummary();
+
+    expect(
+      await within(summary).findByText(
+        i18n.t('dashboard.summary.byCategory.empty', { period: formatPeriod(currentPeriod()) }),
+      ),
+    ).toBeInTheDocument();
+    expect(await totalOf(summary, es.dashboard.summary.savings)).toHaveTextContent('$ 450.000,00');
+  });
+
+  it('si falla, avisa y permite reintentar sin afectar el listado de gastos', async () => {
+    const { user } = renderDashboard({
+      'GET /dashboard': [jsonResponse(500), jsonResponse(200, activeDashboard())],
+    });
+    const summary = await findSummary();
+
+    expect(await within(summary).findByRole('alert')).toHaveTextContent(
+      es.dashboard.summary.loadError,
+    );
+    expect(
+      await screen.findByRole('heading', { name: emptyTitle(currentPeriod()) }),
+    ).toBeInTheDocument();
+
+    await user.click(within(summary).getByRole('button', { name: es.common.retry }));
+
+    expect(await findTotal(summary, es.dashboard.summary.income)).toBeInTheDocument();
+    expect(within(summary).queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('después de cargar un gasto vuelve a pedir el resumen', async () => {
+    const { user, fetchMock } = renderDashboard({
+      'POST /expenses': createdExpense,
+      'GET /dashboard': [jsonResponse(200, apiDashboard()), jsonResponse(200, activeDashboard())],
+    });
+    await screen.findByRole('heading', { name: emptyTitle(currentPeriod()) });
+
+    await fillExpense(user);
+    await user.click(submitButton());
+
+    expect(await totalOf(await findSummary(), es.dashboard.summary.consumption)).toHaveTextContent(
+      '$ 38.101,00',
+    );
+    expect(fetchCallsTo(fetchMock, 'GET /dashboard')).toHaveLength(2);
+  });
+});
+
 describe('Aislamiento entre usuarios', () => {
   it('después de cerrar sesión no queda a la vista nada del usuario anterior', async () => {
     // La API responde según el token: A tiene un gasto, B ninguno.
     saveToken('token-a');
     const fetchMock = mockApi({
       'GET /me': jsonResponse(200, TEST_USER),
+      'GET /dashboard': jsonResponse(200, apiDashboard()),
       'GET /categories': jsonResponse(200, CATEGORIES),
       'GET /expenses': ({ headers }) =>
         jsonResponse(

@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
 import { API_BASE_URL } from '../config/constants';
+import { currentPeriod } from '../utils/dates';
 
 export const TEST_TOKEN = 'token-de-prueba';
 
@@ -29,11 +30,27 @@ export function mockFetch(...responses) {
   return fetchMock;
 }
 
+// Lo que responde GET /dashboard para un mes sin movimientos, con la forma de la API.
+export function apiDashboard(overrides = {}) {
+  return {
+    period: currentPeriod(),
+    income: '0.0',
+    consumption: '0.0',
+    savings: '0.0',
+    savings_goal_percentage: 0,
+    incomes: [],
+    consumption_by_category: [],
+    monthly_savings: [],
+    ...overrides,
+  };
+}
+
 // Respuestas para que el dashboard cargue sin datos, para usar con mockApi. Incluye GET /me, que
 // valida el token guardado al arrancar.
 export function emptyDashboardRoutes() {
   return {
     'GET /me': jsonResponse(200, TEST_USER),
+    'GET /dashboard': jsonResponse(200, apiDashboard()),
     'GET /categories': jsonResponse(200, []),
     'GET /expenses': jsonResponse(200, []),
   };
