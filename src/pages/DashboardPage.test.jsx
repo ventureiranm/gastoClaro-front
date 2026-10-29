@@ -1,6 +1,6 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { saveToken } from '../api/tokenStorage';
-import { ROUTES } from '../config/constants';
+import { ROUTES, TOAST_DURATION_MS } from '../config/constants';
 import i18n from '../i18n';
 import es from '../locales/es.json';
 import {
@@ -77,6 +77,17 @@ function submitButton() {
 
 function emptyTitle(period) {
   return i18n.t('expenses.list.emptyTitle', { period: formatPeriod(period) });
+}
+
+// El aviso de confirmación (toast) que aparece después de guardar.
+function findConfirmation() {
+  return screen.findByText(es.expenses.form.success, { selector: '.toast__message' });
+}
+
+// Espera la confirmación y la cierra: recién entonces aparece el gasto nuevo.
+async function closeConfirmation(user) {
+  await findConfirmation();
+  await user.click(screen.getByRole('button', { name: es.common.close }));
 }
 
 describe('Listado de gastos', () => {
@@ -236,7 +247,7 @@ describe('Nuevo gasto', () => {
     expect(screen.getByLabelText(es.expenses.fields.category)).toHaveAccessibleDescription(message);
   });
 
-  it('un alta correcta confirma y suma el gasto al listado sin recargar', async () => {
+  it('un alta correcta confirma y, al cerrar el aviso, suma el gasto al listado sin recargar', async () => {
     const { user, fetchMock } = renderDashboard({ 'POST /expenses': createdExpense });
     await screen.findByRole('heading', { name: emptyTitle(currentPeriod()) });
 
@@ -249,8 +260,15 @@ describe('Nuevo gasto', () => {
     );
     await user.click(submitButton());
 
-    const confirmation = await screen.findByText(es.expenses.form.success);
-    expect(confirmation.closest('[role="status"]')).toHaveFocus();
+    // La confirmación se anuncia sin mover el foco, que vuelve a la fecha para cargar otro gasto.
+    // Mientras está a la vista, el gasto todavía no aparece.
+    const confirmation = await findConfirmation();
+    expect(confirmation).toHaveAttribute('role', 'status');
+    expect(screen.getByLabelText(es.expenses.fields.date)).toHaveFocus();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: es.common.close }));
+    expect(confirmation).toBeEmptyDOMElement();
 
     const row = within(screen.getByRole('table')).getAllByRole('row')[1];
     expect(row).toHaveTextContent('Internet');
@@ -289,10 +307,10 @@ describe('Nuevo gasto', () => {
     });
     await fillExpense(user);
     await user.click(submitButton());
+    await closeConfirmation(user);
 
     expect(await screen.findByText('Gasto atrasado')).toBeInTheDocument();
     expect(screen.getByLabelText(es.expenses.filter.label)).toHaveValue(PAST_PERIOD);
-    expect(screen.getByText(es.expenses.form.success)).toBeInTheDocument();
   });
 
   it('deshabilita el botón mientras guarda', async () => {
@@ -311,7 +329,7 @@ describe('Nuevo gasto', () => {
     expect(fetchCallsTo(fetchMock, 'POST /expenses')).toHaveLength(1);
 
     respond();
-    expect(await screen.findByText(es.expenses.form.success)).toBeInTheDocument();
+    expect(await findConfirmation()).toBeInTheDocument();
     expect(submitButton()).toBeEnabled();
   });
 
@@ -325,8 +343,65 @@ describe('Nuevo gasto', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(es.errors.network);
     await user.click(screen.getByRole('button', { name: es.common.retry }));
+    await closeConfirmation(user);
 
-    expect(await screen.findByText(es.expenses.form.success)).toBeInTheDocument();
+    expect(screen.getByRole('table')).toHaveTextContent('$ 250,00');
+  });
+});
+
+describe('Confirmación al guardar', () => {
+  afterEach(() => vi.useRealTimers());
+
+  // Avanza el reloj simulado y deja que React procese lo que eso dispara.
+  async function advance(ms) {
+    await act(async () => {
+      vi.advanceTimersByTime(ms);
+    });
+  }
+
+  // Llena el formulario con los timers reales (user-event los usa) y recién después los simula,
+  // para controlar cuánto dura el aviso. El envío se hace con fireEvent por el mismo motivo.
+  async function submitWithFakeTimers() {
+    const { user } = renderDashboard({ 'POST /expenses': createdExpense });
+    await screen.findByRole('heading', { name: emptyTitle(currentPeriod()) });
+    await fillExpense(user, { amount: '250' });
+
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    fireEvent.click(submitButton());
+
+    // Espera la confirmación sin mover el reloj simulado: findBy se traba con setTimeout simulado y
+    // vi.waitFor lo adelanta. setImmediate (de Node) no está simulado.
+    for (let attempt = 0; attempt < 50; attempt++) {
+      const confirmation = screen.queryByText(es.expenses.form.success, {
+        selector: '.toast__message',
+      });
+      if (confirmation) return confirmation;
+      await act(() => new Promise((resolve) => globalThis.setImmediate(resolve)));
+    }
+    throw new Error('No apareció la confirmación');
+  }
+
+  it('se cierra sola y recién entonces aparece el gasto', async () => {
+    await submitWithFakeTimers();
+
+    await advance(TOAST_DURATION_MS - 1);
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+
+    await advance(1);
+    expect(screen.getByRole('table')).toHaveTextContent('$ 250,00');
+    expect(screen.queryByText(es.expenses.form.success)).not.toBeInTheDocument();
+  });
+
+  it('no se cierra mientras el puntero está sobre ella', async () => {
+    const confirmation = await submitWithFakeTimers();
+
+    fireEvent.mouseEnter(confirmation.parentElement);
+    await advance(TOAST_DURATION_MS * 2);
+    expect(confirmation).toHaveTextContent(es.expenses.form.success);
+
+    fireEvent.mouseLeave(confirmation.parentElement);
+    await advance(TOAST_DURATION_MS);
+    expect(confirmation).toBeEmptyDOMElement();
     expect(screen.getByRole('table')).toHaveTextContent('$ 250,00');
   });
 });
@@ -473,6 +548,9 @@ describe('Resumen del mes', () => {
 
     await fillExpense(user);
     await user.click(submitButton());
+    await findConfirmation();
+    expect(fetchCallsTo(fetchMock, 'GET /dashboard')).toHaveLength(1);
+    await closeConfirmation(user);
 
     expect(await totalOf(await findSummary(), es.dashboard.summary.consumption)).toHaveTextContent(
       '$ 38.101,00',
