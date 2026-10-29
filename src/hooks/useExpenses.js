@@ -10,22 +10,28 @@ function insertByDate(expenses, expense) {
   return index === -1 ? [...expenses, expense] : expenses.toSpliced(index, 0, expense);
 }
 
-// Gastos del período 'YYYY-MM'. create() da de alta un gasto y, si es del período que se está
-// mostrando, lo suma al listado sin volver a pedirlo. Devuelve el gasto creado.
+// Gastos del período 'YYYY-MM'.
+// - create(newExpense) da de alta un gasto y lo devuelve, sin sumarlo al listado.
+// - add(expense) suma al listado un gasto ya creado, sin volver a pedirlo. Solo si es del período
+//   que está cargado y todavía no figura (pudo llegar en un pedido posterior al alta).
 export function useExpenses(period) {
-  const load = useCallback(({ signal }) => listExpenses({ period, signal }), [period]);
+  // El dato guarda a qué período corresponde, para que add() no sume un gasto al listado de otro
+  // mes aunque el filtro haya cambiado entre el alta y la llamada.
+  const load = useCallback(
+    async ({ signal }) => ({ period, expenses: await listExpenses({ period, signal }) }),
+    [period],
+  );
   const { data, isLoading, error, retry, setData } = useRemoteData(load);
 
-  const create = useCallback(
-    async (newExpense) => {
-      const expense = await createExpense(newExpense);
-      if (periodOf(expense.date) === period) {
-        setData((expenses) => expenses && insertByDate(expenses, expense));
-      }
-      return expense;
-    },
-    [period, setData],
+  const add = useCallback(
+    (expense) =>
+      setData((current) => {
+        if (current?.period !== periodOf(expense.date)) return current;
+        if (current.expenses.some(({ id }) => id === expense.id)) return current;
+        return { ...current, expenses: insertByDate(current.expenses, expense) };
+      }),
+    [setData],
   );
 
-  return { expenses: data, isLoading, error, retry, create };
+  return { expenses: data?.expenses, isLoading, error, retry, create: createExpense, add };
 }

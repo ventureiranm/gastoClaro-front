@@ -153,17 +153,51 @@ a {
   grid-column: 2;
 }
 
-.success-message {
+/* Avisos de confirmación flotando abajo a la derecha; en pantallas angostas, a lo ancho. La región
+   no captura clics: solo el aviso. */
+.toast-region {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  max-width: 24rem;
   padding: 0.75rem 1rem;
   color: var(--color-success);
   background: var(--color-surface);
   border: 1px solid var(--color-success);
   border-left-width: 4px;
   border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgb(15 23 42 / 15%);
+  pointer-events: auto;
+  animation: toast-in 150ms ease-out;
 }
 
-.success-message p {
+.toast__message {
+  flex: 1;
   margin: 0;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
 }
 
 .error-message {

@@ -93,7 +93,7 @@
       "fixed": "Fijo",
       "noDescription": "Sin descripción",
       "noChannel": "Sin especificar",
-      "emptyTitle": "No hay gastos en {{period}}",
+      "emptyTitle": "Todavía no cargaste gastos en {{period}}",
       "emptyDescription": "Cargá uno y lo vas a ver acá.",
       "emptyAction": "Cargar un gasto"
     },
@@ -120,6 +120,7 @@
   "common": {
     "loading": "Cargando…",
     "retry": "Reintentar",
+    "close": "Cerrar",
     "required": "obligatorio"
   },
   "errors": {

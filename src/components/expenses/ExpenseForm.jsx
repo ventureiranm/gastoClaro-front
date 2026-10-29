@@ -8,7 +8,6 @@ import Button from '../ui/Button';
 import FormAlert from '../ui/FormAlert';
 import FormField from '../ui/FormField';
 import LoadingIndicator from '../ui/LoadingIndicator';
-import SuccessMessage from '../ui/SuccessMessage';
 
 // Nombres de campo de la API que no coinciden con los del formulario.
 const API_FIELDS = {
@@ -19,7 +18,8 @@ const API_FIELDS = {
 
 // Alta de un gasto. onSubmit(newExpense) recibe el gasto con amount y categoryId como números.
 // Sin categorías no se puede guardar: el campo lo explica y el botón queda deshabilitado.
-// `firstFieldRef` permite llevar el foco al formulario desde afuera.
+// `firstFieldRef` permite llevar el foco al formulario desde afuera; después de guardar, el foco
+// vuelve ahí para cargar otro. La confirmación la muestra quien llama.
 export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
   const { t } = useTranslation();
   const hasCategories = categories.length > 0;
@@ -29,13 +29,11 @@ export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
     formErrors,
     isNetworkError,
     isSubmitting,
-    succeeded,
     handleChange,
     handleSubmit,
     retry,
     formRef,
     alertRef,
-    successRef,
   } = useForm({
     initialValues: {
       date: todayISO(),
@@ -49,6 +47,7 @@ export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
     onSubmit: (formValues) => onSubmit(toNewExpense(formValues)),
     apiFields: API_FIELDS,
     resetOnSuccess: true,
+    successFocusRef: firstFieldRef,
   });
 
   function handleFormSubmit(event) {
@@ -58,7 +57,6 @@ export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
 
   return (
     <form ref={formRef} className="form" onSubmit={handleFormSubmit} noValidate>
-      <SuccessMessage ref={successRef} message={succeeded ? t('expenses.form.success') : null} />
       <FormAlert
         ref={alertRef}
         messages={formErrors}

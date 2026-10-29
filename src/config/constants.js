@@ -23,6 +23,9 @@ export const NETWORK_ERROR_STATUS = 0;
 
 export const REQUEST_TIMEOUT_MS = 15000;
 
+// Cuánto tiempo queda a la vista un aviso de confirmación (toast) si nadie lo cierra antes.
+export const TOAST_DURATION_MS = 4000;
+
 // Validar la sesión guardada con GET /me al arrancar la app: así, al recargar la página, se
 // recupera el usuario del token. Si el token ya no sirve, el 401 cierra la sesión.
 export const VALIDATE_SESSION_ON_START = true;
