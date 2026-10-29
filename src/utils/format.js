@@ -4,6 +4,10 @@ import { CURRENCY, LOCALE, PURCHASE_CHANNELS } from '../config/constants';
 // calendario, y con la zona horaria local se correría al 11 en la Argentina.
 
 const amountFormat = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY });
+const percentageFormat = new Intl.NumberFormat(LOCALE, {
+  style: 'percent',
+  maximumFractionDigits: 0,
+});
 const dateFormat = new Intl.DateTimeFormat(LOCALE, {
   day: '2-digit',
   month: '2-digit',
@@ -19,6 +23,11 @@ const periodFormat = new Intl.DateTimeFormat(LOCALE, {
 // 13101 → "$ 13.101,00"
 export function formatAmount(amount) {
   return amountFormat.format(amount);
+}
+
+// 0.656 → "66 %"
+export function formatPercentage(ratio) {
+  return percentageFormat.format(ratio);
 }
 
 // '2026-09-12' → "12/09/2026"
