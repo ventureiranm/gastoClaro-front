@@ -80,14 +80,19 @@ function emptyTitle(period) {
 
 describe('Listado de gastos', () => {
   it('muestra los gastos del mes en curso con el monto formateado', async () => {
+    // La respuesta queda pendiente hasta comprobar que se ve la carga.
+    let respond;
     const { fetchMock } = renderDashboard({
-      'GET /expenses': jsonResponse(200, [
-        apiExpense({ id: 2, is_fixed: true, purchase_channel: 'delivery' }),
-        apiExpense({ amount: '1800.5', description: '', purchase_channel: null }),
-      ]),
+      'GET /expenses': () => new Promise((resolve) => (respond = resolve)),
     });
 
     expect(await screen.findByText(es.expenses.list.loading)).toBeInTheDocument();
+    respond(
+      jsonResponse(200, [
+        apiExpense({ id: 2, is_fixed: true, purchase_channel: 'delivery' }),
+        apiExpense({ amount: '1800.5', description: '', purchase_channel: null }),
+      ]),
+    );
 
     const table = await screen.findByRole('table', {
       name: i18n.t('expenses.list.caption', { period: formatPeriod(currentPeriod()) }),
