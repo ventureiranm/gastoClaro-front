@@ -10,6 +10,7 @@ import {
   mockApi,
   mockFetch,
   TEST_TOKEN,
+  TEST_USER,
 } from '../test/api';
 import { renderApp } from '../test/renderApp';
 
@@ -32,7 +33,7 @@ describe('Registro', () => {
   it('con datos válidos deja al usuario logueado y lo lleva adentro', async () => {
     const fetchMock = mockApi({
       ...emptyDashboardRoutes(),
-      'POST /register': jsonResponse(201, { token: TEST_TOKEN, user: 'nico' }),
+      'POST /register': jsonResponse(201, { token: TEST_TOKEN, user: TEST_USER }),
     });
     const { user } = renderApp(ROUTES.REGISTER);
 

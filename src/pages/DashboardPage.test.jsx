@@ -3,7 +3,15 @@ import { saveToken } from '../api/tokenStorage';
 import { ROUTES } from '../config/constants';
 import i18n from '../i18n';
 import es from '../locales/es.json';
-import { apiErrors, fetchCallsTo, jsonResponse, mockApi, TEST_TOKEN } from '../test/api';
+import {
+  apiErrors,
+  emptyDashboardRoutes,
+  fetchCallsTo,
+  jsonResponse,
+  mockApi,
+  TEST_TOKEN,
+  TEST_USER,
+} from '../test/api';
 import { BACK, BackButton } from '../test/BackButton';
 import { renderApp } from '../test/renderApp';
 import { currentPeriod, todayISO } from '../utils/dates';
@@ -50,8 +58,8 @@ function createdExpense({ body }) {
 function renderDashboard(routes = {}) {
   saveToken(TEST_TOKEN);
   const fetchMock = mockApi({
+    ...emptyDashboardRoutes(),
     'GET /categories': jsonResponse(200, CATEGORIES),
-    'GET /expenses': jsonResponse(200, []),
     ...routes,
   });
   return { fetchMock, ...renderApp(ROUTES.DASHBOARD) };
@@ -79,7 +87,7 @@ describe('Listado de gastos', () => {
       ]),
     });
 
-    expect(screen.getByText(es.expenses.list.loading)).toBeInTheDocument();
+    expect(await screen.findByText(es.expenses.list.loading)).toBeInTheDocument();
 
     const table = await screen.findByRole('table', {
       name: i18n.t('expenses.list.caption', { period: formatPeriod(currentPeriod()) }),
@@ -327,6 +335,7 @@ describe('Aislamiento entre usuarios', () => {
     // La API responde según el token: A tiene un gasto, B ninguno.
     saveToken('token-a');
     const fetchMock = mockApi({
+      'GET /me': jsonResponse(200, TEST_USER),
       'GET /categories': jsonResponse(200, CATEGORIES),
       'GET /expenses': ({ headers }) =>
         jsonResponse(
@@ -336,7 +345,10 @@ describe('Aislamiento entre usuarios', () => {
             : [],
         ),
       'DELETE /logout': jsonResponse(204),
-      'POST /login': jsonResponse(200, { token: 'token-b', user: 'b' }),
+      'POST /login': jsonResponse(200, {
+        token: 'token-b',
+        user: { id: 2, user: 'b', email: 'b@example.com', admin: false },
+      }),
     });
     const { user } = renderApp(ROUTES.DASHBOARD, { extra: <BackButton /> });
     expect(await screen.findByText('Gasto de A')).toBeInTheDocument();

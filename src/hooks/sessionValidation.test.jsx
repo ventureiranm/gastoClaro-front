@@ -13,24 +13,10 @@ import {
 } from '../test/api';
 import { renderApp } from '../test/renderApp';
 
-// Prueba la validación al arrancar como si GET /me ya existiera.
-vi.mock('../config/constants', async (importOriginal) => ({
-  ...(await importOriginal()),
-  VALIDATE_SESSION_ON_START: true,
-}));
-
 describe('Validación de la sesión al arrancar', () => {
   it('muestra la carga mientras valida y después la pantalla protegida', async () => {
     saveToken(TEST_TOKEN);
-    const fetchMock = mockApi({
-      ...emptyDashboardRoutes(),
-      'GET /me': jsonResponse(200, {
-        id: 1,
-        user: 'nico',
-        email: 'nico@example.com',
-        admin: false,
-      }),
-    });
+    const fetchMock = mockApi(emptyDashboardRoutes());
     renderApp(ROUTES.DASHBOARD);
 
     expect(screen.getByRole('status')).toHaveTextContent(es.common.loading);

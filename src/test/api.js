@@ -3,6 +3,9 @@ import { API_BASE_URL } from '../config/constants';
 
 export const TEST_TOKEN = 'token-de-prueba';
 
+// El usuario con la forma que devuelven GET /me, login y register.
+export const TEST_USER = { id: 1, user: 'nico', email: 'nico@example.com', admin: false };
+
 export function jsonResponse(status, body) {
   return new Response(body === undefined ? null : JSON.stringify(body), {
     status,
@@ -26,9 +29,11 @@ export function mockFetch(...responses) {
   return fetchMock;
 }
 
-// Respuestas para que el dashboard cargue sin datos, para usar con mockApi.
+// Respuestas para que el dashboard cargue sin datos, para usar con mockApi. Incluye GET /me, que
+// valida el token guardado al arrancar.
 export function emptyDashboardRoutes() {
   return {
+    'GET /me': jsonResponse(200, TEST_USER),
     'GET /categories': jsonResponse(200, []),
     'GET /expenses': jsonResponse(200, []),
   };

@@ -10,6 +10,7 @@ import {
   mockApi,
   mockFetch,
   TEST_TOKEN,
+  TEST_USER,
 } from '../test/api';
 import { renderApp } from '../test/renderApp';
 
@@ -23,7 +24,7 @@ describe('Login', () => {
   it('con credenciales correctas entra a la pantalla protegida', async () => {
     const fetchMock = mockApi({
       ...emptyDashboardRoutes(),
-      'POST /login': jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }),
+      'POST /login': jsonResponse(200, { token: TEST_TOKEN, user: TEST_USER }),
     });
     const { user } = renderApp(ROUTES.DASHBOARD);
 
@@ -71,7 +72,7 @@ describe('Login', () => {
       ...emptyDashboardRoutes(),
       'POST /login': [
         new TypeError('Failed to fetch'),
-        jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }),
+        jsonResponse(200, { token: TEST_TOKEN, user: TEST_USER }),
       ],
     });
     const { user } = renderApp(ROUTES.LOGIN);
@@ -97,7 +98,7 @@ describe('Login', () => {
     expect(screen.getByRole('button', { name: es.login.submit })).toBeDisabled();
     expect(screen.getByRole('status')).toHaveTextContent(es.login.submitting);
 
-    respond(jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }));
+    respond(jsonResponse(200, { token: TEST_TOKEN, user: TEST_USER }));
     expect(await screen.findByRole('heading', { name: es.dashboard.title })).toBeInTheDocument();
   });
 });
