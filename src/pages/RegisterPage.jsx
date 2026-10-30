@@ -8,6 +8,7 @@ import Button from '../components/ui/Button';
 import FormAlert from '../components/ui/FormAlert';
 import FormField from '../components/ui/FormField';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
+import PageHeader from '../components/ui/PageHeader';
 
 // Nombres de campo de la API que no coinciden con los del formulario.
 const API_FIELDS = { password_confirmation: 'passwordConfirmation' };
@@ -36,7 +37,7 @@ export default function RegisterPage() {
   // La API devuelve el token al registrar: el usuario queda logueado y GuestRoute lo lleva adentro.
   return (
     <section className="page page--narrow">
-      <h1>{t('register.title')}</h1>
+      <PageHeader eyebrow={t('app.name')} title={t('register.title')} />
       <form ref={formRef} className="form" onSubmit={handleSubmit} noValidate>
         <FormAlert
           ref={alertRef}

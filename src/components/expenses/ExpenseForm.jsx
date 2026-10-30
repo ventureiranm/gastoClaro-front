@@ -96,6 +96,7 @@ export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
       <FormField
         label={t('expenses.fields.amount')}
         name="amount"
+        className="mono"
         inputMode="decimal"
         autoComplete="off"
         hint={t('expenses.form.amountHint', { count: AMOUNT_MAX_DECIMALS })}

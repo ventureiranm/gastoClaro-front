@@ -14,6 +14,7 @@ import EmptyState from '../components/ui/EmptyState';
 import FormAlert from '../components/ui/FormAlert';
 import FormField from '../components/ui/FormField';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
+import PageHeader from '../components/ui/PageHeader';
 import Toast from '../components/ui/Toast';
 
 // Sin conexión, el mensaje genérico de red; ante cualquier otro problema, el de esa carga.
@@ -121,13 +122,13 @@ export default function DashboardPage() {
 
   return (
     <section className="page">
-      <h1>{t('dashboard.title')}</h1>
+      <PageHeader eyebrow={t('nav.dashboard')} title={t('dashboard.title')} />
       <section aria-labelledby={summaryTitleId} className="dashboard-summary">
         <h2 id={summaryTitleId}>{t('dashboard.summary.title')}</h2>
         {renderSummary()}
       </section>
       <div className="dashboard">
-        <section aria-labelledby={listTitleId}>
+        <section aria-labelledby={listTitleId} className="panel">
           <h2 id={listTitleId}>{t('expenses.list.title')}</h2>
           <div className="dashboard__filter">
             <FormField
@@ -142,7 +143,7 @@ export default function DashboardPage() {
           </div>
           {renderList()}
         </section>
-        <section aria-labelledby={formTitleId} className="dashboard__form">
+        <section aria-labelledby={formTitleId} className="panel dashboard__form">
           <h2 id={formTitleId}>{t('expenses.form.title')}</h2>
           {renderForm()}
         </section>

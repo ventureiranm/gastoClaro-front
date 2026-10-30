@@ -41,6 +41,7 @@ src/
   validation/   validaciones de formularios que no necesitan al servidor
   utils/        formato para mostrar (montos, fechas) y manejo de fechas, sin React
   locales/      todos los textos
+  styles/       tokens del sistema visual (ver docs/design-system.md)
 ```
 
 Reglas del proyecto:
