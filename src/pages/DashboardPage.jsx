@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useCategories } from '../hooks/useCategories';
 import { useDashboard } from '../hooks/useDashboard';
 import { useExpenses } from '../hooks/useExpenses';
+import { useToast } from '../hooks/useToast';
 import { currentPeriod, isValidPeriod, periodOf } from '../utils/dates';
 import { formatPeriod } from '../utils/format';
 import DashboardSummary from '../components/dashboard/DashboardSummary';
@@ -13,6 +14,8 @@ import EmptyState from '../components/ui/EmptyState';
 import FormAlert from '../components/ui/FormAlert';
 import FormField from '../components/ui/FormField';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
+import PageHeader from '../components/ui/PageHeader';
+import Toast from '../components/ui/Toast';
 
 // Sin conexión, el mensaje genérico de red; ante cualquier otro problema, el de esa carga.
 function loadErrorMessage(error, messageKey, t) {
@@ -32,18 +35,24 @@ export default function DashboardPage() {
   const expenses = useExpenses(period);
   const categories = useCategories();
   const dashboard = useDashboard();
+  const confirmation = useToast();
 
   function changePeriod(value) {
     setPeriodInput(value);
     if (isValidPeriod(value)) setPeriod(value);
   }
 
-  // Si el gasto es de otro mes, el filtro pasa a ese mes para que se vea dónde quedó. El resumen se
-  // vuelve a pedir siempre: un gasto de un mes anterior también cambia la evolución de los 6 meses.
+  // Al guardar se muestra la confirmación, y el gasto aparece recién cuando el aviso termina:
+  // entonces se suma al listado y el filtro pasa a su mes, para que se vea dónde quedó. El resumen
+  // se vuelve a pedir siempre: un gasto de un mes anterior también cambia la evolución de los 6
+  // meses.
   async function handleCreate(newExpense) {
     const expense = await expenses.create(newExpense);
-    dashboard.retry();
-    if (periodOf(expense.date) !== period) changePeriod(periodOf(expense.date));
+    confirmation.show(t('expenses.form.success')).then(() => {
+      expenses.add(expense);
+      changePeriod(periodOf(expense.date));
+      dashboard.retry();
+    });
   }
 
   function renderSummary() {
@@ -113,13 +122,13 @@ export default function DashboardPage() {
 
   return (
     <section className="page">
-      <h1>{t('dashboard.title')}</h1>
+      <PageHeader eyebrow={t('nav.dashboard')} title={t('dashboard.title')} />
       <section aria-labelledby={summaryTitleId} className="dashboard-summary">
         <h2 id={summaryTitleId}>{t('dashboard.summary.title')}</h2>
         {renderSummary()}
       </section>
       <div className="dashboard">
-        <section aria-labelledby={listTitleId}>
+        <section aria-labelledby={listTitleId} className="panel">
           <h2 id={listTitleId}>{t('expenses.list.title')}</h2>
           <div className="dashboard__filter">
             <FormField
@@ -134,11 +143,17 @@ export default function DashboardPage() {
           </div>
           {renderList()}
         </section>
-        <section aria-labelledby={formTitleId} className="dashboard__form">
+        <section aria-labelledby={formTitleId} className="panel dashboard__form">
           <h2 id={formTitleId}>{t('expenses.form.title')}</h2>
           {renderForm()}
         </section>
       </div>
+      <Toast
+        toast={confirmation.toast}
+        onClose={confirmation.close}
+        onPause={confirmation.pause}
+        onResume={confirmation.resume}
+      />
     </section>
   );
 }

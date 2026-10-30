@@ -10,7 +10,7 @@ const API_EXPENSE = {
   description: 'Compra semanal',
   is_fixed: false,
   purchase_channel: 'presencial',
-  user_id: 1,
+  user: { id: 1, user: 'nico' },
   vendor_id: 4,
   category: { id: 1, name: 'Supermercado' },
   expense_items: [

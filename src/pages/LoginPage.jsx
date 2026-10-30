@@ -9,6 +9,7 @@ import Button from '../components/ui/Button';
 import FormAlert from '../components/ui/FormAlert';
 import FormField from '../components/ui/FormField';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
+import PageHeader from '../components/ui/PageHeader';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -39,8 +40,12 @@ export default function LoginPage() {
   // La redirección después de un login exitoso la hace GuestRoute.
   return (
     <section className="page page--narrow">
-      <h1>{t('login.title')}</h1>
-      <FormAlert ref={expiredRef} messages={sessionExpired ? t('auth.sessionExpired') : null} />
+      <PageHeader eyebrow={t('app.name')} title={t('login.title')} />
+      <FormAlert
+        ref={expiredRef}
+        tone="warning"
+        messages={sessionExpired ? t('auth.sessionExpired') : null}
+      />
       <form ref={formRef} className="form" onSubmit={handleSubmit} noValidate>
         <FormAlert
           ref={alertRef}
