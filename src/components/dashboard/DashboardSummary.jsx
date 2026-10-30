@@ -27,7 +27,7 @@ function SummaryTotals({ summary }) {
         <dt>{t('dashboard.summary.savings')}</dt>
         <dd className="summary-total__amount">{formatAmount(savings)}</dd>
         {savingsGoalPercentage > 0 && (
-          <dd className="muted">
+          <dd className="muted summary-total__context">
             {t('dashboard.summary.savingsGoal', {
               percentage: formatPercentage(savingsGoalPercentage / 100),
             })}
@@ -45,13 +45,13 @@ function CategoryBreakdown({ summary, period }) {
   const categories = summary.consumptionByCategory.toSorted((a, b) => b.total - a.total);
 
   return (
-    <section aria-labelledby={titleId}>
+    <section aria-labelledby={titleId} className="panel">
       <h3 id={titleId}>{t('dashboard.summary.byCategory.title')}</h3>
       {categories.length === 0 ? (
         <p className="muted">{t('dashboard.summary.byCategory.empty', { period })}</p>
       ) : (
         <div className="table-wrapper">
-          <table className="data-table" aria-labelledby={titleId}>
+          <table className="data-table data-table--stack" aria-labelledby={titleId}>
             <thead>
               <tr>
                 <th scope="col">{t('expenses.fields.category')}</th>
@@ -66,9 +66,13 @@ function CategoryBreakdown({ summary, period }) {
             <tbody>
               {categories.map(({ category, total }) => (
                 <tr key={category}>
-                  <td>{category}</td>
-                  <td className="numeric">{formatAmount(total)}</td>
-                  <td className="numeric">{formatPercentage(total / summary.consumption)}</td>
+                  <td data-label={t('expenses.fields.category')}>{category}</td>
+                  <td data-label={t('expenses.fields.amount')} className="numeric">
+                    {formatAmount(total)}
+                  </td>
+                  <td data-label={t('dashboard.summary.byCategory.share')} className="numeric">
+                    {formatPercentage(total / summary.consumption)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -85,13 +89,17 @@ function MonthlySavings({ months }) {
   const hintId = useId();
 
   return (
-    <section aria-labelledby={titleId}>
+    <section aria-labelledby={titleId} className="panel">
       <h3 id={titleId}>{t('dashboard.summary.monthly.title')}</h3>
       <p id={hintId} className="muted">
         {t('dashboard.summary.monthly.hint')}
       </p>
       <div className="table-wrapper">
-        <table className="data-table" aria-labelledby={titleId} aria-describedby={hintId}>
+        <table
+          className="data-table data-table--stack-wide"
+          aria-labelledby={titleId}
+          aria-describedby={hintId}
+        >
           <thead>
             <tr>
               <th scope="col">{t('dashboard.summary.monthly.month')}</th>
@@ -113,10 +121,18 @@ function MonthlySavings({ months }) {
             {months.map((month) => (
               <tr key={month.month}>
                 <th scope="row">{formatPeriod(month.month)}</th>
-                <td className="numeric">{formatAmount(month.income)}</td>
-                <td className="numeric">{formatAmount(month.consumption)}</td>
-                <td className="numeric">{formatAmount(month.savings)}</td>
-                <td className="numeric">{formatAmount(month.accumulated)}</td>
+                <td data-label={t('dashboard.summary.income')} className="numeric">
+                  {formatAmount(month.income)}
+                </td>
+                <td data-label={t('dashboard.summary.consumption')} className="numeric">
+                  {formatAmount(month.consumption)}
+                </td>
+                <td data-label={t('dashboard.summary.savings')} className="numeric">
+                  {formatAmount(month.savings)}
+                </td>
+                <td data-label={t('dashboard.summary.monthly.accumulated')} className="numeric">
+                  {formatAmount(month.accumulated)}
+                </td>
               </tr>
             ))}
           </tbody>

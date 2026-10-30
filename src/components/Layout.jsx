@@ -17,42 +17,46 @@ export default function Layout() {
     navigate(ROUTES.LOGIN);
   }
 
+  // Con sesión, la navegación es una barra lateral en pantallas anchas y una barra arriba en las
+  // angostas; sin sesión, siempre una barra arriba.
   return (
     <>
       <a className="skip-link" href={`#${MAIN_CONTENT_ID}`}>
         {t('nav.skipToContent')}
       </a>
-      <header className="app-header">
-        <span className="app-header__brand">{t('app.name')}</span>
-        <nav aria-label={t('nav.label')}>
-          <ul className="app-nav">
-            {isAuthenticated ? (
-              <>
-                <li>
-                  <NavLink to={ROUTES.DASHBOARD}>{t('nav.dashboard')}</NavLink>
-                </li>
-                <li>
-                  <Button variant="link" onClick={handleLogout}>
-                    {t('nav.logout')}
-                  </Button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <NavLink to={ROUTES.LOGIN}>{t('nav.login')}</NavLink>
-                </li>
-                <li>
-                  <NavLink to={ROUTES.REGISTER}>{t('nav.register')}</NavLink>
-                </li>
-              </>
-            )}
-          </ul>
-        </nav>
-      </header>
-      <main id={MAIN_CONTENT_ID} className="app-main" tabIndex={-1}>
-        <Outlet />
-      </main>
+      <div className={isAuthenticated ? 'app-shell app-shell--sidebar' : 'app-shell'}>
+        <header className="app-header">
+          <span className="app-header__brand">{t('app.name')}</span>
+          <nav aria-label={t('nav.label')}>
+            <ul className="app-nav">
+              {isAuthenticated ? (
+                <>
+                  <li>
+                    <NavLink to={ROUTES.DASHBOARD}>{t('nav.dashboard')}</NavLink>
+                  </li>
+                  <li className="app-nav__logout">
+                    <Button variant="secondary" onClick={handleLogout}>
+                      {t('nav.logout')}
+                    </Button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <NavLink to={ROUTES.LOGIN}>{t('nav.login')}</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to={ROUTES.REGISTER}>{t('nav.register')}</NavLink>
+                  </li>
+                </>
+              )}
+            </ul>
+          </nav>
+        </header>
+        <main id={MAIN_CONTENT_ID} className="app-main" tabIndex={-1}>
+          <Outlet />
+        </main>
+      </div>
     </>
   );
 }
