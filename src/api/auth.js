@@ -8,16 +8,10 @@ const ENDPOINTS = {
   ME: '/me',
 };
 
-// Hacia adentro de la app el usuario es siempre { id, user, email, admin }. Hoy login y register
-// devuelven `user` como string con el nombre de usuario; hay una propuesta para que pase a ser el
-// objeto completo. Este es el único lugar que conoce esa diferencia. Lo que la API no trae queda
-// en null.
-function normalizeUser(raw) {
-  if (raw && typeof raw === 'object') {
-    const { id = null, user = null, email = null, admin = null } = raw;
-    return { id, user, email, admin };
-  }
-  return { id: null, user: raw ?? null, email: null, admin: null };
+// Hacia adentro de la app el usuario es siempre { id, user, email, admin }, la misma forma que
+// devuelven GET /me, login y register. Lo que la API no trae queda en null.
+function normalizeUser({ id = null, user = null, email = null, admin = null }) {
+  return { id, user, email, admin };
 }
 
 function normalizeSession({ token, user }) {

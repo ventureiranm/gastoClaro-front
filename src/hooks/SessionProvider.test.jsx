@@ -9,6 +9,7 @@ import {
   jsonResponse,
   mockApi,
   TEST_TOKEN,
+  TEST_USER,
 } from '../test/api';
 import { BACK, BackButton } from '../test/BackButton';
 import { renderApp } from '../test/renderApp';
@@ -19,7 +20,7 @@ describe('Sesión', () => {
     const fetchMock = mockApi({ ...emptyDashboardRoutes(), 'DELETE /logout': jsonResponse(204) });
     const { user } = renderApp(ROUTES.DASHBOARD);
 
-    await user.click(screen.getByRole('button', { name: es.nav.logout }));
+    await user.click(await screen.findByRole('button', { name: es.nav.logout }));
 
     expect(await screen.findByRole('heading', { name: es.login.title })).toBeInTheDocument();
     expect(getToken()).toBeNull();
@@ -32,7 +33,7 @@ describe('Sesión', () => {
     mockApi({ ...emptyDashboardRoutes(), 'DELETE /logout': jsonResponse(204) });
     const { user } = renderApp(ROUTES.DASHBOARD, { extra: <BackButton /> });
 
-    await user.click(screen.getByRole('button', { name: es.nav.logout }));
+    await user.click(await screen.findByRole('button', { name: es.nav.logout }));
     expect(await screen.findByRole('heading', { name: es.login.title })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: BACK }));
@@ -46,19 +47,19 @@ describe('Sesión', () => {
     mockApi({ ...emptyDashboardRoutes(), 'DELETE /logout': new TypeError('Failed to fetch') });
     const { user } = renderApp(ROUTES.DASHBOARD);
 
-    await user.click(screen.getByRole('button', { name: es.nav.logout }));
+    await user.click(await screen.findByRole('button', { name: es.nav.logout }));
 
     expect(await screen.findByRole('heading', { name: es.login.title })).toBeInTheDocument();
     expect(getToken()).toBeNull();
     expect(screen.queryByText(es.auth.sessionExpired)).not.toBeInTheDocument();
   });
 
-  it('con token guardado, recargar mantiene al usuario adentro', () => {
+  it('con token guardado, recargar mantiene al usuario adentro', async () => {
     saveToken(TEST_TOKEN);
     mockApi(emptyDashboardRoutes());
     renderApp(ROUTES.DASHBOARD);
 
-    expect(screen.getByRole('heading', { name: es.dashboard.title })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: es.dashboard.title })).toBeInTheDocument();
   });
 
   it('un 401 de cualquier endpoint cierra la sesión y avisa que venció', async () => {
@@ -70,7 +71,7 @@ describe('Sesión', () => {
         jsonResponse(401, apiErrors(['base', 'No autorizado'])),
         jsonResponse(200, []),
       ],
-      'POST /login': jsonResponse(200, { token: 'token-nuevo', user: 'nico' }),
+      'POST /login': jsonResponse(200, { token: 'token-nuevo', user: TEST_USER }),
     });
     const { user } = renderApp(ROUTES.DASHBOARD);
 

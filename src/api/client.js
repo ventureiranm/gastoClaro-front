@@ -65,7 +65,7 @@ export async function request(
   { method = 'GET', body, headers, signal, token = getToken() } = {},
 ) {
   if (!API_BASE_URL) {
-    throw new Error('Falta VITE_API_URL: copiá .env.example a .env.');
+    throw new Error('Missing VITE_API_URL: copy .env.example to .env.');
   }
 
   const finalHeaders = { ...DEFAULT_HEADERS, ...headers };
