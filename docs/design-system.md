@@ -44,7 +44,9 @@ Los estilos son CSS plano, sin librerías:
 | `--color-error`                               | `#8A3A32`             | Errores                              |
 
 Tipografía: **Libre Franklin** (`--font-sans`) para todo el texto e **IBM Plex Mono**
-(`--font-mono`) para los números; se cargan desde Google Fonts en `index.html`.
+(`--font-mono`) para los números. Vienen de los paquetes `@fontsource/libre-franklin` y
+`@fontsource/ibm-plex-mono`, que `src/main.jsx` importa solo con los pesos que se usan, así que
+no dependen de internet.
 
 | Token                 | Tamaño | Uso                                          |
 | --------------------- | ------ | -------------------------------------------- |
