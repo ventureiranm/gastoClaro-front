@@ -30,3 +30,11 @@ export const VALIDATE_SESSION_ON_START = false;
 
 // Deben coincidir con las validaciones del back-end.
 export const PASSWORD_MIN_LENGTH = 8;
+
+// Montos y fechas se muestran con formato argentino: punto para los miles, coma para los decimales.
+export const LOCALE = 'es-AR';
+export const CURRENCY = 'ARS';
+export const AMOUNT_MAX_DECIMALS = 2;
+
+// Códigos de canal de compra que acepta la API. Las etiquetas visibles están en es.json.
+export const PURCHASE_CHANNELS = ['presencial', 'delivery', 'retiro'];

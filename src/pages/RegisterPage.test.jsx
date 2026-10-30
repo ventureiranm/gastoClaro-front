@@ -2,7 +2,15 @@ import { screen } from '@testing-library/react';
 import { getToken } from '../api/tokenStorage';
 import { PASSWORD_MIN_LENGTH, ROUTES } from '../config/constants';
 import es from '../locales/es.json';
-import { apiErrors, fetchCall, jsonResponse, mockFetch, TEST_TOKEN } from '../test/api';
+import {
+  apiErrors,
+  emptyDashboardRoutes,
+  fetchCall,
+  jsonResponse,
+  mockApi,
+  mockFetch,
+  TEST_TOKEN,
+} from '../test/api';
 import { renderApp } from '../test/renderApp';
 
 const VALID = {
@@ -22,7 +30,10 @@ async function fillAndSubmit(user, values = VALID) {
 
 describe('Registro', () => {
   it('con datos válidos deja al usuario logueado y lo lleva adentro', async () => {
-    const fetchMock = mockFetch(jsonResponse(201, { token: TEST_TOKEN, user: 'nico' }));
+    const fetchMock = mockApi({
+      ...emptyDashboardRoutes(),
+      'POST /register': jsonResponse(201, { token: TEST_TOKEN, user: 'nico' }),
+    });
     const { user } = renderApp(ROUTES.REGISTER);
 
     await fillAndSubmit(user);

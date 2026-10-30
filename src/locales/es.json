@@ -22,7 +22,10 @@
     "required": "Completá este campo.",
     "email": "Ingresá un correo electrónico válido.",
     "passwordMinLength": "Tiene que tener al menos {{count}} caracteres.",
-    "passwordMismatch": "Las contraseñas no coinciden."
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "date": "Ingresá una fecha válida.",
+    "amount": "Ingresá un número sin separador de miles, con hasta {{count}} decimales.",
+    "amountPositive": "El monto tiene que ser mayor a 0."
   },
   "login": {
     "title": "Iniciar sesión",
@@ -39,9 +42,53 @@
     "goToLogin": "Iniciá sesión"
   },
   "dashboard": {
-    "title": "Mis gastos",
-    "emptyTitle": "Todavía no hay gastos",
-    "emptyDescription": "Cuando cargues tu primer gasto, lo vas a ver acá."
+    "title": "Mis gastos"
+  },
+  "expenses": {
+    "fields": {
+      "date": "Fecha",
+      "category": "Categoría",
+      "amount": "Monto",
+      "description": "Descripción",
+      "isFixed": "Gasto fijo",
+      "purchaseChannel": "Canal de compra"
+    },
+    "channels": {
+      "presencial": "Presencial",
+      "delivery": "Delivery",
+      "retiro": "Retiro en el local"
+    },
+    "filter": {
+      "label": "Mes",
+      "placeholder": "AAAA-MM",
+      "invalid": "Ingresá un mes con el formato AAAA-MM."
+    },
+    "list": {
+      "title": "Gastos del mes",
+      "caption": "Gastos de {{period}}",
+      "loading": "Cargando gastos…",
+      "loadError": "No pudimos cargar tus gastos.",
+      "fixed": "Fijo",
+      "noDescription": "Sin descripción",
+      "noChannel": "Sin especificar",
+      "emptyTitle": "No hay gastos en {{period}}",
+      "emptyDescription": "Cargá uno y lo vas a ver acá.",
+      "emptyAction": "Cargar un gasto"
+    },
+    "form": {
+      "title": "Nuevo gasto",
+      "categoryPlaceholder": "Elegí una categoría",
+      "noCategoriesOption": "No hay categorías",
+      "noCategories": "Todavía no hay categorías cargadas, así que no se pueden guardar gastos.",
+      "loadingCategories": "Cargando categorías…",
+      "categoriesError": "No pudimos cargar las categorías.",
+      "amountHint": "Sin separador de miles y con hasta {{count}} decimales. Por ejemplo: 1500,50",
+      "isFixedHint": "Se repite todos los meses, como el alquiler o un servicio.",
+      "channelNone": "Sin especificar",
+      "submit": "Guardar gasto",
+      "submitting": "Guardando…",
+      "success": "Gasto guardado."
+    }
   },
   "notFound": {
     "title": "Página no encontrada",

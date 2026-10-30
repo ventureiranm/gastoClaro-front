@@ -2,7 +2,15 @@ import { screen } from '@testing-library/react';
 import { getToken, saveToken } from '../api/tokenStorage';
 import { ROUTES } from '../config/constants';
 import es from '../locales/es.json';
-import { apiErrors, fetchCall, jsonResponse, mockFetch, TEST_TOKEN } from '../test/api';
+import {
+  apiErrors,
+  emptyDashboardRoutes,
+  fetchCall,
+  jsonResponse,
+  mockApi,
+  mockFetch,
+  TEST_TOKEN,
+} from '../test/api';
 import { renderApp } from '../test/renderApp';
 
 // Prueba la validación al arrancar como si GET /me ya existiera.
@@ -14,9 +22,15 @@ vi.mock('../config/constants', async (importOriginal) => ({
 describe('Validación de la sesión al arrancar', () => {
   it('muestra la carga mientras valida y después la pantalla protegida', async () => {
     saveToken(TEST_TOKEN);
-    const fetchMock = mockFetch(
-      jsonResponse(200, { id: 1, user: 'nico', email: 'nico@example.com', admin: false }),
-    );
+    const fetchMock = mockApi({
+      ...emptyDashboardRoutes(),
+      'GET /me': jsonResponse(200, {
+        id: 1,
+        user: 'nico',
+        email: 'nico@example.com',
+        admin: false,
+      }),
+    });
     renderApp(ROUTES.DASHBOARD);
 
     expect(screen.getByRole('status')).toHaveTextContent(es.common.loading);

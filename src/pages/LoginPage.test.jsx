@@ -2,7 +2,15 @@ import { screen } from '@testing-library/react';
 import { getToken } from '../api/tokenStorage';
 import { ROUTES } from '../config/constants';
 import es from '../locales/es.json';
-import { apiErrors, fetchCall, jsonResponse, mockFetch, TEST_TOKEN } from '../test/api';
+import {
+  apiErrors,
+  emptyDashboardRoutes,
+  fetchCall,
+  jsonResponse,
+  mockApi,
+  mockFetch,
+  TEST_TOKEN,
+} from '../test/api';
 import { renderApp } from '../test/renderApp';
 
 async function fillAndSubmit(user, { username = 'nico', password = 'clave1234' } = {}) {
@@ -13,7 +21,10 @@ async function fillAndSubmit(user, { username = 'nico', password = 'clave1234' }
 
 describe('Login', () => {
   it('con credenciales correctas entra a la pantalla protegida', async () => {
-    const fetchMock = mockFetch(jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }));
+    const fetchMock = mockApi({
+      ...emptyDashboardRoutes(),
+      'POST /login': jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }),
+    });
     const { user } = renderApp(ROUTES.DASHBOARD);
 
     await fillAndSubmit(user);
@@ -56,10 +67,13 @@ describe('Login', () => {
   });
 
   it('ante un error de red muestra el mensaje genérico y permite reintentar', async () => {
-    mockFetch(
-      new TypeError('Failed to fetch'),
-      jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }),
-    );
+    mockApi({
+      ...emptyDashboardRoutes(),
+      'POST /login': [
+        new TypeError('Failed to fetch'),
+        jsonResponse(200, { token: TEST_TOKEN, user: 'nico' }),
+      ],
+    });
     const { user } = renderApp(ROUTES.LOGIN);
 
     await fillAndSubmit(user);

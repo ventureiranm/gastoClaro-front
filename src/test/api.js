@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import { API_BASE_URL } from '../config/constants';
 
 export const TEST_TOKEN = 'token-de-prueba';
 
@@ -25,13 +26,64 @@ export function mockFetch(...responses) {
   return fetchMock;
 }
 
-// Devuelve { url, method, headers, body } del pedido número `index`.
-export function fetchCall(fetchMock, index = 0) {
-  const [url, options] = fetchMock.mock.calls[index];
+// Respuestas para que el dashboard cargue sin datos, para usar con mockApi.
+export function emptyDashboardRoutes() {
+  return {
+    'GET /categories': jsonResponse(200, []),
+    'GET /expenses': jsonResponse(200, []),
+  };
+}
+
+function parseCall(url, options) {
   return {
     url,
     method: options.method,
     headers: options.headers,
     body: options.body === undefined ? undefined : JSON.parse(options.body),
   };
+}
+
+// Devuelve { url, method, headers, body } del pedido número `index`.
+export function fetchCall(fetchMock, index = 0) {
+  const [url, options] = fetchMock.mock.calls[index];
+  return parseCall(url, options);
+}
+
+// Todos los pedidos a "MÉTODO /ruta" (sin la query), en orden, con la forma de fetchCall.
+export function fetchCallsTo(fetchMock, route) {
+  return fetchMock.mock.calls
+    .map(([url, options]) => parseCall(url, options))
+    .filter((call) => routeOf(call) === route);
+}
+
+function routeOf({ url, method }) {
+  const path = url.slice(API_BASE_URL.length).split('?')[0];
+  return `${method} ${path}`;
+}
+
+// Reemplaza fetch por un mock que responde según el pedido. Las claves son "MÉTODO /ruta" (sin la
+// query) y cada valor puede ser:
+// - una respuesta (se puede usar más de una vez),
+// - un Error, que simula la red caída,
+// - una función que recibe el pedido ({ url, method, headers, body }) y devuelve una respuesta,
+// - una lista de lo anterior, que se usa en orden; la última se repite.
+// Un pedido sin respuesta simulada se avisa por consola y se comporta como la red caída.
+export function mockApi(routes) {
+  const queues = new Map(Object.entries(routes).map(([route, value]) => [route, [].concat(value)]));
+
+  const fetchMock = vi.fn(async (url, options) => {
+    const call = parseCall(url, options);
+    const route = routeOf(call);
+    const queue = queues.get(route);
+    if (!queue) {
+      console.error(`Pedido no simulado: ${route}`);
+      throw new TypeError('Failed to fetch');
+    }
+
+    const next = queue.length > 1 ? queue.shift() : queue[0];
+    if (next instanceof Error) throw next;
+    return typeof next === 'function' ? next(call) : next.clone();
+  });
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
 }
