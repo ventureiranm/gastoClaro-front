@@ -105,5 +105,8 @@ Clases para lo que no tiene componente:
   del contenedor (container queries), no de la ventana: la misma tabla funciona en el panel angosto y
   a lo ancho.
 - **Tarjetas de resumen.** Se acomodan solas (`auto-fit`): tres por fila si entran, si no, menos.
+- **Aviso flotante (`Toast`).** Abajo a la derecha; en pantallas angostas, a lo ancho. Mientras se
+  ve, la página reserva su alto al final (`--toast-space`) y el navegador mantiene el foco por encima
+  de él, así que nunca tapa un control: importa sobre todo con los errores, que no se cierran solos.
 - **Teléfono (menos de 40rem).** Márgenes laterales de 16px, controles de 44px y campos en 16px
   (para que el teléfono no haga zoom al escribir).
