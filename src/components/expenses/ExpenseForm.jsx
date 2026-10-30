@@ -19,8 +19,9 @@ const API_FIELDS = {
 // Alta de un gasto. onSubmit(newExpense) recibe el gasto con amount y categoryId como números.
 // Sin categorías no se puede guardar: el campo lo explica y el botón queda deshabilitado.
 // `firstFieldRef` permite llevar el foco al formulario desde afuera; después de guardar, el foco
-// vuelve ahí para cargar otro. La confirmación la muestra quien llama.
-export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
+// vuelve ahí para cargar otro. La confirmación la muestra quien llama; los errores generales de la
+// API (field "base") se avisan en `toast` (lo que devuelve useToast), si se pasa.
+export default function ExpenseForm({ categories, onSubmit, firstFieldRef, toast }) {
   const { t } = useTranslation();
   const hasCategories = categories.length > 0;
   const {
@@ -48,6 +49,7 @@ export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
     apiFields: API_FIELDS,
     resetOnSuccess: true,
     successFocusRef: firstFieldRef,
+    toast,
   });
 
   function handleFormSubmit(event) {
@@ -67,6 +69,7 @@ export default function ExpenseForm({ categories, onSubmit, firstFieldRef }) {
         label={t('expenses.fields.date')}
         name="date"
         type="date"
+        max={todayISO()}
         value={values.date}
         onChange={handleChange}
         errors={fieldErrors.date}

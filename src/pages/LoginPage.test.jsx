@@ -13,6 +13,7 @@ import {
   TEST_USER,
 } from '../test/api';
 import { renderApp } from '../test/renderApp';
+import { logError } from '../utils/logger';
 
 async function fillAndSubmit(user, { username = 'nico', password = 'clave1234' } = {}) {
   await user.type(screen.getByLabelText(es.auth.user), username);
@@ -38,18 +39,42 @@ describe('Login', () => {
     expect(call.body).toEqual({ user: 'nico', password: 'clave1234' });
   });
 
-  it('con credenciales incorrectas muestra el mensaje de la API y sigue en el login', async () => {
+  it('con credenciales incorrectas avisa el mensaje de la API y sigue en el login', async () => {
     const message = 'Usuario o contraseña incorrectos';
     mockFetch(jsonResponse(401, apiErrors(['base', message])));
     const { user } = renderApp(ROUTES.LOGIN);
 
     await fillAndSubmit(user, { password: 'equivocada' });
 
+    // Un error "base" es general: va en el aviso flotante, no en un campo.
     expect(await screen.findByRole('alert')).toHaveTextContent(message);
-    expect(document.activeElement).toHaveTextContent(message);
+    expect(screen.getByLabelText(es.auth.user)).not.toHaveAttribute('aria-invalid');
+    expect(screen.getByLabelText(es.auth.password)).not.toHaveAttribute('aria-invalid');
     expect(screen.getByRole('heading', { name: es.login.title })).toBeInTheDocument();
     expect(screen.queryByText(es.auth.sessionExpired)).not.toBeInTheDocument();
     expect(getToken()).toBeNull();
+    expect(logError).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+
+    // El aviso de error no se cierra solo: queda hasta que se cierra a mano.
+    await user.click(screen.getByRole('button', { name: es.common.close }));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('al volver a enviar, cierra el aviso de error anterior', async () => {
+    const message = 'Usuario o contraseña incorrectos';
+    // El segundo intento queda pendiente, para ver el formulario mientras se envía.
+    mockApi({
+      'POST /login': [jsonResponse(401, apiErrors(['base', message])), () => new Promise(() => {})],
+    });
+    const { user } = renderApp(ROUTES.LOGIN);
+
+    await fillAndSubmit(user, { password: 'equivocada' });
+    expect(await screen.findByRole('alert')).toHaveTextContent(message);
+
+    await user.click(screen.getByRole('button', { name: es.login.submit }));
+
+    expect(screen.getByText(es.login.submitting)).toBeInTheDocument();
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
   });
 
   it('no envía el formulario vacío y lleva el foco al primer campo con problema', async () => {
@@ -96,7 +121,7 @@ describe('Login', () => {
     await fillAndSubmit(user);
 
     expect(screen.getByRole('button', { name: es.login.submit })).toBeDisabled();
-    expect(screen.getByRole('status')).toHaveTextContent(es.login.submitting);
+    expect(screen.getByText(es.login.submitting)).toBeInTheDocument();
 
     respond(jsonResponse(200, { token: TEST_TOKEN, user: TEST_USER }));
     expect(await screen.findByRole('heading', { name: es.dashboard.title })).toBeInTheDocument();

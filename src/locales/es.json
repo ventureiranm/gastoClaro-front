@@ -25,7 +25,8 @@
     "passwordMismatch": "Las contraseñas no coinciden.",
     "date": "Ingresá una fecha válida.",
     "amount": "Ingresá un número sin separador de miles, con hasta {{count}} decimales.",
-    "amountPositive": "El monto tiene que ser mayor a 0."
+    "amountPositive": "El monto tiene que ser mayor a {{min}}.",
+    "dateFuture": "La fecha no puede ser posterior a hoy."
   },
   "login": {
     "title": "Iniciar sesión",
@@ -125,6 +126,9 @@
   },
   "errors": {
     "generic": "Ocurrió un error inesperado. Probá de nuevo.",
-    "network": "No pudimos conectarnos con el servidor. Revisá tu conexión."
+    "network": "No pudimos conectarnos con el servidor. Revisá tu conexión.",
+    "forbidden": "No tenés permiso para hacer esto.",
+    "notFound": "Lo que buscás no existe o ya no está disponible.",
+    "validation": "Revisá los datos ingresados."
   }
 }

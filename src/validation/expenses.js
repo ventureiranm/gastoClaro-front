@@ -1,5 +1,5 @@
-import { AMOUNT_MAX_DECIMALS } from '../config/constants';
-import { isValidISODate } from '../utils/dates';
+import { AMOUNT_MAX_DECIMALS, AMOUNT_MIN_EXCLUSIVE } from '../config/constants';
+import { isValidISODate, todayISO } from '../utils/dates';
 
 // Número sin separador de miles, con coma o punto para los decimales: "1500", "1500,5", "1500.50".
 // Que no acepte "1.500" es a propósito: sería ambiguo entre mil quinientos y uno con cincuenta.
@@ -12,12 +12,14 @@ export function parseAmount(text) {
 }
 
 // Devuelve { campo: [mensajes] } solo con los campos que tienen problemas; `t` es la función de
-// traducción.
-export function validateExpense({ date, categoryId, amount }, t) {
+// traducción. `today` ('YYYY-MM-DD') es el último día aceptado: un gasto no puede ser futuro.
+export function validateExpense({ date, categoryId, amount }, t, today = todayISO()) {
   const errors = {};
 
   if (date === '') errors.date = [t('validation.required')];
   else if (!isValidISODate(date)) errors.date = [t('validation.date')];
+  // Las fechas 'YYYY-MM-DD' se ordenan igual como texto que como fechas.
+  else if (date > today) errors.date = [t('validation.dateFuture')];
 
   if (categoryId === '') errors.categoryId = [t('validation.required')];
 
@@ -26,8 +28,8 @@ export function validateExpense({ date, categoryId, amount }, t) {
     const value = parseAmount(amount);
     if (Number.isNaN(value)) {
       errors.amount = [t('validation.amount', { count: AMOUNT_MAX_DECIMALS })];
-    } else if (value <= 0) {
-      errors.amount = [t('validation.amountPositive')];
+    } else if (value <= AMOUNT_MIN_EXCLUSIVE) {
+      errors.amount = [t('validation.amountPositive', { min: AMOUNT_MIN_EXCLUSIVE })];
     }
   }
   return errors;

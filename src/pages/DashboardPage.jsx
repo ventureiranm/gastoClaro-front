@@ -5,6 +5,7 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useExpenses } from '../hooks/useExpenses';
 import { useToast } from '../hooks/useToast';
 import { currentPeriod, isValidPeriod, periodOf } from '../utils/dates';
+import { statusMessage } from '../utils/errors';
 import { formatPeriod } from '../utils/format';
 import DashboardSummary from '../components/dashboard/DashboardSummary';
 import ExpenseForm from '../components/expenses/ExpenseForm';
@@ -17,9 +18,11 @@ import LoadingIndicator from '../components/ui/LoadingIndicator';
 import PageHeader from '../components/ui/PageHeader';
 import Toast from '../components/ui/Toast';
 
-// Sin conexión, el mensaje genérico de red; ante cualquier otro problema, el de esa carga.
+// Sin conexión, el mensaje genérico de red; ante cualquier otro problema, el de esa carga y, si el
+// estado HTTP lo explica (sin permiso, no existe), también ese motivo.
 function loadErrorMessage(error, messageKey, t) {
-  return error.isNetworkError ? t('errors.network') : t(messageKey);
+  if (error.isNetworkError) return t('errors.network');
+  return [t(messageKey), statusMessage(error, t)];
 }
 
 export default function DashboardPage() {
@@ -116,6 +119,7 @@ export default function DashboardPage() {
         categories={categories.categories}
         onSubmit={handleCreate}
         firstFieldRef={dateFieldRef}
+        toast={confirmation}
       />
     );
   }

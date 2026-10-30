@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ApiError } from '../api/client';
+import { logError } from '../utils/logger';
 
 // Pide un dato a la API y expone sus estados: isLoading, error (el ApiError) y data.
 // - load({ signal }) hace el pedido. Tiene que ser estable (de useCallback o de módulo): cada vez
@@ -19,7 +19,7 @@ export function useRemoteData(load) {
       (data) => setResult({ load, attempt, data, error: null }),
       (error) => {
         if (error?.name === 'AbortError') return;
-        if (!(error instanceof ApiError)) console.error(error);
+        logError(error);
         setResult({ load, attempt, data: undefined, error });
       },
     );
