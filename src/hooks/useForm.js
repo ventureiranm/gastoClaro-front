@@ -1,31 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ApiError, toFormErrors } from '../api/client';
+import { toFormErrors } from '../api/client';
+import { TOAST_TONE } from '../config/constants';
+import { statusMessage } from '../utils/errors';
+import { logError } from '../utils/logger';
 
-// Reparte el error de un envío entre los campos del formulario y el aviso general. Los mensajes de
-// la API se muestran tal cual; si no trae ninguno (500, cuerpo inesperado), va el genérico.
+// Reparte el error de un envío entre los campos del formulario y los mensajes generales. Los
+// mensajes de la API se muestran tal cual y todos juntos; si no trae ninguno, va el que corresponde
+// al estado HTTP (403, 404, 422) o, si no, el genérico.
 function splitSubmitError(error, fieldNames, apiFields, t) {
   if (error?.isNetworkError) {
-    return { fieldErrors: {}, formErrors: [t('errors.network')], isNetworkError: true };
+    return { fieldErrors: {}, generalErrors: [t('errors.network')], isNetworkError: true };
   }
-  if (!(error instanceof ApiError)) console.error(error);
 
   const { fieldErrors: apiFieldErrors, baseErrors } = toFormErrors(error);
   const fieldErrors = {};
-  const formErrors = baseErrors.filter(Boolean);
+  const generalErrors = baseErrors.filter(Boolean);
 
   for (const [apiField, messages] of Object.entries(apiFieldErrors)) {
     const field = apiFields[apiField] ?? apiField;
     const list = messages.filter(Boolean);
-    // Un campo que este formulario no muestra va al aviso general para que no se pierda.
+    // Un campo que este formulario no muestra va a los mensajes generales para que no se pierda.
     if (fieldNames.includes(field)) fieldErrors[field] = list;
-    else formErrors.push(...list);
+    else generalErrors.push(...list);
   }
 
-  if (formErrors.length === 0 && Object.keys(fieldErrors).length === 0) {
-    formErrors.push(t('errors.generic'));
+  if (generalErrors.length === 0 && Object.keys(fieldErrors).length === 0) {
+    generalErrors.push(statusMessage(error, t) ?? t('errors.generic'));
   }
-  return { fieldErrors, formErrors, isNetworkError: false };
+  return { fieldErrors, generalErrors, isNetworkError: false };
 }
 
 // Maneja un formulario que se envía a la API: valores, validación previa, envío, errores y foco.
@@ -35,7 +38,11 @@ function splitSubmitError(error, fieldNames, apiFields, t) {
 // - resetOnSuccess vuelve los valores a initialValues después de un envío exitoso.
 // - successFocusRef es a dónde va el foco después de un envío exitoso; por ejemplo, el primer
 //   campo, para cargar otro. La confirmación la muestra quien llama.
-// Después de un error, el foco va al aviso general (alertRef) o al primer campo con problema.
+// - toast (lo que devuelve useToast) es dónde se avisan los errores generales: los de field "base"
+//   y los de campos que el formulario no muestra. Sin toast, van al aviso de arriba (formErrors).
+// Cada error de un campo se muestra junto a ese campo. La red caída siempre va al aviso de arriba,
+// que ofrece reintentar. Todo error de envío se registra con logError.
+// Después de un error, el foco va al aviso de arriba (alertRef) o al primer campo con problema.
 export function useForm({
   initialValues,
   validate,
@@ -43,6 +50,7 @@ export function useForm({
   apiFields = {},
   resetOnSuccess = false,
   successFocusRef,
+  toast,
 }) {
   const { t } = useTranslation();
   const [values, setValues] = useState(initialValues);
@@ -66,11 +74,18 @@ export function useForm({
     if (successfulSubmits > 0) successFocusRef?.current?.focus();
   }, [successfulSubmits, successFocusRef]);
 
-  function showErrors(errors) {
-    setFieldErrors(errors.fieldErrors);
-    setFormErrors(errors.formErrors);
-    setIsNetworkError(errors.isNetworkError);
+  function showErrors({ fieldErrors: errorsByField, generalErrors, isNetworkError: isNetwork }) {
+    const toToast = toast && !isNetwork && generalErrors.length > 0;
+    if (toToast) toast.show(generalErrors, { tone: TOAST_TONE.ERROR });
+    setFieldErrors(errorsByField);
+    setFormErrors(toToast ? [] : generalErrors);
+    setIsNetworkError(isNetwork);
     setFailedAttempts((count) => count + 1);
+  }
+
+  // Un error general de un envío anterior ya no corresponde: se cierra al volver a enviar.
+  function closeErrorToast() {
+    if (toast?.toast?.tone === TOAST_TONE.ERROR) toast.close();
   }
 
   function handleChange(event) {
@@ -87,10 +102,11 @@ export function useForm({
 
   async function submit() {
     if (submittingRef.current) return;
+    closeErrorToast();
 
     const clientErrors = validate?.(values) ?? {};
     if (Object.keys(clientErrors).length > 0) {
-      showErrors({ fieldErrors: clientErrors, formErrors: [], isNetworkError: false });
+      showErrors({ fieldErrors: clientErrors, generalErrors: [], isNetworkError: false });
       return;
     }
 
@@ -104,6 +120,7 @@ export function useForm({
       if (resetOnSuccess) setValues(initialValues);
       setSuccessfulSubmits((count) => count + 1);
     } catch (error) {
+      logError(error);
       showErrors(splitSubmitError(error, Object.keys(initialValues), apiFields, t));
     } finally {
       submittingRef.current = false;

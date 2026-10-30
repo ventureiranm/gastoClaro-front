@@ -3,12 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { PASSWORD_MIN_LENGTH, ROUTES } from '../config/constants';
 import { useForm } from '../hooks/useForm';
 import { useSession } from '../hooks/useSession';
+import { useToast } from '../hooks/useToast';
 import { validateRegister } from '../validation/auth';
 import Button from '../components/ui/Button';
 import FormAlert from '../components/ui/FormAlert';
 import FormField from '../components/ui/FormField';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import PageHeader from '../components/ui/PageHeader';
+import Toast from '../components/ui/Toast';
 
 // Nombres de campo de la API que no coinciden con los del formulario.
 const API_FIELDS = { password_confirmation: 'passwordConfirmation' };
@@ -16,6 +18,7 @@ const API_FIELDS = { password_confirmation: 'passwordConfirmation' };
 export default function RegisterPage() {
   const { t } = useTranslation();
   const { register } = useSession();
+  const notice = useToast();
   const {
     values,
     fieldErrors,
@@ -32,6 +35,7 @@ export default function RegisterPage() {
     validate: (formValues) => validateRegister(formValues, t),
     onSubmit: register,
     apiFields: API_FIELDS,
+    toast: notice,
   });
 
   // La API devuelve el token al registrar: el usuario queda logueado y GuestRoute lo lleva adentro.
@@ -94,6 +98,12 @@ export default function RegisterPage() {
       <p>
         {t('register.hasAccount')} <Link to={ROUTES.LOGIN}>{t('register.goToLogin')}</Link>
       </p>
+      <Toast
+        toast={notice.toast}
+        onClose={notice.close}
+        onPause={notice.pause}
+        onResume={notice.resume}
+      />
     </section>
   );
 }

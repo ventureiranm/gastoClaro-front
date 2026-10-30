@@ -75,7 +75,7 @@ En `src/components/ui/`:
 | `ErrorMessage`     | Uno o varios errores, anunciados a lectores de pantalla.                              |
 | `LoadingIndicator` | Indicador de carga con texto.                                                         |
 | `EmptyState`       | Estado vacío: zona apagada con título, descripción y acción opcional.                 |
-| `Toast`            | Confirmación flotante.                                                                |
+| `Toast`            | Aviso flotante: confirmación (se cierra sola) o error (queda hasta cerrarlo).         |
 
 Clases para lo que no tiene componente:
 

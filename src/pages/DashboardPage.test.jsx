@@ -1,6 +1,6 @@
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { saveToken } from '../api/tokenStorage';
-import { ROUTES, TOAST_DURATION_MS } from '../config/constants';
+import { AMOUNT_MIN_EXCLUSIVE, ROUTES, TOAST_DURATION_MS } from '../config/constants';
 import i18n from '../i18n';
 import es from '../locales/es.json';
 import {
@@ -17,6 +17,7 @@ import { BACK, BackButton } from '../test/BackButton';
 import { renderApp } from '../test/renderApp';
 import { currentPeriod, todayISO } from '../utils/dates';
 import { formatPercentage, formatPeriod } from '../utils/format';
+import { logError } from '../utils/logger';
 
 const CATEGORIES = [
   { id: 3, name: 'Servicios', parent_id: null, tracks_installments: null },
@@ -182,6 +183,18 @@ describe('Listado de gastos', () => {
     expect(screen.queryByText(es.errors.network)).not.toBeInTheDocument();
   });
 
+  it.each([
+    [403, es.errors.forbidden],
+    [404, es.errors.notFound],
+  ])('si la carga responde %i, explica el motivo y lo registra', async (status, reason) => {
+    renderDashboard({ 'GET /expenses': jsonResponse(status) });
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(es.expenses.list.loadError);
+    expect(alert).toHaveTextContent(reason);
+    expect(logError).toHaveBeenCalledWith(expect.objectContaining({ status }));
+  });
+
   it('si fallan las categorías, lo avisa en lugar del formulario y permite reintentar', async () => {
     const { user } = renderDashboard({
       'GET /categories': [jsonResponse(500), jsonResponse(200, CATEGORIES)],
@@ -218,7 +231,7 @@ describe('Nuevo gasto', () => {
     expect(category).toHaveAccessibleDescription(es.validation.required);
     expect(category).toHaveFocus();
     expect(screen.getByLabelText(es.expenses.fields.amount)).toHaveAccessibleDescription(
-      expect.stringContaining(es.validation.amountPositive),
+      expect.stringContaining(i18n.t('validation.amountPositive', { min: AMOUNT_MIN_EXCLUSIVE })),
     );
     expect(fetchCallsTo(fetchMock, 'POST /expenses')).toHaveLength(0);
   });
@@ -250,6 +263,61 @@ describe('Nuevo gasto', () => {
 
     expect(await screen.findByText(message)).toBeInTheDocument();
     expect(screen.getByLabelText(es.expenses.fields.category)).toHaveAccessibleDescription(message);
+  });
+
+  it('no acepta una fecha futura', async () => {
+    const { user, fetchMock } = renderDashboard();
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const date = await screen.findByLabelText(es.expenses.fields.date);
+    expect(date).toHaveAttribute('max', todayISO());
+    fireEvent.change(date, { target: { value: todayISO(tomorrow) } });
+    await fillExpense(user);
+    await user.click(submitButton());
+
+    expect(date).toHaveAccessibleDescription(es.validation.dateFuture);
+    expect(date).toHaveFocus();
+    expect(fetchCallsTo(fetchMock, 'POST /expenses')).toHaveLength(0);
+  });
+
+  it('muestra todos los errores de la API juntos, y los generales en un aviso flotante', async () => {
+    const { user } = renderDashboard({
+      'POST /expenses': jsonResponse(
+        422,
+        apiErrors(
+          ['amount', 'es demasiado grande'],
+          ['date', 'está en un mes cerrado'],
+          ['base', 'Superaste el límite de gastos del mes'],
+        ),
+      ),
+    });
+
+    await fillExpense(user);
+    await user.click(submitButton());
+
+    const toast = await screen.findByText('Superaste el límite de gastos del mes');
+    expect(toast.closest('[role="alert"]')).toBeInTheDocument();
+    expect(screen.getByLabelText(es.expenses.fields.amount)).toHaveAccessibleDescription(
+      expect.stringContaining('es demasiado grande'),
+    );
+    expect(screen.getByLabelText(es.expenses.fields.date)).toHaveAccessibleDescription(
+      'está en un mes cerrado',
+    );
+    // El foco va al primer campo con problema, en el orden del formulario.
+    expect(screen.getByLabelText(es.expenses.fields.date)).toHaveFocus();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  it('si la API responde 403 al guardar, avisa que no hay permiso y lo registra', async () => {
+    const { user } = renderDashboard({ 'POST /expenses': jsonResponse(403) });
+
+    await fillExpense(user);
+    await user.click(submitButton());
+
+    expect(await screen.findByText(es.errors.forbidden)).toBeInTheDocument();
+    expect(logError).toHaveBeenCalledWith(expect.objectContaining({ status: 403 }));
+    expect(screen.getByLabelText(es.expenses.fields.amount)).toHaveValue('1500');
   });
 
   it('un alta correcta confirma y, al cerrar el aviso, suma el gasto al listado sin recargar', async () => {

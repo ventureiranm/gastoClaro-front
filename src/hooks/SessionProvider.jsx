@@ -3,6 +3,7 @@ import * as authApi from '../api/auth';
 import { setUnauthorizedHandler } from '../api/client';
 import { clearToken, getToken, saveToken } from '../api/tokenStorage';
 import { VALIDATE_SESSION_ON_START } from '../config/constants';
+import { logError } from '../utils/logger';
 import { SessionContext } from './sessionContext';
 
 const STATUS = {
@@ -58,7 +59,9 @@ export default function SessionProvider({ children }) {
         setStatus(STATUS.AUTHENTICATED);
       })
       .catch((error) => {
-        if (error?.name === 'AbortError' || error?.isUnauthorized) return;
+        if (error?.name === 'AbortError') return;
+        logError(error);
+        if (error?.isUnauthorized) return;
         setStatus(STATUS.AUTHENTICATED);
       });
     return () => controller.abort();
@@ -84,8 +87,9 @@ export default function SessionProvider({ children }) {
     if (!token) return;
     try {
       await authApi.logout(token);
-    } catch {
-      // Nada que hacer: la sesión local ya está cerrada.
+    } catch (error) {
+      // Solo se registra: la sesión local ya está cerrada y el usuario no tiene nada que hacer.
+      logError(error);
     }
   }, [endSession]);
 

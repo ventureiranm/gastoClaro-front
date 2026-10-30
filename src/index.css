@@ -629,6 +629,14 @@ time {
   margin: 0;
 }
 
+.toast--error {
+  border-color: var(--color-error);
+}
+
+.toast .error-message {
+  font-size: var(--font-size-body);
+}
+
 @keyframes toast-in {
   from {
     opacity: 0;
