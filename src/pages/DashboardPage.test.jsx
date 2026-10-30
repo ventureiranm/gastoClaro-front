@@ -32,7 +32,7 @@ function apiExpense(overrides = {}) {
     description: 'Compra semanal',
     is_fixed: false,
     purchase_channel: 'presencial',
-    user_id: 1,
+    user: { id: 1, user: 'nico' },
     category: { id: 1, name: 'Supermercado' },
     expense_items: [],
     ...overrides,
