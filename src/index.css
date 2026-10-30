@@ -301,34 +301,88 @@ a {
   overflow-x: auto;
 }
 
-.expense-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   background: var(--color-surface);
 }
 
-.expense-table caption {
+.data-table caption {
   padding-bottom: 0.5rem;
   text-align: left;
   font-weight: 600;
 }
 
-.expense-table th,
-.expense-table td {
+.data-table th,
+.data-table td {
   padding: 0.5rem 0.75rem;
   text-align: left;
   border-bottom: 1px solid var(--color-border);
 }
 
-.expense-table th {
+.data-table th {
   font-size: 0.875rem;
   color: var(--color-muted);
 }
 
-.expense-table .numeric {
+.data-table .numeric {
   text-align: right;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+}
+
+/* Los encabezados de fila se leen como un dato más, no como los de columna. */
+.data-table tbody th {
+  font-size: inherit;
+  font-weight: 400;
+  color: inherit;
+}
+
+.dashboard-summary {
+  margin-bottom: 2rem;
+}
+
+.dashboard-summary h2 {
+  margin-bottom: 0;
+}
+
+/* Ingreso, consumo y ahorro uno al lado del otro; en pantallas angostas, uno debajo del otro. */
+.summary-totals {
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 1rem;
+}
+
+@media (min-width: 40rem) {
+  .summary-totals {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.summary-total {
+  padding: 1rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.summary-total dt {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.summary-total dd {
+  margin: 0;
+}
+
+.summary-total__amount {
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-total--negative .summary-total__amount {
+  color: var(--color-error);
 }
 
 .badge {

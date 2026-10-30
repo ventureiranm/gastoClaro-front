@@ -7,7 +7,7 @@ export default function ExpenseTable({ caption, expenses }) {
 
   return (
     <div className="table-wrapper">
-      <table className="expense-table">
+      <table className="data-table">
         <caption>{caption}</caption>
         <thead>
           <tr>
