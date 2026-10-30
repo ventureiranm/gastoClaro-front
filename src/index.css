@@ -20,6 +20,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Al moverse con Tab, el navegador deja el control enfocado por encima del aviso flotante, si
+     hay uno (ver .app-main). */
+  scroll-padding-bottom: calc(var(--toast-space, 0px) + var(--space-4));
 }
 
 body {
@@ -236,6 +239,9 @@ time {
 
 .app-main {
   padding: var(--space-8);
+  /* Mientras hay un aviso flotante, abajo se reserva su alto (--toast-space lo informa Toast): así lo
+     último de la página se puede subir por encima del aviso en lugar de quedar tapado. */
+  padding-bottom: calc(var(--space-8) + var(--toast-space, 0px));
 }
 
 .app-main:focus {
@@ -295,6 +301,7 @@ time {
 
   .app-main {
     padding: var(--space-6) var(--space-4);
+    padding-bottom: calc(var(--space-6) + var(--toast-space, 0px));
   }
 }
 
