@@ -27,7 +27,7 @@ export default function ExpenseTable({ caption, expenses }) {
               <td data-label={t('expenses.fields.date')}>
                 <time dateTime={expense.date}>{formatDate(expense.date)}</time>
               </td>
-              <td data-label={t('expenses.fields.description')}>
+              <td data-label={t('expenses.fields.description')} className="free-text">
                 {/* Un solo hijo: apilada, la celda es una grilla de rótulo y valor. */}
                 <span>
                   {expense.description || (

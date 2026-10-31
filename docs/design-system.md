@@ -79,19 +79,20 @@ En `src/components/ui/`:
 
 Clases para lo que no tiene componente:
 
-| Clase                                 | Qué es                                                                                         |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `.page` / `.page--narrow`             | Contenedor de pantalla; `--narrow` es una tarjeta centrada.                                    |
-| `.panel`                              | Tarjeta o panel: blanco, borde oscuro, radio 8px.                                              |
-| `.eyebrow`                            | Línea chica en versales.                                                                       |
-| `.data-table`                         | Tabla: encabezado en versales, filas con línea de 1px.                                         |
-| `.data-table--stack` / `--stack-wide` | Tabla que se apila en tarjetas cuando no entra (ver abajo).                                    |
-| `.numeric`, `.mono`, `.muted`         | Alineado a la derecha / monoespaciada / texto secundario.                                      |
-| `.badge`                              | Etiqueta chica (por ejemplo, «Fijo»).                                                          |
-| `.summary-totals`, `.summary-total`   | Tarjetas de resumen: rótulo, número grande y línea de contexto.                                |
-| `.pill-tabs`, `.pill`                 | Píldoras de pestañas; la activa se marca con `aria-selected`, `aria-current` o `aria-pressed`. |
-| `.dropzone` / `.dropzone--active`     | Zona de carga de archivos: borde punteado, contenido centrado.                                 |
-| `.visually-hidden`                    | Oculto a la vista, presente para lectores de pantalla.                                         |
+| Clase                                 | Qué es                                                                                          |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `.page` / `.page--narrow`             | Contenedor de pantalla; `--narrow` es una tarjeta centrada.                                     |
+| `.panel`                              | Tarjeta o panel: blanco, borde oscuro, radio 8px.                                               |
+| `.eyebrow`                            | Línea chica en versales.                                                                        |
+| `.data-table`                         | Tabla: encabezado en versales, filas con línea de 1px.                                          |
+| `.data-table--stack` / `--stack-wide` | Tabla que se apila en tarjetas cuando no entra (ver abajo).                                     |
+| `.free-text`                          | Celda con texto libre del usuario: una palabra larga sin espacios se parte en vez de desbordar. |
+| `.numeric`, `.mono`, `.muted`         | Alineado a la derecha / monoespaciada / texto secundario.                                       |
+| `.badge`                              | Etiqueta chica (por ejemplo, «Fijo»).                                                           |
+| `.summary-totals`, `.summary-total`   | Tarjetas de resumen: rótulo, número grande y línea de contexto.                                 |
+| `.pill-tabs`, `.pill`                 | Píldoras de pestañas; la activa se marca con `aria-selected`, `aria-current` o `aria-pressed`.  |
+| `.dropzone` / `.dropzone--active`     | Zona de carga de archivos: borde punteado, contenido centrado.                                  |
+| `.visually-hidden`                    | Oculto a la vista, presente para lectores de pantalla.                                          |
 
 ## Responsive
 
@@ -103,10 +104,26 @@ Clases para lo que no tiene componente:
   numéricas). Cada fila pasa a ser una tarjeta; cada celda necesita `data-label` con el nombre de
   su columna, y si tiene más de un elemento, se envuelve en un `<span>`. El corte depende del ancho
   del contenedor (container queries), no de la ventana: la misma tabla funciona en el panel angosto y
-  a lo ancho.
+  a lo ancho. La celda de texto libre (como la descripción de un gasto) lleva `.free-text`: sin
+  eso, una palabra larga sin espacios ensancha la tabla y esconde las columnas de la derecha.
 - **Tarjetas de resumen.** Se acomodan solas (`auto-fit`): tres por fila si entran, si no, menos.
 - **Aviso flotante (`Toast`).** Abajo a la derecha; en pantallas angostas, a lo ancho. Mientras se
   ve, la página reserva su alto al final (`--toast-space`) y el navegador mantiene el foco por encima
   de él, así que nunca tapa un control: importa sobre todo con los errores, que no se cierran solos.
 - **Teléfono (menos de 40rem).** Márgenes laterales de 16px, controles de 44px y campos en 16px
   (para que el teléfono no haga zoom al escribir).
+
+## Cómo se verifica
+
+Antes de dar por terminada una pantalla:
+
+- **Anchos.** Recorrerla en 320, 390, 768, 1280 y 1440px, con datos largos (montos de nueve cifras,
+  nombres de categoría largos, una descripción sin espacios): nada cortado y sin desplazamiento
+  horizontal de la página ni de las tablas.
+- **Teclado.** Recorrerla solo con Tab y Shift+Tab: el primer Tab llega a «Saltar al contenido»,
+  cada enlace, botón y campo se alcanza en el orden en que se lee, y el foco siempre se ve. En los
+  campos de fecha y mes, el segundo Tab va al botón del calendario, que el navegador marca con su
+  propio recuadro.
+- **Etiquetas.** Cada campo tiene su `label` visible (con `FormField` sale solo).
+
+Las pruebas de `src/App.test.jsx` (grupo «Teclado») cubren el orden de Tab y las etiquetas.

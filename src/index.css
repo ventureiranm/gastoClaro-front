@@ -397,7 +397,6 @@ time {
 .form-field input[type='month'] {
   font-family: var(--font-mono);
 }
-
 .form-field input[aria-invalid='true'],
 .form-field select[aria-invalid='true'],
 .form-field textarea[aria-invalid='true'] {
@@ -745,6 +744,13 @@ time {
   text-align: left;
   vertical-align: top;
   border-bottom: var(--border-width-thin) solid var(--color-border-soft);
+}
+
+/* Texto libre que escribe el usuario (por ejemplo, una descripción): si trae una palabra larga sin
+   espacios, se parte antes que ensanchar la tabla y esconder columnas a la derecha. Solo ahí: en el
+   resto de las celdas, partir palabras comunes se lee mal. */
+.data-table .free-text {
+  overflow-wrap: anywhere;
 }
 
 .data-table th:first-child,

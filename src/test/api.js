@@ -18,6 +18,15 @@ export function apiErrors(...errors) {
   return { errors: errors.map(([field, message]) => ({ field, message })) };
 }
 
+// Respuesta simulada que queda pendiente hasta que el test llama a `respond`. La promesa se crea
+// antes de que la app pida nada: así `respond` existe siempre, sin depender de si la app ya hizo el
+// pedido cuando el test la libera. `build(valor, pedido)` arma la respuesta (por defecto, el valor).
+export function heldResponse(build = (value) => value) {
+  let respond;
+  const pending = new Promise((resolve) => (respond = resolve));
+  return { handler: (call) => pending.then((value) => build(value, call)), respond };
+}
+
 // Reemplaza fetch por un mock que responde en orden. Un Error en la lista simula la red caída.
 export function mockFetch(...responses) {
   const fetchMock = vi.fn();
