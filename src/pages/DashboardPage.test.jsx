@@ -8,6 +8,7 @@ import {
   apiErrors,
   emptyDashboardRoutes,
   fetchCallsTo,
+  heldResponse,
   jsonResponse,
   mockApi,
   TEST_TOKEN,
@@ -93,13 +94,11 @@ async function closeConfirmation(user) {
 describe('Listado de gastos', () => {
   it('muestra los gastos del mes en curso con el monto formateado', async () => {
     // La respuesta queda pendiente hasta comprobar que se ve la carga.
-    let respond;
-    const { fetchMock } = renderDashboard({
-      'GET /expenses': () => new Promise((resolve) => (respond = resolve)),
-    });
+    const held = heldResponse();
+    const { fetchMock } = renderDashboard({ 'GET /expenses': held.handler });
 
     expect(await screen.findByText(es.expenses.list.loading)).toBeInTheDocument();
-    respond(
+    held.respond(
       jsonResponse(200, [
         apiExpense({ id: 2, is_fixed: true, purchase_channel: 'delivery' }),
         apiExpense({ amount: '1800.5', description: '', purchase_channel: null }),
@@ -319,11 +318,8 @@ describe('Nuevo gasto', () => {
   });
 
   it('deshabilita el botón mientras guarda', async () => {
-    let respond;
-    const { user, fetchMock } = renderDashboard({
-      'POST /expenses': (call) =>
-        new Promise((resolve) => (respond = () => resolve(createdExpense(call)))),
-    });
+    const held = heldResponse((_value, call) => createdExpense(call));
+    const { user, fetchMock } = renderDashboard({ 'POST /expenses': held.handler });
 
     await fillExpense(user);
     await user.click(submitButton());
@@ -333,7 +329,7 @@ describe('Nuevo gasto', () => {
     await user.click(submitButton());
     expect(fetchCallsTo(fetchMock, 'POST /expenses')).toHaveLength(1);
 
-    respond();
+    held.respond();
     expect(await findConfirmation()).toBeInTheDocument();
     expect(submitButton()).toBeEnabled();
   });
@@ -459,13 +455,11 @@ async function totalOf(summary, label) {
 describe('Resumen del mes', () => {
   it('muestra ingreso, consumo y ahorro, el consumo por categoría y los últimos meses', async () => {
     // La respuesta queda pendiente hasta comprobar que se ve la carga.
-    let respond;
-    const { fetchMock } = renderDashboard({
-      'GET /dashboard': () => new Promise((resolve) => (respond = resolve)),
-    });
+    const held = heldResponse();
+    const { fetchMock } = renderDashboard({ 'GET /dashboard': held.handler });
 
     expect(await screen.findByText(es.dashboard.summary.loading)).toBeInTheDocument();
-    respond(jsonResponse(200, activeDashboard()));
+    held.respond(jsonResponse(200, activeDashboard()));
     const summary = await findSummary();
 
     expect(await totalOf(summary, es.dashboard.summary.income)).toHaveTextContent('$ 450.000,00');

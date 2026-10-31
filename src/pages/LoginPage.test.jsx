@@ -6,6 +6,7 @@ import {
   apiErrors,
   emptyDashboardRoutes,
   fetchCall,
+  heldResponse,
   jsonResponse,
   mockApi,
   mockFetch,
@@ -86,11 +87,8 @@ describe('Login', () => {
   });
 
   it('deshabilita el envío y muestra la carga mientras espera la respuesta', async () => {
-    let respond;
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => new Promise((resolve) => (respond = resolve))),
-    );
+    const held = heldResponse();
+    vi.stubGlobal('fetch', vi.fn(held.handler));
     const { user } = renderApp(ROUTES.LOGIN);
 
     await fillAndSubmit(user);
@@ -98,7 +96,7 @@ describe('Login', () => {
     expect(screen.getByRole('button', { name: es.login.submit })).toBeDisabled();
     expect(screen.getByRole('status')).toHaveTextContent(es.login.submitting);
 
-    respond(jsonResponse(200, { token: TEST_TOKEN, user: TEST_USER }));
+    held.respond(jsonResponse(200, { token: TEST_TOKEN, user: TEST_USER }));
     expect(await screen.findByRole('heading', { name: es.dashboard.title })).toBeInTheDocument();
   });
 });
