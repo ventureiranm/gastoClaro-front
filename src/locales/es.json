@@ -30,7 +30,8 @@
     "amountPositive": "El monto tiene que ser mayor a {{min}}.",
     "dateFuture": "La fecha no puede ser posterior a hoy.",
     "period": "Ingresá un mes con el formato AAAA-MM.",
-    "installmentsCount": "Ingresá un número entero de {{min}} a {{max}}."
+    "installmentsCount": "Ingresá un número entero de {{min}} a {{max}}.",
+    "itemQuantity": "Ingresá un número entero de al menos {{min}}. Para fracciones, usá gramos."
   },
   "login": {
     "title": "Iniciar sesión",
@@ -78,13 +79,24 @@
       "amount": "Monto",
       "description": "Descripción",
       "isFixed": "Gasto fijo",
-      "purchaseChannel": "Canal de compra"
+      "purchaseChannel": "Canal de compra",
+      "items": "Ítems",
+      "itemName": "Nombre",
+      "itemQuantity": "Cantidad",
+      "itemUnit": "Unidad",
+      "itemUnitPrice": "Precio unitario"
     },
     "channels": {
       "presencial": "Presencial",
       "delivery": "Delivery",
       "retiro": "Retiro en el local"
     },
+    "units": {
+      "unidad": "Unidades",
+      "kg": "Kilos (kg)",
+      "g": "Gramos (g)"
+    },
+    "missing": "Ese gasto ya no existe o no es tuyo. Actualizamos el listado.",
     "filter": {
       "label": "Mes",
       "placeholder": "AAAA-MM",
@@ -100,10 +112,22 @@
       "noChannel": "Sin especificar",
       "emptyTitle": "Todavía no cargaste gastos en {{period}}",
       "emptyDescription": "Cargá uno y lo vas a ver acá.",
-      "emptyAction": "Cargar un gasto"
+      "emptyAction": "Cargar un gasto",
+      "actions": "Acciones",
+      "namedExpense": "«{{description}}» del {{date}}",
+      "unnamedExpense": "el gasto del {{date}}",
+      "edit": "Editar",
+      "editLabel": "Editar {{name}}",
+      "delete": "Borrar",
+      "deleteLabel": "Borrar {{name}}",
+      "deleteQuestion": "¿Borrar {{name}}?",
+      "deleteConfirm": "Sí, borrar",
+      "deleteError": "No pudimos borrar el gasto.",
+      "deleted": "Gasto borrado."
     },
     "form": {
       "title": "Nuevo gasto",
+      "editTitle": "Editar gasto",
       "categoryPlaceholder": "Elegí una categoría",
       "noCategoriesOption": "No hay categorías",
       "noCategories": "Todavía no hay categorías cargadas, así que no se pueden guardar gastos.",
@@ -113,8 +137,19 @@
       "isFixedHint": "Se repite todos los meses, como el alquiler o un servicio.",
       "channelNone": "Sin especificar",
       "submit": "Guardar gasto",
+      "update": "Guardar cambios",
       "submitting": "Guardando…",
-      "success": "Gasto guardado."
+      "success": "Gasto guardado.",
+      "updated": "Cambios guardados.",
+      "amountFromItems": "Es la suma de los ítems; se recalcula al guardar.",
+      "amountWithoutItems": "Quitaste todos los ítems: el gasto va a quedar con este monto.",
+      "itemsHint": "Podés corregir cada ítem o quitarlo. Los cambios se aplican al guardar el gasto.",
+      "item": "Ítem {{number}}",
+      "removeItem": "Quitar",
+      "removeItemLabel": "Quitar «{{name}}»",
+      "itemRemoved": "«{{name}}» se va a quitar al guardar.",
+      "restoreItem": "Deshacer",
+      "restoreItemLabel": "Deshacer: no quitar «{{name}}»"
     }
   },
   "installments": {

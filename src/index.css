@@ -1023,6 +1023,64 @@ time {
 
 /* ---------- Acciones ---------- */
 
+/* Campo de solo lectura (por ejemplo, el monto que es la suma de los ítems): se ve apagado, pero se
+   puede alcanzar con Tab y leer. */
+.form-field input[readonly] {
+  background: var(--color-subdued);
+}
+
+/* Ítems de un gasto: el grupo lleva el rótulo como el de un campo, y cada ítem va en su recuadro. */
+.item-list {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.item-list > legend {
+  margin-bottom: var(--space-1);
+  padding: 0;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+}
+
+.item-fields,
+.item-removed {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4);
+  border: var(--border-width-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+}
+
+.item-fields > legend {
+  padding: 0 var(--space-1);
+  font-size: var(--font-size-eyebrow);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.item-fields > .button,
+.item-removed > .button {
+  justify-self: start;
+}
+
+/* Un ítem quitado: se ve apagado hasta guardar, con la opción de deshacer. */
+.item-removed {
+  background: var(--color-subdued);
+}
+
+.item-removed p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Botones al pie de un formulario (guardar, cancelar): uno al lado del otro mientras entren. */
 .form__actions {
   display: flex;

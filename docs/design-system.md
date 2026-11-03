@@ -96,12 +96,19 @@ Clases para lo que no tiene componente:
 | `.visually-hidden`                    | Oculto a la vista, presente para lectores de pantalla.                                          |
 | `.form__actions`                      | Botones al pie de un formulario (guardar, cancelar), uno al lado del otro mientras entren.      |
 | `.row-actions`                        | Botones de una fila de tabla (editar, borrar), a la derecha y siempre uno al lado del otro.     |
+| `.item-list`, `.item-fields`          | Grupo de ítems de un formulario (`fieldset`) y el recuadro de cada ítem, con su `legend`.       |
+| `.item-removed`                       | Ítem marcado para quitar: recuadro apagado con el aviso y el botón Deshacer.                    |
+
+Un campo con `readOnly` (como el monto que es la suma de los ítems) se ve con fondo apagado, pero
+sigue en el orden de Tab para que se pueda leer.
 
 ## Responsive
 
 - **Navegación.** Con sesión iniciada, barra lateral desde 56rem (896px); por debajo, barra arriba
   con la marca y los ítems en una fila que se acomoda si no entra. Sin sesión, siempre barra arriba.
 - **Panel.** Listado y alta en dos columnas desde 80rem (1280px); por debajo, uno debajo del otro.
+  La tabla de gastos lleva la columna de acciones y por eso usa `.data-table--stack-wide`: en el
+  listado angosto de dos columnas se apila en tarjetas.
 - **Cuotas.** Listado arriba y formulario debajo en todos los anchos: la tabla tiene seis columnas
   de datos y necesita el ancho completo. Usa `.data-table--stack-wide`. La primera cuota va como
   `09/2026` (`formatShortPeriod`) y no como «septiembre de 2026»: con montos de nueve cifras, ese

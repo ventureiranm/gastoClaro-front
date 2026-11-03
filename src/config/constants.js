@@ -57,3 +57,8 @@ export const AMOUNT_MAX_DECIMALS = 2;
 
 // Códigos de canal de compra que acepta la API. Las etiquetas visibles están en es.json.
 export const PURCHASE_CHANNELS = ['presencial', 'delivery', 'retiro'];
+
+// Ítems de un gasto: unidades que acepta la API (etiquetas en es.json) y cantidad entera mínima.
+// La API recorta una cantidad con decimales sin avisar, así que se valida antes de enviar.
+export const ITEM_UNITS = ['unidad', 'kg', 'g'];
+export const ITEM_QUANTITY_MIN = 1;
