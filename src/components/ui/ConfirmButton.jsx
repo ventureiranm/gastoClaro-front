@@ -48,18 +48,20 @@ export default function ConfirmButton({ children, question, confirmLabel, onConf
   return (
     <div role="group" aria-labelledby={questionId} className="confirm-action">
       <p id={questionId}>{question}</p>
-      <Button isLoading={isWorking} onClick={confirm} onKeyDown={handleKeyDown}>
-        {confirmLabel}
-      </Button>
-      <Button
-        ref={cancelRef}
-        variant="secondary"
-        disabled={isWorking}
-        onClick={() => setIsAsking(false)}
-        onKeyDown={handleKeyDown}
-      >
-        {t('common.cancel')}
-      </Button>
+      <div className="confirm-action__buttons">
+        <Button isLoading={isWorking} onClick={confirm} onKeyDown={handleKeyDown}>
+          {confirmLabel}
+        </Button>
+        <Button
+          ref={cancelRef}
+          variant="secondary"
+          disabled={isWorking}
+          onClick={() => setIsAsking(false)}
+          onKeyDown={handleKeyDown}
+        >
+          {t('common.cancel')}
+        </Button>
+      </div>
     </div>
   );
 }

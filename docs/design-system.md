@@ -95,7 +95,7 @@ Clases para lo que no tiene componente:
 | `.dropzone` / `.dropzone--active`     | Zona de carga de archivos: borde punteado, contenido centrado.                                  |
 | `.visually-hidden`                    | Oculto a la vista, presente para lectores de pantalla.                                          |
 | `.form__actions`                      | Botones al pie de un formulario (guardar, cancelar), uno al lado del otro mientras entren.      |
-| `.row-actions`                        | Botones de una fila de tabla (editar, borrar), a la derecha; si no entran, bajan.               |
+| `.row-actions`                        | Botones de una fila de tabla (editar, borrar), a la derecha y siempre uno al lado del otro.     |
 
 ## Responsive
 
@@ -103,7 +103,9 @@ Clases para lo que no tiene componente:
   con la marca y los ítems en una fila que se acomoda si no entra. Sin sesión, siempre barra arriba.
 - **Panel.** Listado y alta en dos columnas desde 80rem (1280px); por debajo, uno debajo del otro.
 - **Cuotas.** Listado arriba y formulario debajo en todos los anchos: la tabla tiene seis columnas
-  de datos y necesita el ancho completo. Usa `.data-table--stack-wide`.
+  de datos y necesita el ancho completo. Usa `.data-table--stack-wide`. La primera cuota va como
+  `09/2026` (`formatShortPeriod`) y no como «septiembre de 2026»: con montos de nueve cifras, ese
+  ancho es el que deja lugar a los botones de cada fila sin desbordar la tabla en 1280px.
 - **Tablas.** Las que pueden no entrar llevan `.data-table--stack` (se apila con menos de 34rem
   disponibles) o `.data-table--stack-wide` (menos de 46rem, para tablas con muchas columnas
   numéricas). Cada fila pasa a ser una tarjeta; cada celda necesita `data-label` con el nombre de

@@ -14,7 +14,7 @@ import {
 } from '../test/api';
 import { renderApp } from '../test/renderApp';
 import { currentPeriod } from '../utils/dates';
-import { formatPeriod } from '../utils/format';
+import { formatShortPeriod } from '../utils/format';
 import { logError } from '../utils/logger';
 
 const CATEGORIES = [
@@ -138,7 +138,7 @@ describe('Listado de compras en cuotas', () => {
     const [heladera, bicicleta] = await findRows();
     expect(heladera).toHaveTextContent('Heladera');
     expect(heladera).toHaveTextContent('Electrodomésticos');
-    expect(heladera).toHaveTextContent(formatPeriod('2026-11'));
+    expect(heladera).toHaveTextContent(formatShortPeriod('2026-11'));
     expect(heladera).toHaveTextContent('$ 1.200,00');
     expect(heladera).toHaveTextContent('$ 100,00');
     expect(heladera).toHaveTextContent(

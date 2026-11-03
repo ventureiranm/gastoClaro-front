@@ -42,6 +42,13 @@ export function formatPeriod(period) {
   return periodFormat.format(Date.UTC(year, month - 1, 1));
 }
 
+// '2026-09' → "09/2026". Para tablas: ocupa poco y se lee igual que formatDate. Se arma a mano
+// porque Intl con es-AR no completa el mes con cero ("9/2026").
+export function formatShortPeriod(period) {
+  const [year, month] = period.split('-');
+  return `${month}/${year}`;
+}
+
 // Traduce el código que manda la API. Un código desconocido se muestra tal cual.
 export function formatPurchaseChannel(code, t) {
   return PURCHASE_CHANNELS.includes(code) ? t(`expenses.channels.${code}`) : code;

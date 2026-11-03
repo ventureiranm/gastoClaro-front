@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { formatAmount, formatPeriod } from '../../utils/format';
+import { formatAmount, formatShortPeriod } from '../../utils/format';
 import Button from '../ui/Button';
 import ConfirmButton from '../ui/ConfirmButton';
 
@@ -58,7 +58,9 @@ export default function InstallmentTable({
                   )}
                 </td>
                 <td data-label={t('installments.fields.firstPeriod')}>
-                  <time dateTime={purchase.firstPeriod}>{formatPeriod(purchase.firstPeriod)}</time>
+                  <time dateTime={purchase.firstPeriod}>
+                    {formatShortPeriod(purchase.firstPeriod)}
+                  </time>
                 </td>
                 <td data-label={t('installments.fields.totalAmount')} className="numeric">
                   {formatAmount(purchase.totalAmount)}

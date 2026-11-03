@@ -1030,27 +1030,38 @@ time {
   gap: var(--space-3);
 }
 
-/* Acciones de una fila de tabla (editar, borrar): a la derecha, y si no entran, una debajo de otra. */
+/* Acciones de una fila de tabla (editar, borrar): a la derecha y una al lado de la otra. Si pudieran
+   bajar de línea, la tabla le daría a la columna el ancho mínimo y las apilaría siempre, con filas
+   el doble de altas. El texto de un botón nunca se parte. */
 .row-actions {
   display: flex;
-  flex-wrap: wrap;
+  align-items: flex-start;
   justify-content: flex-end;
   gap: var(--space-2);
 }
 
-/* Pregunta de ConfirmButton: arriba la pregunta, debajo confirmar y cancelar. */
+.row-actions .button {
+  white-space: nowrap;
+}
+
+/* Pregunta de ConfirmButton: arriba la pregunta, que puede ocupar varias líneas, y debajo confirmar
+   y cancelar, que bajan una debajo de otra si no entran: así confirmar no ensancha la columna. */
 .confirm-action {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
+  display: grid;
+  justify-items: end;
   gap: var(--space-2);
 }
 
 .confirm-action p {
-  flex-basis: 100%;
   margin: 0;
   font-weight: var(--font-weight-semibold);
   text-align: right;
   overflow-wrap: anywhere;
+}
+
+.confirm-action__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }

@@ -6,6 +6,7 @@ import {
   formatPercentage,
   formatPeriod,
   formatPurchaseChannel,
+  formatShortPeriod,
 } from './format';
 
 describe('formato', () => {
@@ -25,6 +26,11 @@ describe('formato', () => {
 
   it('nombra el período con el mes y el año', () => {
     expect(formatPeriod('2026-09')).toBe('septiembre de 2026');
+  });
+
+  it('abrevia el período como la fecha, con el mes en dos cifras', () => {
+    expect(formatShortPeriod('2026-09')).toBe('09/2026');
+    expect(formatShortPeriod('2026-11')).toBe('11/2026');
   });
 
   it('traduce el canal de compra y muestra tal cual un código desconocido', () => {
