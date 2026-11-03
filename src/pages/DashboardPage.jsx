@@ -1,5 +1,6 @@
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { HTTP_STATUS, TOAST_TONE } from '../config/constants';
 import { useCategories } from '../hooks/useCategories';
 import { useDashboard } from '../hooks/useDashboard';
 import { useExpenses } from '../hooks/useExpenses';
@@ -7,6 +8,7 @@ import { useToast } from '../hooks/useToast';
 import { currentPeriod, isValidPeriod, periodOf } from '../utils/dates';
 import { requestErrorMessages } from '../utils/errors';
 import { formatPeriod } from '../utils/format';
+import { logError } from '../utils/logger';
 import DashboardSummary from '../components/dashboard/DashboardSummary';
 import ExpenseForm from '../components/expenses/ExpenseForm';
 import ExpenseTable from '../components/expenses/ExpenseTable';
@@ -23,19 +25,53 @@ export default function DashboardPage() {
   const summaryTitleId = useId();
   const listTitleId = useId();
   const formTitleId = useId();
+  const listTitleRef = useRef(null);
   const dateFieldRef = useRef(null);
+  // El botón Editar de cada fila, por id de gasto: al terminar de editar, el foco vuelve ahí.
+  const editButtonsRef = useRef(new Map());
   // La app es mensual: arranca en el mes en curso. `periodInput` es lo que está escrito en el
   // filtro (en navegadores sin selector de mes es texto libre); `period`, el último mes válido.
   const [period, setPeriod] = useState(currentPeriod);
   const [periodInput, setPeriodInput] = useState(period);
+  // El gasto que se está editando, o null si el formulario es de alta.
+  const [editing, setEditing] = useState(null);
   const expenses = useExpenses(period);
   const categories = useCategories();
   const dashboard = useDashboard();
   const confirmation = useToast();
 
+  // Al elegir un gasto para editar, el foco va al formulario (que puede estar más abajo).
+  useEffect(() => {
+    if (editing) dateFieldRef.current?.focus();
+  }, [editing]);
+
   function changePeriod(value) {
     setPeriodInput(value);
     if (isValidPeriod(value)) setPeriod(value);
+  }
+
+  function registerEditButton(id, node) {
+    if (node) editButtonsRef.current.set(id, node);
+    else editButtonsRef.current.delete(id);
+  }
+
+  // Vuelve al alta. El foco va al Editar del gasto, si sigue en el listado, o al título del listado.
+  function stopEditing({ stillListed = true } = {}) {
+    const { id } = editing;
+    setEditing(null);
+    const button = stillListed ? editButtonsRef.current.get(id) : null;
+    (button ?? listTitleRef.current)?.focus();
+  }
+
+  // El gasto ya no existe o no es del usuario (404): se avisa, se deja de editar y se vuelve a pedir
+  // el listado para que no quede a la vista.
+  function handleMissingExpense(error) {
+    logError(error);
+    setEditing(null);
+    confirmation.show(t('expenses.missing'), { tone: TOAST_TONE.ERROR });
+    expenses.retry();
+    dashboard.retry();
+    listTitleRef.current?.focus();
   }
 
   // Al guardar se muestra la confirmación, y el gasto aparece recién cuando el aviso termina:
@@ -49,6 +85,44 @@ export default function DashboardPage() {
       changePeriod(periodOf(expense.date));
       dashboard.retry();
     });
+  }
+
+  // Al editar, el listado cambia enseguida (si el gasto pasó a otro mes, sale de este) y el resumen
+  // se vuelve a pedir. Un 422 lo muestra el formulario en sus campos; un 404, esta pantalla.
+  async function handleUpdate(changes) {
+    let expense;
+    try {
+      expense = await expenses.update(editing.id, changes);
+    } catch (error) {
+      if (error?.status !== HTTP_STATUS.NOT_FOUND) throw error;
+      handleMissingExpense(error);
+      return;
+    }
+    stopEditing({ stillListed: periodOf(expense.date) === period });
+    confirmation.show(t('expenses.form.updated'));
+    dashboard.retry();
+  }
+
+  // El error se avisa acá y no se propaga: ConfirmButton solo vuelve a mostrar el botón. Si sale
+  // bien, la fila desaparece y el foco pasa al título del listado para no perderse.
+  async function handleDelete(expense) {
+    try {
+      await expenses.remove(expense.id);
+    } catch (error) {
+      if (error?.status === HTTP_STATUS.NOT_FOUND) {
+        handleMissingExpense(error);
+        return;
+      }
+      logError(error);
+      confirmation.show(requestErrorMessages(error, 'expenses.list.deleteError', t), {
+        tone: TOAST_TONE.ERROR,
+      });
+      return;
+    }
+    if (editing?.id === expense.id) setEditing(null);
+    confirmation.show(t('expenses.list.deleted'));
+    dashboard.retry();
+    listTitleRef.current?.focus();
   }
 
   function renderSummary() {
@@ -92,6 +166,9 @@ export default function DashboardPage() {
       <ExpenseTable
         caption={t('expenses.list.caption', { period: formatPeriod(period) })}
         expenses={expenses.expenses}
+        onEdit={setEditing}
+        onDelete={handleDelete}
+        editButtonRef={registerEditButton}
       />
     );
   }
@@ -107,10 +184,15 @@ export default function DashboardPage() {
         />
       );
     }
+    // La key vuelve a montar el formulario al pasar de alta a edición o de un gasto a otro, para
+    // que arranque con los datos del gasto elegido.
     return (
       <ExpenseForm
+        key={editing?.id ?? 'new'}
         categories={categories.categories}
-        onSubmit={handleCreate}
+        expense={editing}
+        onSubmit={editing ? handleUpdate : handleCreate}
+        onCancel={() => stopEditing()}
         firstFieldRef={dateFieldRef}
         toast={confirmation}
       />
@@ -126,7 +208,9 @@ export default function DashboardPage() {
       </section>
       <div className="dashboard">
         <section aria-labelledby={listTitleId} className="panel">
-          <h2 id={listTitleId}>{t('expenses.list.title')}</h2>
+          <h2 id={listTitleId} ref={listTitleRef} tabIndex={-1}>
+            {t('expenses.list.title')}
+          </h2>
           <div className="dashboard__filter">
             <FormField
               label={t('expenses.filter.label')}
@@ -141,7 +225,9 @@ export default function DashboardPage() {
           {renderList()}
         </section>
         <section aria-labelledby={formTitleId} className="panel dashboard__form">
-          <h2 id={formTitleId}>{t('expenses.form.title')}</h2>
+          <h2 id={formTitleId}>
+            {editing ? t('expenses.form.editTitle') : t('expenses.form.title')}
+          </h2>
           {renderForm()}
         </section>
       </div>

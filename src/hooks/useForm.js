@@ -88,16 +88,27 @@ export function useForm({
     if (toast?.toast?.tone === TOAST_TONE.ERROR) toast.close();
   }
 
+  // Al corregir un campo, su error deja de mostrarse.
+  function clearFieldErrors(names) {
+    setFieldErrors((current) => {
+      const next = { ...current };
+      for (const name of names) delete next[name];
+      return next;
+    });
+  }
+
   function handleChange(event) {
     const { name, type, checked } = event.target;
     const value = type === 'checkbox' ? checked : event.target.value;
     setValues((current) => ({ ...current, [name]: value }));
-    // Al corregir un campo, su error deja de mostrarse.
-    setFieldErrors((current) => {
-      const next = { ...current };
-      delete next[name];
-      return next;
-    });
+    clearFieldErrors([name]);
+  }
+
+  // Para un valor que no sale de un campo simple (por ejemplo, una lista de ítems). `errorKeys` son
+  // los errores que deja de mostrar; por defecto, el del propio valor.
+  function setFieldValue(name, value, errorKeys = [name]) {
+    setValues((current) => ({ ...current, [name]: value }));
+    clearFieldErrors(errorKeys);
   }
 
   async function submit() {
@@ -140,6 +151,7 @@ export function useForm({
     isNetworkError,
     isSubmitting,
     handleChange,
+    setFieldValue,
     handleSubmit,
     retry: submit,
     formRef,

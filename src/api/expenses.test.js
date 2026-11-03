@@ -1,7 +1,7 @@
 import { apiErrors, fetchCall, jsonResponse, mockFetch } from '../test/api';
 import { listCategories } from './categories';
 import { ApiError } from './client';
-import { createExpense, listExpenses } from './expenses';
+import { createExpense, deleteExpense, listExpenses, updateExpense } from './expenses';
 
 const API_EXPENSE = {
   id: 2,
@@ -35,7 +35,7 @@ const NEW_EXPENSE = {
 };
 
 describe('gastos', () => {
-  it('convierte el monto a número y deja afuera lo que el TP2 no usa', async () => {
+  it('convierte los montos a número y deja afuera lo que el TP2 no usa', async () => {
     const fetchMock = mockFetch(jsonResponse(200, [API_EXPENSE]));
 
     expect(await listExpenses({ period: '2026-09' })).toEqual([
@@ -47,6 +47,9 @@ describe('gastos', () => {
         isFixed: false,
         purchaseChannel: 'presencial',
         category: { id: 1, name: 'Supermercado' },
+        items: [
+          { id: 1, name: 'Leche', quantity: 2, unit: 'unidad', unitPrice: 1800.5, subtotal: 3601 },
+        ],
       },
     ]);
     expect(fetchCall(fetchMock).url).toMatch(/\/expenses\?period=2026-09$/);
@@ -92,6 +95,65 @@ describe('gastos', () => {
       { field: 'category_id', message: 'tiene que existir' },
       { field: 'amount', message: 'es inválido' },
     ]);
+  });
+});
+
+describe('editar y borrar gastos', () => {
+  const CHANGES = { ...NEW_EXPENSE, description: '  ', purchaseChannel: 'delivery' };
+
+  it('sin ítems manda el monto, y la descripción aunque quede vacía', async () => {
+    const fetchMock = mockFetch(jsonResponse(200, API_EXPENSE));
+
+    await updateExpense(2, CHANGES);
+
+    const call = fetchCall(fetchMock);
+    expect(call.method).toBe('PATCH');
+    expect(call.url).toMatch(/\/expenses\/2$/);
+    expect(call.body).toEqual({
+      date: '2026-09-12',
+      category_id: 1,
+      amount: 1500.5,
+      description: '',
+      is_fixed: false,
+      purchase_channel: 'delivery',
+    });
+  });
+
+  it('modifica un ítem con su id y su name, y quita otro con _destroy, sin mandar el monto', async () => {
+    const fetchMock = mockFetch(jsonResponse(200, API_EXPENSE));
+
+    await updateExpense(2, {
+      ...CHANGES,
+      items: [
+        { id: 1, name: ' Leche ', quantity: 3, unit: 'unidad', unitPrice: 1800.5 },
+        { id: 7, destroy: true },
+      ],
+    });
+
+    const { body } = fetchCall(fetchMock);
+    expect(body).not.toHaveProperty('amount');
+    expect(body.expense_items_attributes).toEqual([
+      { id: 1, name: 'Leche', quantity: 3, unit: 'unidad', unit_price: 1800.5 },
+      { id: 7, _destroy: true },
+    ]);
+  });
+
+  it('si se quitan todos los ítems, manda el monto para que el gasto no quede con el anterior', async () => {
+    const fetchMock = mockFetch(jsonResponse(200, API_EXPENSE));
+
+    await updateExpense(2, { ...CHANGES, items: [{ id: 1, destroy: true }] });
+
+    const { body } = fetchCall(fetchMock);
+    expect(body.amount).toBe(1500.5);
+    expect(body.expense_items_attributes).toEqual([{ id: 1, _destroy: true }]);
+  });
+
+  it('borra por id', async () => {
+    const fetchMock = mockFetch(jsonResponse(204));
+
+    await expect(deleteExpense(2)).resolves.toBeUndefined();
+    expect(fetchCall(fetchMock).method).toBe('DELETE');
+    expect(fetchCall(fetchMock).url).toMatch(/\/expenses\/2$/);
   });
 });
 

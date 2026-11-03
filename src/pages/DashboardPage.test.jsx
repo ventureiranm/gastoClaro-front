@@ -1,6 +1,11 @@
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { saveToken } from '../api/tokenStorage';
-import { AMOUNT_MIN_EXCLUSIVE, ROUTES, TOAST_DURATION_MS } from '../config/constants';
+import {
+  AMOUNT_MIN_EXCLUSIVE,
+  ITEM_QUANTITY_MIN,
+  ROUTES,
+  TOAST_DURATION_MS,
+} from '../config/constants';
 import i18n from '../i18n';
 import es from '../locales/es.json';
 import {
@@ -17,7 +22,7 @@ import {
 import { BACK, BackButton } from '../test/BackButton';
 import { renderApp } from '../test/renderApp';
 import { currentPeriod, todayISO } from '../utils/dates';
-import { formatPercentage, formatPeriod } from '../utils/format';
+import { formatAmount, formatDate, formatPercentage, formatPeriod } from '../utils/format';
 import { logError } from '../utils/logger';
 
 const CATEGORIES = [
@@ -119,6 +124,7 @@ describe('Listado de gastos', () => {
       es.expenses.fields.category,
       es.expenses.fields.purchaseChannel,
       es.expenses.fields.amount,
+      es.expenses.list.actions,
     ]);
 
     const [, fixed, other] = within(table).getAllByRole('row');
@@ -670,5 +676,321 @@ describe('Aislamiento entre usuarios', () => {
     expect(screen.queryByText('Gasto de A')).not.toBeInTheDocument();
     const lastList = fetchCallsTo(fetchMock, 'GET /expenses').at(-1);
     expect(lastList.headers.Authorization).toBe('Bearer token-b');
+  });
+});
+
+// Un gasto de hoy (siempre del mes en curso y nunca futuro) con dos ítems: el monto es su suma.
+function apiExpenseWithItems(overrides = {}) {
+  return apiExpense({
+    date: todayISO(),
+    expense_items: [
+      {
+        id: 1,
+        name: 'Leche',
+        quantity: 2,
+        unit: 'unidad',
+        unit_price: '1800.5',
+        subtotal: '3601.0',
+      },
+      {
+        id: 2,
+        name: 'Arroz',
+        quantity: 1,
+        unit: 'unidad',
+        unit_price: '9500.0',
+        subtotal: '9500.0',
+      },
+    ],
+    ...overrides,
+  });
+}
+
+// Lo que respondería la API al editar: el gasto con los cambios. Con ítems, el monto es su suma.
+function updatedExpense(original) {
+  return ({ body }) => {
+    const items = (body.expense_items_attributes ?? [])
+      .filter((item) => !item._destroy)
+      .map((item) => ({
+        ...item,
+        unit_price: String(item.unit_price),
+        subtotal: String(item.quantity * item.unit_price),
+      }));
+    const amount = items.length
+      ? items.reduce((total, item) => total + Number(item.subtotal), 0)
+      : (body.amount ?? Number(original.amount));
+    const category = CATEGORIES.find(({ id }) => id === body.category_id);
+    return jsonResponse(
+      200,
+      apiExpense({
+        ...original,
+        amount: String(amount),
+        date: body.date,
+        description: body.description,
+        is_fixed: body.is_fixed,
+        purchase_channel: body.purchase_channel ?? original.purchase_channel,
+        category: { id: category.id, name: category.name },
+        expense_items: items,
+      }),
+    );
+  };
+}
+
+function expenseName(description, date = todayISO()) {
+  return i18n.t('expenses.list.namedExpense', { description, date: formatDate(date) });
+}
+
+function editButton(description) {
+  return screen.getByRole('button', {
+    name: i18n.t('expenses.list.editLabel', { name: expenseName(description) }),
+  });
+}
+
+function deleteButton(description) {
+  return screen.getByRole('button', {
+    name: i18n.t('expenses.list.deleteLabel', { name: expenseName(description) }),
+  });
+}
+
+function updateButton() {
+  return screen.getByRole('button', { name: es.expenses.form.update });
+}
+
+async function findExpenseRow(text) {
+  const table = await screen.findByRole('table');
+  return within(table)
+    .getAllByRole('row')
+    .find((row) => row.textContent.includes(text));
+}
+
+describe('Editar un gasto', () => {
+  it('carga el gasto en el formulario, guarda y actualiza el listado y el resumen', async () => {
+    const original = apiExpense({ date: todayISO() });
+    const { user, fetchMock } = renderDashboard({
+      'GET /expenses': jsonResponse(200, [original]),
+      'PATCH /expenses/1': updatedExpense(original),
+    });
+    await findExpenseRow('Compra semanal');
+
+    await user.click(editButton('Compra semanal'));
+
+    expect(screen.getByRole('heading', { name: es.expenses.form.editTitle })).toBeInTheDocument();
+    expect(screen.getByLabelText(es.expenses.fields.date)).toHaveFocus();
+    expect(screen.getByLabelText(es.expenses.fields.category)).toHaveValue('1');
+    expect(screen.getByLabelText(es.expenses.fields.amount)).toHaveValue('13101');
+    expect(screen.getByLabelText(es.expenses.fields.description)).toHaveValue('Compra semanal');
+
+    await user.clear(screen.getByLabelText(es.expenses.fields.amount));
+    await user.type(screen.getByLabelText(es.expenses.fields.amount), '2000,50');
+    await user.clear(screen.getByLabelText(es.expenses.fields.description));
+    await user.type(screen.getByLabelText(es.expenses.fields.description), 'Compra del sábado');
+    await user.click(updateButton());
+
+    expect(await screen.findByText(es.expenses.form.updated)).toBeInTheDocument();
+    const row = await findExpenseRow('Compra del sábado');
+    expect(row).toHaveTextContent('$ 2.000,50');
+    expect(editButton('Compra del sábado')).toHaveFocus();
+    expect(screen.getByRole('heading', { name: es.expenses.form.title })).toBeInTheDocument();
+
+    const [call] = fetchCallsTo(fetchMock, 'PATCH /expenses/1');
+    expect(call.body).toEqual({
+      date: todayISO(),
+      category_id: 1,
+      amount: 2000.5,
+      description: 'Compra del sábado',
+      is_fixed: false,
+      purchase_channel: 'presencial',
+    });
+    // El listado se actualiza sin volver a pedirlo; el resumen sí se vuelve a pedir.
+    expect(fetchCallsTo(fetchMock, 'GET /expenses')).toHaveLength(1);
+    expect(fetchCallsTo(fetchMock, 'GET /dashboard')).toHaveLength(2);
+  });
+
+  it('en un gasto con ítems, modifica uno con su id y su name y quita otro con _destroy', async () => {
+    const original = apiExpenseWithItems();
+    const { user, fetchMock } = renderDashboard({
+      'GET /expenses': jsonResponse(200, [original]),
+      'PATCH /expenses/1': updatedExpense(original),
+    });
+    await findExpenseRow('Compra semanal');
+    await user.click(editButton('Compra semanal'));
+
+    // Con ítems, el monto es su suma y no se escribe.
+    const amount = screen.getByLabelText(es.expenses.fields.amount);
+    expect(amount).toHaveAttribute('readonly');
+    expect(amount).toHaveValue(formatAmount(13101));
+
+    const leche = screen.getByRole('group', { name: i18n.t('expenses.form.item', { number: 1 }) });
+    const quantity = within(leche).getByLabelText(es.expenses.fields.itemQuantity);
+    await user.clear(quantity);
+    await user.type(quantity, '3');
+    expect(amount).toHaveValue(formatAmount(14901.5));
+
+    await user.click(
+      screen.getByRole('button', {
+        name: i18n.t('expenses.form.removeItemLabel', { name: 'Arroz' }),
+      }),
+    );
+    expect(screen.getByText(i18n.t('expenses.form.itemRemoved', { name: 'Arroz' }))).toBeVisible();
+    expect(
+      screen.getByRole('button', {
+        name: i18n.t('expenses.form.restoreItemLabel', { name: 'Arroz' }),
+      }),
+    ).toHaveFocus();
+    expect(amount).toHaveValue(formatAmount(5401.5));
+
+    await user.click(updateButton());
+
+    expect(await screen.findByText(es.expenses.form.updated)).toBeInTheDocument();
+    expect(await findExpenseRow('Compra semanal')).toHaveTextContent('$ 5.401,50');
+    const [call] = fetchCallsTo(fetchMock, 'PATCH /expenses/1');
+    expect(call.body).not.toHaveProperty('amount');
+    expect(call.body.expense_items_attributes).toEqual([
+      { id: 1, name: 'Leche', quantity: 3, unit: 'unidad', unit_price: 1800.5 },
+      { id: 2, _destroy: true },
+    ]);
+  });
+
+  it('valida los ítems antes de enviar', async () => {
+    const { user, fetchMock } = renderDashboard({
+      'GET /expenses': jsonResponse(200, [apiExpenseWithItems()]),
+    });
+    await findExpenseRow('Compra semanal');
+    await user.click(editButton('Compra semanal'));
+
+    const leche = screen.getByRole('group', { name: i18n.t('expenses.form.item', { number: 1 }) });
+    const quantity = within(leche).getByLabelText(es.expenses.fields.itemQuantity);
+    await user.clear(quantity);
+    await user.type(quantity, '1,5');
+    await user.click(updateButton());
+
+    expect(quantity).toHaveAccessibleDescription(
+      i18n.t('validation.itemQuantity', { min: ITEM_QUANTITY_MIN }),
+    );
+    expect(quantity).toHaveFocus();
+    expect(fetchCallsTo(fetchMock, 'PATCH /expenses/1')).toHaveLength(0);
+  });
+
+  it('si la API responde 422, muestra cada error en su campo y no cambia el listado', async () => {
+    const { user } = renderDashboard({
+      'GET /expenses': jsonResponse(200, [apiExpense({ date: todayISO() })]),
+      'PATCH /expenses/1': jsonResponse(
+        422,
+        apiErrors(['amount', 'debe ser mayor que 0'], ['purchase_channel', 'no es válido']),
+      ),
+    });
+    await findExpenseRow('Compra semanal');
+    await user.click(editButton('Compra semanal'));
+    await user.click(updateButton());
+
+    const amount = screen.getByLabelText(es.expenses.fields.amount);
+    expect(await screen.findByText('debe ser mayor que 0')).toBeInTheDocument();
+    expect(amount).toHaveAccessibleDescription(expect.stringContaining('debe ser mayor que 0'));
+    expect(amount).toHaveFocus();
+    expect(screen.getByLabelText(es.expenses.fields.purchaseChannel)).toHaveAccessibleDescription(
+      'no es válido',
+    );
+    expect(screen.getByRole('heading', { name: es.expenses.form.editTitle })).toBeInTheDocument();
+    expect(await findExpenseRow('Compra semanal')).toHaveTextContent('$ 13.101,00');
+  });
+
+  it('si el gasto ya no existe o no es del usuario (404), lo avisa y vuelve a pedir el listado', async () => {
+    const { user, fetchMock } = renderDashboard({
+      'GET /expenses': [
+        jsonResponse(200, [apiExpense({ date: todayISO() })]),
+        jsonResponse(200, []),
+      ],
+      'PATCH /expenses/1': jsonResponse(404),
+    });
+    await findExpenseRow('Compra semanal');
+    await user.click(editButton('Compra semanal'));
+    await user.click(updateButton());
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(es.expenses.missing);
+    expect(
+      await screen.findByRole('heading', { name: emptyTitle(currentPeriod()) }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: es.expenses.form.title })).toBeInTheDocument();
+    expect(fetchCallsTo(fetchMock, 'GET /expenses')).toHaveLength(2);
+    expect(logError).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }));
+  });
+
+  it('al cancelar vuelve al alta y devuelve el foco a la fila', async () => {
+    const { user, fetchMock } = renderDashboard({
+      'GET /expenses': jsonResponse(200, [apiExpense({ date: todayISO() })]),
+    });
+    await findExpenseRow('Compra semanal');
+
+    await user.click(editButton('Compra semanal'));
+    await user.click(screen.getByRole('button', { name: es.common.cancel }));
+
+    expect(screen.getByRole('heading', { name: es.expenses.form.title })).toBeInTheDocument();
+    expect(editButton('Compra semanal')).toHaveFocus();
+    expect(fetchCallsTo(fetchMock, 'PATCH /expenses/1')).toHaveLength(0);
+  });
+});
+
+describe('Borrar un gasto', () => {
+  it('pide confirmación, borra y actualiza el listado y el resumen', async () => {
+    const { user, fetchMock } = renderDashboard({
+      'GET /expenses': jsonResponse(200, [apiExpense({ date: todayISO() })]),
+      'DELETE /expenses/1': jsonResponse(204),
+    });
+    await findExpenseRow('Compra semanal');
+    const question = i18n.t('expenses.list.deleteQuestion', {
+      name: expenseName('Compra semanal'),
+    });
+
+    await user.click(deleteButton('Compra semanal'));
+    expect(screen.getByRole('group', { name: question })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: es.common.cancel }));
+    expect(deleteButton('Compra semanal')).toHaveFocus();
+    expect(fetchCallsTo(fetchMock, 'DELETE /expenses/1')).toHaveLength(0);
+
+    await user.click(deleteButton('Compra semanal'));
+    await user.click(screen.getByRole('button', { name: es.expenses.list.deleteConfirm }));
+
+    expect(await screen.findByText(es.expenses.list.deleted)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: emptyTitle(currentPeriod()) }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: es.expenses.list.title })).toHaveFocus();
+    expect(fetchCallsTo(fetchMock, 'DELETE /expenses/1')).toHaveLength(1);
+    expect(fetchCallsTo(fetchMock, 'GET /expenses')).toHaveLength(1);
+    expect(fetchCallsTo(fetchMock, 'GET /dashboard')).toHaveLength(2);
+  });
+
+  it('si el gasto ya no existe o no es del usuario (404), lo avisa y vuelve a pedir el listado', async () => {
+    const { user, fetchMock } = renderDashboard({
+      'GET /expenses': [
+        jsonResponse(200, [apiExpense({ date: todayISO() })]),
+        jsonResponse(200, []),
+      ],
+      'DELETE /expenses/1': jsonResponse(404),
+    });
+    await findExpenseRow('Compra semanal');
+
+    await user.click(deleteButton('Compra semanal'));
+    await user.click(screen.getByRole('button', { name: es.expenses.list.deleteConfirm }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(es.expenses.missing);
+    expect(
+      await screen.findByRole('heading', { name: emptyTitle(currentPeriod()) }),
+    ).toBeInTheDocument();
+    expect(fetchCallsTo(fetchMock, 'GET /expenses')).toHaveLength(2);
+  });
+
+  it('si falla por otro motivo, lo avisa y el gasto queda en el listado', async () => {
+    const { user } = renderDashboard({
+      'GET /expenses': jsonResponse(200, [apiExpense({ date: todayISO() })]),
+      'DELETE /expenses/1': jsonResponse(500),
+    });
+    await findExpenseRow('Compra semanal');
+
+    await user.click(deleteButton('Compra semanal'));
+    await user.click(screen.getByRole('button', { name: es.expenses.list.deleteConfirm }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(es.expenses.list.deleteError);
+    expect(await findExpenseRow('Compra semanal')).toBeInTheDocument();
+    expect(deleteButton('Compra semanal')).toHaveFocus();
   });
 });

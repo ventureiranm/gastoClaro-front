@@ -10,9 +10,9 @@ const ENDPOINTS = {
 const API_FIELD_ALIASES = { category: 'category_id' };
 
 // Hacia adentro de la app un gasto es { id, amount, date, description, isFixed, purchaseChannel,
-// category: { id, name } }. Los montos llegan como texto ("13101.0") y acá pasan a número, para
-// que nadie más tenga que convertirlos. vendor_id y expense_items quedaron fuera del TP2: no se
-// pasan; si un gasto tiene ítems, amount ya es su total.
+// category: { id, name }, items: [{ id, name, quantity, unit, unitPrice, subtotal }] }. Los montos
+// llegan como texto ("13101.0") y acá pasan a número, para que nadie más tenga que convertirlos.
+// Si un gasto tiene ítems, amount ya es su total. vendor_id quedó fuera del TP2: no se pasa.
 function normalizeExpense(raw) {
   return {
     id: raw.id,
@@ -22,6 +22,14 @@ function normalizeExpense(raw) {
     isFixed: Boolean(raw.is_fixed),
     purchaseChannel: raw.purchase_channel ?? null,
     category: raw.category ? { id: raw.category.id, name: raw.category.name } : null,
+    items: (raw.expense_items ?? []).map((item) => ({
+      id: item.id,
+      name: item.name,
+      quantity: item.quantity,
+      unit: item.unit,
+      unitPrice: Number(item.unit_price),
+      subtotal: Number(item.subtotal),
+    })),
   };
 }
 
@@ -37,6 +45,32 @@ function normalizeErrorFields(error) {
     field: API_FIELD_ALIASES[item.field] ?? item.field,
   }));
   return new ApiError(error.status, errors, { cause: error });
+}
+
+// Hace el pedido y, si falla, normaliza los nombres de campo del error.
+async function send(request) {
+  try {
+    return normalizeExpense(await request());
+  } catch (error) {
+    throw normalizeErrorFields(error);
+  }
+}
+
+// Ítems de una edición, con la forma que pide la API: uno que se quita va solo con su id y
+// _destroy; uno que se modifica, con su id y también su name (sin name, la API lo descarta en
+// silencio).
+function toItemAttributes(items) {
+  return items.map((item) =>
+    item.destroy
+      ? { id: item.id, _destroy: true }
+      : {
+          id: item.id,
+          name: item.name.trim(),
+          quantity: item.quantity,
+          unit: item.unit,
+          unit_price: item.unitPrice,
+        },
+  );
 }
 
 // Gastos del usuario del token, del más reciente al más antiguo (como máximo 100). `period` es
@@ -61,9 +95,34 @@ export async function createExpense({
   if (description.trim()) body.description = description.trim();
   if (purchaseChannel) body.purchase_channel = purchaseChannel;
 
-  try {
-    return normalizeExpense(await api.post(ENDPOINTS.EXPENSES, body));
-  } catch (error) {
-    throw normalizeErrorFields(error);
-  }
+  return send(() => api.post(ENDPOINTS.EXPENSES, body));
+}
+
+// Edita un gasto con los mismos tipos que createExpense, más `items`: los del gasto, cada uno
+// modificado ({ id, name, quantity, unit, unitPrice }) o para quitar ({ id, destroy: true }).
+// - La descripción se manda siempre, aunque esté vacía: así se puede borrar.
+// - amount se manda solo si no queda ningún ítem: con ítems, la API calcula el monto y gana el
+//   suyo; si se quitan todos, sin amount el gasto conservaría el monto anterior.
+// - purchase_channel vacío no se manda: la API no acepta dejarlo sin canal.
+// Devuelve el gasto actualizado. Un 404 significa que no existe o no es del usuario.
+export async function updateExpense(
+  id,
+  { date, categoryId, amount, description = '', isFixed = false, purchaseChannel = '', items = [] },
+) {
+  const body = {
+    date,
+    category_id: categoryId,
+    description: description.trim(),
+    is_fixed: isFixed,
+  };
+  if (purchaseChannel) body.purchase_channel = purchaseChannel;
+  if (items.every((item) => item.destroy)) body.amount = amount;
+  if (items.length > 0) body.expense_items_attributes = toItemAttributes(items);
+
+  return send(() => api.patch(`${ENDPOINTS.EXPENSES}/${id}`, body));
+}
+
+// Borra el gasto y sus ítems. Un 404 significa que no existe o no es del usuario.
+export async function deleteExpense(id) {
+  await api.delete(`${ENDPOINTS.EXPENSES}/${id}`);
 }
