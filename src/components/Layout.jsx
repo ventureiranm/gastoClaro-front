@@ -34,6 +34,9 @@ export default function Layout() {
                   <li>
                     <NavLink to={ROUTES.DASHBOARD}>{t('nav.dashboard')}</NavLink>
                   </li>
+                  <li>
+                    <NavLink to={ROUTES.INCOMES}>{t('nav.incomes')}</NavLink>
+                  </li>
                   <li className="app-nav__logout">
                     <Button variant="secondary" onClick={handleLogout}>
                       {t('nav.logout')}

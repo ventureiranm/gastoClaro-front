@@ -8,7 +8,8 @@
     "dashboard": "Inicio",
     "login": "Iniciar sesión",
     "register": "Crear cuenta",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "incomes": "Ingresos"
   },
   "auth": {
     "user": "Usuario",
@@ -111,6 +112,29 @@
       "submit": "Guardar gasto",
       "submitting": "Guardando…",
       "success": "Gasto guardado."
+    }
+  },
+  "incomes": {
+    "title": "Mis ingresos",
+    "fields": {
+      "date": "Fecha",
+      "amount": "Monto"
+    },
+    "list": {
+      "title": "Ingresos cargados",
+      "caption": "Ingresos cargados, del más reciente al más antiguo",
+      "loading": "Cargando ingresos…",
+      "loadError": "No pudimos cargar tus ingresos.",
+      "emptyTitle": "Todavía no cargaste ingresos",
+      "emptyDescription": "Cargá uno y lo vas a ver acá.",
+      "emptyAction": "Cargar un ingreso"
+    },
+    "form": {
+      "title": "Nuevo ingreso",
+      "amountHint": "Sin separador de miles y con hasta {{count}} decimales. Por ejemplo: 450000,50",
+      "submit": "Guardar ingreso",
+      "submitting": "Guardando…",
+      "success": "Ingreso guardado."
     }
   },
   "notFound": {
