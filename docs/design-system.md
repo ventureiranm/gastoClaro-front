@@ -76,6 +76,7 @@ En `src/components/ui/`:
 | `LoadingIndicator` | Indicador de carga con texto.                                                         |
 | `EmptyState`       | Estado vacío: zona apagada con título, descripción y acción opcional.                 |
 | `Toast`            | Aviso flotante: confirmación (se cierra sola) o error (queda hasta cerrarlo).         |
+| `ConfirmButton`    | Botón para lo que no se deshace (borrar): pregunta antes, con el foco en Cancelar.    |
 
 Clases para lo que no tiene componente:
 
@@ -93,12 +94,16 @@ Clases para lo que no tiene componente:
 | `.pill-tabs`, `.pill`                 | Píldoras de pestañas; la activa se marca con `aria-selected`, `aria-current` o `aria-pressed`.  |
 | `.dropzone` / `.dropzone--active`     | Zona de carga de archivos: borde punteado, contenido centrado.                                  |
 | `.visually-hidden`                    | Oculto a la vista, presente para lectores de pantalla.                                          |
+| `.form__actions`                      | Botones al pie de un formulario (guardar, cancelar), uno al lado del otro mientras entren.      |
+| `.row-actions`                        | Botones de una fila de tabla (editar, borrar), a la derecha; si no entran, bajan.               |
 
 ## Responsive
 
 - **Navegación.** Con sesión iniciada, barra lateral desde 56rem (896px); por debajo, barra arriba
   con la marca y los ítems en una fila que se acomoda si no entra. Sin sesión, siempre barra arriba.
 - **Panel.** Listado y alta en dos columnas desde 80rem (1280px); por debajo, uno debajo del otro.
+- **Cuotas.** Listado arriba y formulario debajo en todos los anchos: la tabla tiene seis columnas
+  de datos y necesita el ancho completo. Usa `.data-table--stack-wide`.
 - **Tablas.** Las que pueden no entrar llevan `.data-table--stack` (se apila con menos de 34rem
   disponibles) o `.data-table--stack-wide` (menos de 46rem, para tablas con muchas columnas
   numéricas). Cada fila pasa a ser una tarjeta; cada celda necesita `data-label` con el nombre de
