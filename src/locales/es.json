@@ -6,6 +6,7 @@
     "label": "Navegación principal",
     "skipToContent": "Saltar al contenido",
     "dashboard": "Inicio",
+    "installments": "Cuotas",
     "login": "Iniciar sesión",
     "register": "Crear cuenta",
     "logout": "Cerrar sesión"
@@ -26,7 +27,9 @@
     "date": "Ingresá una fecha válida.",
     "amount": "Ingresá un número sin separador de miles, con hasta {{count}} decimales.",
     "amountPositive": "El monto tiene que ser mayor a {{min}}.",
-    "dateFuture": "La fecha no puede ser posterior a hoy."
+    "dateFuture": "La fecha no puede ser posterior a hoy.",
+    "period": "Ingresá un mes con el formato AAAA-MM.",
+    "installmentsCount": "Ingresá un número entero de {{min}} a {{max}}."
   },
   "login": {
     "title": "Iniciar sesión",
@@ -113,6 +116,56 @@
       "success": "Gasto guardado."
     }
   },
+  "installments": {
+    "title": "Compras en cuotas",
+    "fields": {
+      "description": "Descripción",
+      "category": "Categoría",
+      "totalAmount": "Monto total",
+      "installmentsCount": "Cantidad de cuotas",
+      "firstPeriod": "Primera cuota",
+      "installmentAmount": "Valor de la cuota",
+      "remainingInstallments": "Cuotas restantes"
+    },
+    "list": {
+      "title": "Mis compras en cuotas",
+      "caption": "Compras en cuotas, de la más reciente a la más antigua",
+      "note": "Las cuotas no se suman al consumo del mes: el resumen de Inicio no cambia.",
+      "loading": "Cargando compras en cuotas…",
+      "loadError": "No pudimos cargar tus compras en cuotas.",
+      "remaining": "{{remaining}} de {{count}}",
+      "unknownCategory": "No disponible",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "editLabel": "Editar «{{description}}»",
+      "delete": "Borrar",
+      "deleteLabel": "Borrar «{{description}}»",
+      "deleteQuestion": "¿Borrar «{{description}}»?",
+      "deleteConfirm": "Sí, borrar",
+      "deleteError": "No pudimos borrar la compra.",
+      "deleted": "Compra borrada.",
+      "emptyTitle": "Todavía no cargaste compras en cuotas",
+      "emptyDescription": "Cargá una y vas a ver acá cuánto vale cada cuota y cuántas faltan.",
+      "emptyAction": "Cargar una compra"
+    },
+    "form": {
+      "title": "Nueva compra en cuotas",
+      "editTitle": "Editar compra en cuotas",
+      "categoryPlaceholder": "Elegí una categoría",
+      "noCategoriesOption": "No hay categorías",
+      "noCategories": "Todavía no hay categorías cargadas, así que no se pueden guardar compras.",
+      "loadingCategories": "Cargando categorías…",
+      "categoriesError": "No pudimos cargar las categorías.",
+      "amountHint": "Sin separador de miles y con hasta {{count}} decimales. Por ejemplo: 120000,50",
+      "installmentsCountHint": "De {{min}} a {{max}} cuotas.",
+      "firstPeriodPlaceholder": "AAAA-MM",
+      "submit": "Guardar compra",
+      "update": "Guardar cambios",
+      "submitting": "Guardando…",
+      "created": "Compra en cuotas guardada.",
+      "updated": "Cambios guardados."
+    }
+  },
   "notFound": {
     "title": "Página no encontrada",
     "description": "La dirección que buscás no existe.",
@@ -122,6 +175,7 @@
     "loading": "Cargando…",
     "retry": "Reintentar",
     "close": "Cerrar",
+    "cancel": "Cancelar",
     "required": "obligatorio"
   },
   "errors": {

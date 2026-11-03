@@ -5,7 +5,7 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useExpenses } from '../hooks/useExpenses';
 import { useToast } from '../hooks/useToast';
 import { currentPeriod, isValidPeriod, periodOf } from '../utils/dates';
-import { statusMessage } from '../utils/errors';
+import { requestErrorMessages } from '../utils/errors';
 import { formatPeriod } from '../utils/format';
 import DashboardSummary from '../components/dashboard/DashboardSummary';
 import ExpenseForm from '../components/expenses/ExpenseForm';
@@ -17,13 +17,6 @@ import FormField from '../components/ui/FormField';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import PageHeader from '../components/ui/PageHeader';
 import Toast from '../components/ui/Toast';
-
-// Sin conexión, el mensaje genérico de red; ante cualquier otro problema, el de esa carga y, si el
-// estado HTTP lo explica (sin permiso, no existe), también ese motivo.
-function loadErrorMessage(error, messageKey, t) {
-  if (error.isNetworkError) return t('errors.network');
-  return [t(messageKey), statusMessage(error, t)];
-}
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -63,7 +56,7 @@ export default function DashboardPage() {
     if (dashboard.error) {
       return (
         <FormAlert
-          messages={loadErrorMessage(dashboard.error, 'dashboard.summary.loadError', t)}
+          messages={requestErrorMessages(dashboard.error, 'dashboard.summary.loadError', t)}
           onRetry={dashboard.retry}
         />
       );
@@ -76,7 +69,7 @@ export default function DashboardPage() {
     if (expenses.error) {
       return (
         <FormAlert
-          messages={loadErrorMessage(expenses.error, 'expenses.list.loadError', t)}
+          messages={requestErrorMessages(expenses.error, 'expenses.list.loadError', t)}
           onRetry={expenses.retry}
         />
       );
@@ -109,7 +102,7 @@ export default function DashboardPage() {
     if (categories.error) {
       return (
         <FormAlert
-          messages={loadErrorMessage(categories.error, 'expenses.form.categoriesError', t)}
+          messages={requestErrorMessages(categories.error, 'expenses.form.categoriesError', t)}
           onRetry={categories.retry}
         />
       );

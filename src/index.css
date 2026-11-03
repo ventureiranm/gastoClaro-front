@@ -1003,3 +1003,54 @@ time {
   max-width: 15rem;
   margin-bottom: var(--space-4);
 }
+
+/* ---------- Compras en cuotas ---------- */
+
+/* Listado arriba, formulario debajo: la tabla tiene muchas columnas y necesita todo el ancho. */
+.installments {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.installments__form {
+  max-width: 40rem;
+}
+
+.installments__note {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-small);
+}
+
+/* ---------- Acciones ---------- */
+
+/* Botones al pie de un formulario (guardar, cancelar): uno al lado del otro mientras entren. */
+.form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Acciones de una fila de tabla (editar, borrar): a la derecha, y si no entran, una debajo de otra. */
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* Pregunta de ConfirmButton: arriba la pregunta, debajo confirmar y cancelar. */
+.confirm-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.confirm-action p {
+  flex-basis: 100%;
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  text-align: right;
+  overflow-wrap: anywhere;
+}

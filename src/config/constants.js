@@ -6,6 +6,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
+  INSTALLMENTS: '/installments',
 };
 
 export const TOKEN_STORAGE_KEY = 'gastoclaro.token';
@@ -41,9 +42,12 @@ export const VALIDATE_SESSION_ON_START = true;
 
 // Límites de los formularios. Deben coincidir con las validaciones del back-end.
 export const PASSWORD_MIN_LENGTH = 8;
-// El monto de un gasto tiene que ser estrictamente mayor que este valor. La fecha de un gasto no
-// puede ser posterior a hoy.
+// El monto de un gasto y el total de una compra en cuotas tienen que ser estrictamente mayores que
+// este valor. La fecha de un gasto no puede ser posterior a hoy.
 export const AMOUNT_MIN_EXCLUSIVE = 0;
+// Cantidad de cuotas que acepta una compra en cuotas, con los dos extremos incluidos.
+export const INSTALLMENTS_MIN = 1;
+export const INSTALLMENTS_MAX = 48;
 
 // Montos y fechas se muestran con formato argentino: punto para los miles, coma para los decimales.
 export const LOCALE = 'es-AR';
