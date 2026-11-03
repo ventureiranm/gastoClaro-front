@@ -5,7 +5,7 @@ import i18n from '../i18n';
 import es from '../locales/es.json';
 import { apiErrors, fetchCallsTo, jsonResponse, mockApi, TEST_TOKEN, TEST_USER } from '../test/api';
 import { renderApp } from '../test/renderApp';
-import { formatPercentage } from '../utils/format';
+import { formatAmount, formatPercentage } from '../utils/format';
 import { logError } from '../utils/logger';
 
 function apiGoal(overrides = {}) {
@@ -87,15 +87,38 @@ describe('Listado de metas', () => {
     });
 
     const table = await findTable();
+    // Lo ahorrado y el objetivo van en columnas separadas, para que los montos largos entren.
+    expect(
+      within(table)
+        .getAllByRole('columnheader')
+        .map((th) => th.textContent),
+    ).toEqual([
+      es.savingsGoals.fields.name,
+      es.savingsGoals.fields.deadline,
+      es.savingsGoals.fields.savedAmount,
+      es.savingsGoals.fields.targetAmount,
+      es.savingsGoals.fields.progress,
+      es.savingsGoals.fields.actions,
+    ]);
     const [, notebook, trip] = within(table).getAllByRole('row');
-    expect(notebook).toHaveTextContent('Notebook');
-    expect(notebook).toHaveTextContent('01/03/2027');
-    expect(notebook).toHaveTextContent('$ 0,00 de $ 800,00');
-    expect(notebook).toHaveTextContent(formatPercentage(0));
-    expect(trip).toHaveTextContent('Viaje');
-    expect(trip).toHaveTextContent(es.savingsGoals.list.noDeadline);
-    expect(trip).toHaveTextContent('$ 250,00 de $ 1.000,00');
-    expect(trip).toHaveTextContent(formatPercentage(0.25));
+    const cells = (row) =>
+      within(row)
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent);
+    expect(cells(notebook).slice(0, 5)).toEqual([
+      'Notebook',
+      '01/03/2027',
+      formatAmount(0),
+      formatAmount(800),
+      formatPercentage(0),
+    ]);
+    expect(cells(trip).slice(0, 5)).toEqual([
+      'Viaje',
+      es.savingsGoals.list.noDeadline,
+      formatAmount(250),
+      formatAmount(1000),
+      formatPercentage(0.25),
+    ]);
   });
 
   it('si no hay metas, muestra el estado vacío', async () => {
@@ -153,7 +176,8 @@ describe('Nueva meta y edición', () => {
 
     await findConfirmation(es.savingsGoals.messages.updated);
     const row = within(screen.getByRole('table')).getAllByRole('row')[1];
-    expect(row).toHaveTextContent('$ 500,00 de $ 1.000,00');
+    expect(row).toHaveTextContent('$ 500,00');
+    expect(row).toHaveTextContent('$ 1.000,00');
     expect(row).toHaveTextContent(formatPercentage(0.5));
 
     const [call] = fetchCallsTo(fetchMock, 'PATCH /savings_goals/1');
@@ -191,11 +215,16 @@ describe('Borrar una meta', () => {
     });
     await findTable();
 
+    // La pregunta arranca con el foco en Cancelar; cancelar lo devuelve a Borrar.
     await user.click(button(deleteLabel()));
     expect(
-      screen.getByText(i18n.t('savingsGoals.list.confirmDelete', { name: 'Viaje' })),
+      screen.getByRole('group', {
+        name: i18n.t('savingsGoals.list.confirmDelete', { name: 'Viaje' }),
+      }),
     ).toBeInTheDocument();
-    await user.click(button(es.savingsGoals.list.confirmNo));
+    expect(button(es.common.cancel)).toHaveFocus();
+    await user.click(button(es.common.cancel));
+    expect(button(deleteLabel())).toHaveFocus();
     expect(fetchCallsTo(fetchMock, 'DELETE /savings_goals/1')).toHaveLength(0);
     expect(screen.getByRole('table')).toHaveTextContent('Viaje');
 
@@ -206,6 +235,8 @@ describe('Borrar una meta', () => {
     expect(fetchCallsTo(fetchMock, 'DELETE /savings_goals/1')).toHaveLength(1);
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(await findEmptyState()).toBeInTheDocument();
+    // La fila ya no está: el foco pasa al título del listado en lugar de perderse.
+    expect(screen.getByRole('heading', { name: es.savingsGoals.list.title })).toHaveFocus();
   });
 
   it('si el borrado falla, avisa, lo registra y la meta queda en el listado', async () => {
@@ -223,6 +254,7 @@ describe('Borrar una meta', () => {
     );
     expect(logError).toHaveBeenCalled();
     expect(screen.getByRole('table')).toHaveTextContent('Viaje');
+    expect(button(deleteLabel())).toHaveFocus();
   });
 });
 
