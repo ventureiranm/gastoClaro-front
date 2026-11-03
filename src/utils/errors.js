@@ -14,3 +14,11 @@ export function statusMessage(error, t) {
   const key = STATUS_MESSAGE_KEYS[error?.status];
   return key ? t(key) : null;
 }
+
+// Mensajes para un pedido que falló fuera de un formulario (una carga, un borrado). Sin conexión, el
+// mensaje genérico de red; ante cualquier otro problema, el de `messageKey` y, si el estado HTTP lo
+// explica (sin permiso, no existe), también ese motivo.
+export function requestErrorMessages(error, messageKey, t) {
+  if (error.isNetworkError) return t('errors.network');
+  return [t(messageKey), statusMessage(error, t)];
+}

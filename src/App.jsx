@@ -6,7 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
-import IncomesPage from './pages/IncomesPage';
+import InstallmentsPage from './pages/InstallmentsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -23,7 +23,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-          <Route path={ROUTES.INCOMES} element={<IncomesPage />} />
+          <Route path={ROUTES.INSTALLMENTS} element={<InstallmentsPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
