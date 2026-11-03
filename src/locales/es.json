@@ -9,7 +9,8 @@
     "installments": "Cuotas",
     "login": "Iniciar sesión",
     "register": "Crear cuenta",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "incomes": "Ingresos"
   },
   "auth": {
     "user": "Usuario",
