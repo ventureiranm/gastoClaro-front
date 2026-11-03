@@ -6,6 +6,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
+  INCOMES: '/incomes',
 };
 
 export const TOKEN_STORAGE_KEY = 'gastoclaro.token';
