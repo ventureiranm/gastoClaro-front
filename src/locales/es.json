@@ -6,6 +6,7 @@
     "label": "Navegación principal",
     "skipToContent": "Saltar al contenido",
     "dashboard": "Inicio",
+    "savingsGoals": "Metas de ahorro",
     "installments": "Cuotas",
     "login": "Iniciar sesión",
     "register": "Crear cuenta",
@@ -70,6 +71,52 @@
         "month": "Mes",
         "accumulated": "Ahorro acumulado"
       }
+    }
+  },
+  "savingsGoals": {
+    "title": "Mis metas de ahorro",
+    "fields": {
+      "name": "Nombre",
+      "targetAmount": "Monto objetivo",
+      "savedAmount": "Ahorrado hasta ahora",
+      "deadline": "Fecha límite",
+      "progress": "Avance",
+      "actions": "Acciones"
+    },
+    "list": {
+      "title": "Metas",
+      "caption": "Metas de ahorro, de la más reciente a la más antigua",
+      "loading": "Cargando metas…",
+      "loadError": "No pudimos cargar tus metas de ahorro.",
+      "emptyTitle": "Todavía no tenés metas de ahorro",
+      "emptyDescription": "Creá una y vas a ver tu avance acá.",
+      "emptyAction": "Crear una meta",
+      "noDeadline": "Sin fecha límite",
+      "savedOfTarget": "{{saved}} de {{target}}",
+      "edit": "Editar",
+      "editLabel": "Editar la meta {{name}}",
+      "delete": "Borrar",
+      "deleteLabel": "Borrar la meta {{name}}",
+      "confirmDelete": "¿Borrar la meta {{name}}?",
+      "confirmYes": "Sí, borrar",
+      "confirmNo": "Cancelar"
+    },
+    "form": {
+      "createTitle": "Nueva meta",
+      "editTitle": "Editar meta",
+      "amountHint": "Sin separador de miles y con hasta {{count}} decimales. Por ejemplo: 800000,50",
+      "savedHint": "Si lo dejás vacío vale 0. Para cargar un aporte, editá la meta y sumalo acá.",
+      "deadlineHint": "Opcional.",
+      "create": "Guardar meta",
+      "save": "Guardar cambios",
+      "cancel": "Cancelar edición",
+      "submitting": "Guardando…"
+    },
+    "messages": {
+      "created": "Meta guardada.",
+      "updated": "Meta actualizada.",
+      "deleted": "Meta borrada.",
+      "deleteError": "No pudimos borrar la meta."
     }
   },
   "expenses": {

@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import SavingsGoalsPage from './pages/SavingsGoalsPage';
 import DashboardPage from './pages/DashboardPage';
 import IncomesPage from './pages/IncomesPage';
 import InstallmentsPage from './pages/InstallmentsPage';
@@ -23,6 +24,7 @@ export default function App() {
         {/* Rutas protegidas: sin sesión redirigen al login */}
         <Route element={<ProtectedRoute />}>
           <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+          <Route path={ROUTES.SAVINGS_GOALS} element={<SavingsGoalsPage />} />
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.INCOMES} element={<IncomesPage />} />
           <Route path={ROUTES.INSTALLMENTS} element={<InstallmentsPage />} />
