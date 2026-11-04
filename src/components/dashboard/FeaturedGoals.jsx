@@ -2,19 +2,17 @@ import { useId } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from '../../config/constants';
-import { useSavingsGoals } from '../../hooks/useSavingsGoals';
 import GoalCard from '../savingsGoals/GoalCard';
 
 const FEATURED_COUNT = 3;
 
-// Las metas más recientes, con su ilustración y su avance. Es un adorno del Inicio: si las metas no
-// cargan, no se muestra nada (en Metas de ahorro está el aviso de error completo).
-export default function FeaturedGoals() {
+// Las metas más recientes, con su foto y su avance. Es un adorno del Inicio: si las metas no cargan,
+// no se muestra nada (en Metas de ahorro está el aviso de error completo).
+export default function FeaturedGoals({ goals }) {
   const { t } = useTranslation();
   const titleId = useId();
-  const { goals, isLoading, error } = useSavingsGoals();
 
-  if (isLoading || error || !goals || goals.length === 0) return null;
+  if (!goals || goals.length === 0) return null;
 
   return (
     <section aria-labelledby={titleId} className="featured-goals">

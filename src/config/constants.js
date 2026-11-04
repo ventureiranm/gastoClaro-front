@@ -65,6 +65,11 @@ export const AMOUNT_MAX_DECIMALS = 2;
 // cerca del monto.
 export const BUDGET_WARNING_RATIO = 0.8;
 
+// Consejos de Inicio: desde qué parte de los ingresos el consumo se considera alto, y desde cuál el
+// ahorro se considera bueno.
+export const HIGH_CONSUMPTION_RATIO = 0.8;
+export const GOOD_SAVINGS_RATIO = 0.1;
+
 // Códigos de canal de compra que acepta la API. Las etiquetas visibles están en es.json.
 export const PURCHASE_CHANNELS = ['presencial', 'delivery', 'retiro'];
 
@@ -75,11 +80,11 @@ export const ITEM_QUANTITY_MIN = 1;
 
 // Colores de los gráficos. Son valores de la paleta (ver styles/tokens.css); se usan acá porque los
 // atributos de un SVG no leen variables de CSS en todos los navegadores.
-export const CHART_COLORS = ['#1f5b4a', '#d99a32', '#3f7d68', '#789889', '#b86b2b', '#a9c4b7'];
+export const CHART_COLORS = ['#2fae7a', '#ff9f5a', '#3b82f6', '#f5c542', '#e5648a', '#7c5ce6'];
 export const CHART_SERIES_COLORS = {
-  income: '#789889',
-  consumption: '#d99a32',
-  savings: '#1f5b4a',
+  income: '#2fae7a',
+  consumption: '#ff9f5a',
+  savings: '#3b82f6',
 };
 
 // Foto de la pantalla de ingreso (se sirve desde public/images). Si falta, se ve la ilustración.

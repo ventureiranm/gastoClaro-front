@@ -3,8 +3,9 @@
 Estilo natural y cálido: **verde bosque, beige, tarjetas blancas con esquinas redondeadas y
 sombras suaves.** La profundidad la dan una sombra tenue (`--shadow-card`) y bordes claros; los
 bordes oscuros quedan solo en los controles (campos y botones secundarios), para que se vean sobre
-el fondo (contraste de 3:1). Nada de sombras duras ni de degradados llamativos: los únicos
-degradados son los velos verdes que dejan leer el texto sobre una foto.
+el fondo (contraste de 3:1). Los degradados son suaves: un tinte verde o durazno en las tarjetas de resumen y en las
+metas, y los velos verdes que dejan leer el texto sobre una foto. Nada de sombras duras ni de
+degradados llamativos.
 
 Los estilos son CSS plano, sin librerías:
 
@@ -17,8 +18,8 @@ Los estilos son CSS plano, sin librerías:
    primero y se verifica el contraste (4.5:1 para texto). Excepción: los colores de las
    ilustraciones SVG y de los gráficos (`CHART_COLORS`, `GoalArt`, `Logo`), que son parte de la
    imagen y usan los mismos valores de la paleta.
-2. **Sombra suave y nada más.** Solo `--shadow-card`; un velo verde translúcido sobre una foto es el
-   único degradado permitido.
+2. **Sombra suave y degradados tenues.** Solo `--shadow-card`; los degradados usan los tintes de la
+   paleta (`--color-tint-green`, `--color-tint-peach`) y nunca compiten con el texto.
 3. **Monoespaciada** (`--font-mono`) para montos, fechas, cantidades y rutas de API. En tablas,
    `td.numeric` y `<time>` ya la aplican; en otro lugar, la clase `.mono`.
 4. Montos **alineados a la derecha** (`.numeric`).
@@ -27,8 +28,8 @@ Los estilos son CSS plano, sin librerías:
    sube solo a 44px.
 7. El foco se ve siempre (`:focus-visible`, 3px). No se le quita el `outline` a nada interactivo.
 8. El color nunca es la única señal: un error lleva texto, un ítem activo cambia también el peso.
-9. Animación solo en transiciones breves de hover y foco; con `prefers-reduced-motion` no hay
-   ninguna.
+9. Animación solo en transiciones breves de hover y foco y en la entrada de las barras de los
+   gráficos (700ms); con `prefers-reduced-motion` no hay ninguna.
 10. Pantallas nuevas: se arman con los componentes de abajo y tienen que funcionar en 390px sin
     desplazamiento horizontal.
 
@@ -53,9 +54,10 @@ Los estilos son CSS plano, sin librerías:
 | `--color-error` / `--color-error-bg`          | `#B42318` / `#FDEAE8`         | Errores                                   |
 | `--color-sidebar-*`                           | verde oscuro `#174738`        | Barra lateral y saludo de Inicio          |
 
-Tipografía: **Libre Franklin** (`--font-sans`) para todo el texto e **IBM Plex Mono**
-(`--font-mono`) para los números. Vienen de los paquetes `@fontsource/libre-franklin` y
-`@fontsource/ibm-plex-mono`, que `src/main.jsx` importa solo con los pesos que se usan, así que
+Tipografía: **Fraunces** (`--font-display`) para los títulos (h1, h2), el saludo y la marca;
+**Libre Franklin** (`--font-sans`) para todo el texto e **IBM Plex Mono** (`--font-mono`) para los
+números. Vienen de los paquetes `@fontsource/fraunces`,
+`@fontsource/libre-franklin` y `@fontsource/ibm-plex-mono`, que `src/main.jsx` importa solo con los pesos que se usan, así que
 no dependen de internet.
 
 | Token                 | Tamaño | Uso                                          |

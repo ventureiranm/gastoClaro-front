@@ -39,10 +39,10 @@ const SCENES = {
   ),
 };
 
-export default function GoalArt({ scene }) {
+export default function GoalArt({ scene, className = 'goal-art' }) {
   return (
     <svg
-      className="goal-art"
+      className={className}
       viewBox="0 0 200 110"
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"

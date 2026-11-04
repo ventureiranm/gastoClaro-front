@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CHART_SERIES_COLORS } from '../../config/constants';
 import { formatAmount, formatCompactAmount, formatMonthShort } from '../../utils/format';
@@ -51,6 +52,7 @@ function describe(months, key) {
 // Ahorro de cada mes (últimos 12), en barras. El valor negativo se dibuja en cero.
 export function MonthlySavingsBars({ months }) {
   const { t } = useTranslation();
+  const gradientId = useId();
   const shown = months.slice(-MAX_MONTHS);
   const max = Math.max(1, ...shown.map((m) => m.savings));
   const slot = PLOT_WIDTH / shown.length;
@@ -63,6 +65,12 @@ export function MonthlySavingsBars({ months }) {
         role="img"
         aria-label={`${t('savings.charts.monthly')}. ${describe(shown, 'savings')}`}
       >
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={CHART_SERIES_COLORS.savings} />
+            <stop offset="1" stopColor={CHART_SERIES_COLORS.savings} stopOpacity="0.5" />
+          </linearGradient>
+        </defs>
         <Axes months={shown} max={max} />
         {shown.map((month, index) => {
           const height = (Math.max(month.savings, 0) / max) * PLOT_HEIGHT;
@@ -73,9 +81,12 @@ export function MonthlySavingsBars({ months }) {
               y={MARGIN.top + PLOT_HEIGHT - height}
               width={width}
               height={height}
-              rx="4"
-              fill={CHART_SERIES_COLORS.savings}
-            />
+              rx="7"
+              fill={`url(#${gradientId})`}
+              className="chart-bar"
+            >
+              <title>{`${formatMonthShort(month.month)}: ${formatAmount(month.savings)}`}</title>
+            </rect>
           );
         })}
       </svg>
@@ -86,6 +97,7 @@ export function MonthlySavingsBars({ months }) {
 // Ahorro acumulado mes a mes (últimos 12), en línea con área.
 export function AccumulatedLine({ months }) {
   const { t } = useTranslation();
+  const gradientId = useId();
   const shown = months.slice(-MAX_MONTHS);
   const max = Math.max(1, ...shown.map((m) => m.accumulated));
   const slot = PLOT_WIDTH / shown.length;
@@ -104,8 +116,14 @@ export function AccumulatedLine({ months }) {
         role="img"
         aria-label={`${t('savings.charts.accumulated')}. ${describe(shown, 'accumulated')}`}
       >
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={CHART_SERIES_COLORS.savings} stopOpacity="0.45" />
+            <stop offset="1" stopColor={CHART_SERIES_COLORS.savings} stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
         <Axes months={shown} max={max} />
-        <polygon points={area} fill={CHART_SERIES_COLORS.income} opacity="0.25" />
+        <polygon points={area} fill={`url(#${gradientId})`} />
         <polyline
           points={line}
           fill="none"
