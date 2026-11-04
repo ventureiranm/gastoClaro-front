@@ -459,5 +459,9 @@
     "forbidden": "No tenés permiso para hacer esto.",
     "notFound": "Lo que buscás no existe o ya no está disponible.",
     "validation": "Revisá los datos ingresados."
+  },
+  "brand": {
+    "tagline": "Tu dinero, en orden.",
+    "motto": "Pequeños hábitos, grandes logros."
   }
 }

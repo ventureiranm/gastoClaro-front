@@ -6,6 +6,7 @@ import { useForm } from '../hooks/useForm';
 import { useSession } from '../hooks/useSession';
 import { useToast } from '../hooks/useToast';
 import { validateLogin } from '../validation/auth';
+import AuthLayout from '../components/ui/AuthLayout';
 import Button from '../components/ui/Button';
 import FormAlert from '../components/ui/FormAlert';
 import FormField from '../components/ui/FormField';
@@ -43,52 +44,54 @@ export default function LoginPage() {
 
   // La redirección después de un login exitoso la hace GuestRoute.
   return (
-    <section className="page page--narrow">
-      <PageHeader eyebrow={t('app.name')} title={t('login.title')} />
-      <FormAlert
-        ref={expiredRef}
-        tone="warning"
-        messages={sessionExpired ? t('auth.sessionExpired') : null}
-      />
-      <form ref={formRef} className="form" onSubmit={handleSubmit} noValidate>
+    <AuthLayout>
+      <section className="page page--narrow">
+        <PageHeader eyebrow={t('app.name')} title={t('login.title')} />
         <FormAlert
-          ref={alertRef}
-          messages={formErrors}
-          onRetry={isNetworkError ? retry : undefined}
+          ref={expiredRef}
+          tone="warning"
+          messages={sessionExpired ? t('auth.sessionExpired') : null}
         />
-        <FormField
-          label={t('auth.user')}
-          name="user"
-          autoComplete="username"
-          value={values.user}
-          onChange={handleChange}
-          errors={fieldErrors.user}
-          required
+        <form ref={formRef} className="form" onSubmit={handleSubmit} noValidate>
+          <FormAlert
+            ref={alertRef}
+            messages={formErrors}
+            onRetry={isNetworkError ? retry : undefined}
+          />
+          <FormField
+            label={t('auth.user')}
+            name="user"
+            autoComplete="username"
+            value={values.user}
+            onChange={handleChange}
+            errors={fieldErrors.user}
+            required
+          />
+          <FormField
+            label={t('auth.password')}
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            value={values.password}
+            onChange={handleChange}
+            errors={fieldErrors.password}
+            required
+          />
+          <Button type="submit" isLoading={isSubmitting}>
+            {t('login.submit')}
+          </Button>
+          {isSubmitting && <LoadingIndicator label={t('login.submitting')} />}
+        </form>
+        <p>
+          {t('login.noAccount')} <Link to={ROUTES.REGISTER}>{t('login.goToRegister')}</Link>
+        </p>
+        <Toast
+          toast={notice.toast}
+          onClose={notice.close}
+          onPause={notice.pause}
+          onResume={notice.resume}
         />
-        <FormField
-          label={t('auth.password')}
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          value={values.password}
-          onChange={handleChange}
-          errors={fieldErrors.password}
-          required
-        />
-        <Button type="submit" isLoading={isSubmitting}>
-          {t('login.submit')}
-        </Button>
-        {isSubmitting && <LoadingIndicator label={t('login.submitting')} />}
-      </form>
-      <p>
-        {t('login.noAccount')} <Link to={ROUTES.REGISTER}>{t('login.goToRegister')}</Link>
-      </p>
-      <Toast
-        toast={notice.toast}
-        onClose={notice.close}
-        onPause={notice.pause}
-        onResume={notice.resume}
-      />
-    </section>
+      </section>
+    </AuthLayout>
   );
 }
