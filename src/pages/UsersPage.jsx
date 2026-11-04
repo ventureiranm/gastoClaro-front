@@ -13,7 +13,6 @@ import PageHeader from '../components/ui/PageHeader';
 export default function UsersPage() {
   const { t } = useTranslation();
   const { user } = useSession();
-  const { data, isLoading, error, retry } = useRemoteData(listUsers);
 
   if (!user?.admin) {
     return (
@@ -23,6 +22,14 @@ export default function UsersPage() {
       </section>
     );
   }
+
+  return <UsersList />;
+}
+
+// El pedido vive en un componente aparte para que solo se haga cuando la persona es administradora.
+function UsersList() {
+  const { t } = useTranslation();
+  const { data, isLoading, error, retry } = useRemoteData(listUsers);
 
   function renderList() {
     if (isLoading) return <LoadingIndicator label={t('users.loading')} />;
