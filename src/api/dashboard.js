@@ -5,7 +5,7 @@ const ENDPOINTS = {
 };
 
 // Hacia adentro de la app el resumen es { period, income, consumption, savings,
-// savingsGoalPercentage, consumptionByCategory: [{ category, total }], monthlySavings: [{ month,
+// savingsGoalPercentage, consumptionByCategory: [{ category, total, planned }], monthlySavings: [{ month,
 // income, consumption, savings, accumulated }] }. Los montos llegan como texto ("450000.0") y acá
 // pasan a número. El listado de ingresos del mes (`incomes`) no se usa en el panel: no se pasa.
 function normalizeDashboard(raw) {
@@ -15,9 +15,10 @@ function normalizeDashboard(raw) {
     consumption: Number(raw.consumption),
     savings: Number(raw.savings),
     savingsGoalPercentage: raw.savings_goal_percentage,
-    consumptionByCategory: raw.consumption_by_category.map(({ category, total }) => ({
+    consumptionByCategory: raw.consumption_by_category.map(({ category, total, planned }) => ({
       category,
       total: Number(total),
+      planned: Number(planned ?? 0),
     })),
     monthlySavings: raw.monthly_savings.map((month) => ({
       month: month.month,

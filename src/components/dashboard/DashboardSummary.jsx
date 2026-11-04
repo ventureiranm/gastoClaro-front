@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatAmount, formatPercentage, formatPeriod } from '../../utils/format';
+import BudgetProgress from './BudgetProgress';
 import EmptyState from '../ui/EmptyState';
 
 // Un mes tuvo movimientos si entró o salió plata.
@@ -42,7 +43,9 @@ function SummaryTotals({ summary }) {
 function CategoryBreakdown({ summary, period }) {
   const { t } = useTranslation();
   const titleId = useId();
-  const categories = summary.consumptionByCategory.toSorted((a, b) => b.total - a.total);
+  const categories = summary.consumptionByCategory.toSorted(
+    (a, b) => b.total - a.total || b.planned - a.planned,
+  );
 
   return (
     <section aria-labelledby={titleId} className="panel">
@@ -59,19 +62,29 @@ function CategoryBreakdown({ summary, period }) {
                   {t('expenses.fields.amount')}
                 </th>
                 <th scope="col" className="numeric">
+                  {t('dashboard.summary.byCategory.planned')}
+                </th>
+                <th scope="col">{t('dashboard.summary.byCategory.progress')}</th>
+                <th scope="col" className="numeric">
                   {t('dashboard.summary.byCategory.share')}
                 </th>
               </tr>
             </thead>
             <tbody>
-              {categories.map(({ category, total }) => (
+              {categories.map(({ category, total, planned }) => (
                 <tr key={category}>
                   <td data-label={t('expenses.fields.category')}>{category}</td>
                   <td data-label={t('expenses.fields.amount')} className="numeric">
                     {formatAmount(total)}
                   </td>
+                  <td data-label={t('dashboard.summary.byCategory.planned')} className="numeric">
+                    {formatAmount(planned)}
+                  </td>
+                  <td data-label={t('dashboard.summary.byCategory.progress')}>
+                    <BudgetProgress spent={total} planned={planned} />
+                  </td>
                   <td data-label={t('dashboard.summary.byCategory.share')} className="numeric">
-                    {formatPercentage(total / summary.consumption)}
+                    {formatPercentage(summary.consumption > 0 ? total / summary.consumption : 0)}
                   </td>
                 </tr>
               ))}

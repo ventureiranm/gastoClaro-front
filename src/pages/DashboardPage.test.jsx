@@ -489,8 +489,8 @@ function activeDashboard() {
     savings: '411899.0',
     savings_goal_percentage: 10,
     consumption_by_category: [
-      { category: 'Supermercado', total: '13101.0' },
-      { category: 'Limpieza', total: '25000.0' },
+      { category: 'Supermercado', total: '13101.0', planned: '0.0' },
+      { category: 'Limpieza', total: '25000.0', planned: '0.0' },
     ],
     monthly_savings: [
       {
@@ -564,6 +564,50 @@ describe('Resumen del mes', () => {
     expect(current).toHaveTextContent('$ 410.899,00');
 
     expect(fetchCallsTo(fetchMock, 'GET /dashboard')).toHaveLength(1);
+  });
+
+  it('compara el consumo de cada categoría con lo planificado y avisa si se acerca o se pasa', async () => {
+    renderDashboard({
+      'GET /dashboard': jsonResponse(
+        200,
+        apiDashboard({
+          income: '450000.0',
+          consumption: '38000.0',
+          savings: '412000.0',
+          consumption_by_category: [
+            { category: 'Supermercado', total: '20000.0', planned: '40000.0' },
+            { category: 'Limpieza', total: '9000.0', planned: '10000.0' },
+            { category: 'Servicios', total: '5000.0', planned: '4000.0' },
+            { category: 'Varios', total: '4000.0', planned: '0.0' },
+            { category: 'Transporte', total: '0.0', planned: '8000.0' },
+          ],
+        }),
+      ),
+    });
+    await findSummary();
+
+    const byCategory = await screen.findByRole('table', {
+      name: es.dashboard.summary.byCategory.title,
+    });
+    const rows = within(byCategory).getAllByRole('row').slice(1);
+    const status = es.dashboard.summary.byCategory.status;
+
+    // Por consumo, de mayor a menor; la categoría solo planificada queda al final.
+    expect(rows.map((row) => within(row).getAllByRole('cell')[0].textContent)).toEqual([
+      'Supermercado',
+      'Limpieza',
+      'Servicios',
+      'Varios',
+      'Transporte',
+    ]);
+    expect(rows[0]).toHaveTextContent('$ 40.000,00');
+    expect(rows[0]).toHaveTextContent(status.ok);
+    expect(rows[1]).toHaveTextContent(formatPercentage(0.9));
+    expect(rows[1]).toHaveTextContent(status.near);
+    expect(rows[2]).toHaveTextContent(status.over);
+    expect(rows[3]).toHaveTextContent(es.dashboard.summary.byCategory.noPlan);
+    expect(rows[4]).toHaveTextContent('$ 8.000,00');
+    expect(rows[4]).toHaveTextContent(status.ok);
   });
 
   it('si el mes no tuvo movimientos, lo dice en lugar de mostrar todo en cero', async () => {
