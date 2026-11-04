@@ -1060,6 +1060,11 @@ time {
   max-width: 40rem;
 }
 
+/* Subcategoría: va sangrada debajo de su categoría principal. */
+.category-child {
+  padding-left: var(--space-5);
+}
+
 .shopping-list {
   display: grid;
   gap: var(--space-6);

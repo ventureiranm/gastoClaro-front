@@ -18,7 +18,7 @@ import { formatShortPeriod } from '../utils/format';
 import { logError } from '../utils/logger';
 
 const CATEGORIES = [
-  { id: 4, name: 'Electrodomésticos', parent_id: null, tracks_installments: null },
+  { id: 4, name: 'Electrodomésticos', parent_id: null, tracks_installments: true },
   { id: 1, name: 'Supermercado', parent_id: null, tracks_installments: null },
 ];
 
@@ -192,6 +192,41 @@ describe('Listado de compras en cuotas', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: es.installments.title }),
     ).toBeInTheDocument();
+  });
+});
+
+describe('Tarjetas', () => {
+  it('solo ofrece las categorías marcadas como tarjeta para cargar una compra', async () => {
+    renderInstallments({
+      'GET /categories': jsonResponse(200, [
+        ...CATEGORIES,
+        { id: 7, name: 'Visa', parent_id: null, tracks_installments: true },
+      ]),
+    });
+
+    const select = await screen.findByLabelText(es.installments.fields.category);
+    const options = within(select)
+      .getAllByRole('option')
+      .map((option) => option.textContent);
+
+    expect(options).toEqual([
+      es.installments.form.categoryPlaceholder,
+      'Electrodomésticos',
+      'Visa',
+    ]);
+  });
+
+  it('si no hay ninguna tarjeta, lo explica y no deja guardar', async () => {
+    renderInstallments({
+      'GET /categories': jsonResponse(200, [
+        { id: 1, name: 'Supermercado', parent_id: null, tracks_installments: null },
+      ]),
+    });
+
+    const select = await screen.findByLabelText(es.installments.fields.category);
+
+    expect(select).toHaveAccessibleDescription(es.installments.form.noCategories);
+    expect(screen.getByRole('button', { name: es.installments.form.submit })).toBeDisabled();
   });
 });
 

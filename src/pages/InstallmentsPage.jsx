@@ -136,10 +136,15 @@ export default function InstallmentsPage() {
     }
     // La key vuelve a montar el formulario al pasar de alta a edición o de una compra a otra, para
     // que arranque con los datos de la compra elegida.
+    // Las compras en cuotas se cargan en las tarjetas (las categorías marcadas así). Al editar una
+    // compra de otra categoría, esa categoría sigue disponible para no perderla.
+    const cards = categories.categories.filter(
+      ({ id, tracksInstallments }) => tracksInstallments || id === editing?.categoryId,
+    );
     return (
       <InstallmentForm
         key={editing?.id ?? 'new'}
-        categories={categories.categories}
+        categories={cards}
         purchase={editing}
         onSubmit={editing ? handleUpdate : handleCreate}
         onCancel={stopEditing}

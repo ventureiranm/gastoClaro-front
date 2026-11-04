@@ -9,6 +9,7 @@ export const ROUTES = {
   SAVINGS_GOALS: '/savings-goals',
   DASHBOARD: '/dashboard',
   INCOMES: '/incomes',
+  EXPENSES: '/expenses',
   INSTALLMENTS: '/installments',
   CATEGORIES: '/categories',
   SHOPPING_LIST: '/shopping-list',

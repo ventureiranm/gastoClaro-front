@@ -1,9 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { TOAST_TONE } from '../config/constants';
 import { useCategoryManager } from '../hooks/useCategoryManager';
 import { useSession } from '../hooks/useSession';
 import { useToast } from '../hooks/useToast';
 import { requestErrorMessages } from '../utils/errors';
+import { logError } from '../utils/logger';
 import CategoryForm from '../components/categories/CategoryForm';
 import CategoryTable from '../components/categories/CategoryTable';
 import Button from '../components/ui/Button';
@@ -55,6 +57,24 @@ export default function CategoriesPage() {
     notice.show(t('categories.form.updated'));
   }
 
+  // El error se avisa acá y no se propaga: ConfirmButton solo vuelve a mostrar el botón. Si la API
+  // no la borra (tiene gastos, por ejemplo), se muestra su motivo.
+  async function handleDelete(category) {
+    try {
+      await manager.remove(category.id);
+    } catch (error) {
+      logError(error);
+      const reason = error.status === 422 ? error.errors?.[0]?.message : null;
+      notice.show(
+        [...requestErrorMessages(error, 'categories.list.deleteError', t), reason].filter(Boolean),
+        { tone: TOAST_TONE.ERROR },
+      );
+      return;
+    }
+    if (editing?.id === category.id) setEditing(null);
+    notice.show(t('categories.list.deleted'));
+  }
+
   function renderList() {
     if (manager.isLoading) return <LoadingIndicator label={t('categories.list.loading')} />;
     if (manager.error) {
@@ -84,6 +104,7 @@ export default function CategoriesPage() {
         caption={t('categories.list.caption')}
         categories={manager.categories}
         onEdit={setEditing}
+        onDelete={handleDelete}
         editButtonRef={registerEditButton}
       />
     );

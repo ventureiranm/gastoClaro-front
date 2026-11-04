@@ -8,11 +8,11 @@ export function validateCategory({ name }, t) {
 
 // Pasa los valores del formulario (texto) a los tipos que espera la API. Sin categoría padre,
 // parentId es null.
-export function toCategory({ name, parentId }) {
-  return { name, parentId: parentId === '' ? null : Number(parentId) };
+export function toCategory({ name, parentId, tracksInstallments }) {
+  return { name, parentId: parentId === '' ? null : Number(parentId), tracksInstallments };
 }
 
 // Lo inverso: una categoría ya guardada como valores del formulario, para editarla.
-export function toCategoryFormValues({ name, parentId }) {
-  return { name, parentId: parentId === null ? '' : String(parentId) };
+export function toCategoryFormValues({ name, parentId, tracksInstallments }) {
+  return { name, parentId: parentId === null ? '' : String(parentId), tracksInstallments };
 }

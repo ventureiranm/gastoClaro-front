@@ -1,5 +1,10 @@
 import { useCallback } from 'react';
-import { createCategory, listCategoryDetails, updateCategory } from '../api/categories';
+import {
+  createCategory,
+  deleteCategory,
+  listCategoryDetails,
+  updateCategory,
+} from '../api/categories';
 import { useRemoteData } from './useRemoteData';
 
 // Por nombre, como las lista la API.
@@ -39,5 +44,15 @@ export function useCategoryManager() {
     [change],
   );
 
-  return { categories: data, isLoading, error, retry, create, update };
+  // Si la API la borra, sale del listado; si no (tiene gastos, por ejemplo), el error llega a quien
+  // llamó y el listado no cambia.
+  const remove = useCallback(
+    async (id) => {
+      await deleteCategory(id);
+      change((categories) => categories.filter((item) => item.id !== id));
+    },
+    [change],
+  );
+
+  return { categories: data, isLoading, error, retry, create, update, remove };
 }

@@ -14,7 +14,8 @@
     "incomes": "Ingresos",
     "shoppingList": "Gastos fijos",
     "categories": "Categorías",
-    "savings": "Ahorro"
+    "savings": "Ahorro",
+    "expenses": "Consumos"
   },
   "auth": {
     "user": "Usuario",
@@ -225,13 +226,14 @@
       "itemRemoved": "«{{name}}» se va a quitar al guardar.",
       "restoreItem": "Deshacer",
       "restoreItemLabel": "Deshacer: no quitar «{{name}}»"
-    }
+    },
+    "title": "Mis consumos"
   },
   "installments": {
     "title": "Compras en cuotas",
     "fields": {
       "description": "Descripción",
-      "category": "Categoría",
+      "category": "Tarjeta",
       "totalAmount": "Monto total",
       "installmentsCount": "Cantidad de cuotas",
       "firstPeriod": "Primera cuota",
@@ -262,9 +264,9 @@
     "form": {
       "title": "Nueva compra en cuotas",
       "editTitle": "Editar compra en cuotas",
-      "categoryPlaceholder": "Elegí una categoría",
-      "noCategoriesOption": "No hay categorías",
-      "noCategories": "Todavía no hay categorías cargadas, así que no se pueden guardar compras.",
+      "categoryPlaceholder": "Elegí una tarjeta",
+      "noCategoriesOption": "No hay tarjetas",
+      "noCategories": "Todavía no hay tarjetas. Creá una en Categorías y marcala como tarjeta para poder cargar compras en cuotas.",
       "loadingCategories": "Cargando categorías…",
       "categoriesError": "No pudimos cargar las categorías.",
       "amountHint": "Sin separador de miles y con hasta {{count}} decimales. Por ejemplo: 120000,50",
@@ -288,12 +290,14 @@
     "adminOnly": "Solo el administrador puede ver y editar las categorías.",
     "fields": {
       "name": "Nombre",
-      "parent": "Categoría principal"
+      "parent": "Categoría principal",
+      "tracksInstallments": "Es una tarjeta (usa compras en cuotas)",
+      "card": "Tarjeta"
     },
     "list": {
       "title": "Categorías cargadas",
       "caption": "Categorías, por nombre",
-      "note": "Las comparten todos los usuarios: acá van, por ejemplo, alimentos, servicios o tarjetas de crédito.",
+      "note": "Las comparten todos los usuarios: acá van, por ejemplo, alimentos, servicios o tarjetas de crédito, con sus subcategorías (Visa, Mastercard) debajo. Solo se borra una categoría que no tiene gastos, cuotas, gastos fijos ni subcategorías.",
       "loading": "Cargando categorías…",
       "loadError": "No pudimos cargar las categorías.",
       "noParent": "Es principal",
@@ -303,7 +307,15 @@
       "editLabel": "Editar «{{name}}»",
       "emptyTitle": "Todavía no hay categorías",
       "emptyDescription": "Creá una y la vas a poder elegir en tus gastos.",
-      "emptyAction": "Crear una categoría"
+      "emptyAction": "Crear una categoría",
+      "isCard": "Sí",
+      "noCard": "No",
+      "delete": "Borrar",
+      "deleteLabel": "Borrar «{{name}}»",
+      "deleteQuestion": "¿Borrar «{{name}}»?",
+      "deleteConfirm": "Sí, borrar",
+      "deleteError": "No pudimos borrar la categoría.",
+      "deleted": "Categoría borrada."
     },
     "form": {
       "title": "Nueva categoría",
@@ -314,7 +326,8 @@
       "update": "Guardar cambios",
       "submitting": "Guardando…",
       "created": "Categoría guardada.",
-      "updated": "Cambios guardados."
+      "updated": "Cambios guardados.",
+      "tracksInstallmentsHint": "Marcala en tarjetas como Visa o Mastercard: las compras en cuotas se cargan en estas categorías."
     }
   },
   "shoppingList": {
