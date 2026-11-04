@@ -16,7 +16,13 @@
     "categories": "Categorías",
     "savings": "Ahorro",
     "expenses": "Consumos",
-    "users": "Usuarios"
+    "users": "Usuarios",
+    "groups": {
+      "general": "General",
+      "movements": "Movimientos",
+      "planning": "Planificación",
+      "admin": "Administración"
+    }
   },
   "auth": {
     "user": "Usuario",
