@@ -1,67 +1,20 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatAmount, formatDate, formatPercentage } from '../../utils/format';
 import Button from '../ui/Button';
+import ConfirmButton from '../ui/ConfirmButton';
 
 // Listado de metas en el orden en que llegan. `caption` nombra la tabla para lectores de pantalla.
 // Si no entra a lo ancho, cada fila se muestra como tarjeta: `data-label` es el rótulo de cada dato.
-// onEdit(goal) y onDelete(goal) los resuelve quien llama; onDelete devuelve una promesa que no
-// falla (maneja sus propios errores). Borrar pide confirmación en la misma fila.
+// Lo ahorrado y el objetivo van en columnas separadas: juntos en una celda de montos (que no se
+// parte) no entran con montos largos. onEdit(goal) y onDelete(goal) los resuelve quien llama;
+// onDelete se llama recién cuando se confirma el borrado y devuelve una promesa que no falla
+// (maneja sus propios errores).
 export default function SavingsGoalTable({ caption, goals, onEdit, onDelete }) {
   const { t } = useTranslation();
-  const [confirmingId, setConfirmingId] = useState(null);
-  const [deletingId, setDeletingId] = useState(null);
-
-  async function handleDelete(goal) {
-    setDeletingId(goal.id);
-    await onDelete(goal);
-    setDeletingId(null);
-    setConfirmingId(null);
-  }
-
-  function renderActions(goal) {
-    if (confirmingId !== goal.id) {
-      return (
-        <>
-          <Button
-            variant="secondary"
-            aria-label={t('savingsGoals.list.editLabel', { name: goal.name })}
-            onClick={() => onEdit(goal)}
-          >
-            {t('savingsGoals.list.edit')}
-          </Button>{' '}
-          <Button
-            variant="secondary"
-            aria-label={t('savingsGoals.list.deleteLabel', { name: goal.name })}
-            onClick={() => setConfirmingId(goal.id)}
-          >
-            {t('savingsGoals.list.delete')}
-          </Button>
-        </>
-      );
-    }
-    const isDeleting = deletingId === goal.id;
-    return (
-      <>
-        <span>{t('savingsGoals.list.confirmDelete', { name: goal.name })}</span>{' '}
-        <Button variant="secondary" isLoading={isDeleting} onClick={() => handleDelete(goal)}>
-          {t('savingsGoals.list.confirmYes')}
-        </Button>{' '}
-        <Button
-          ref={(button) => button?.focus()}
-          variant="secondary"
-          disabled={isDeleting}
-          onClick={() => setConfirmingId(null)}
-        >
-          {t('savingsGoals.list.confirmNo')}
-        </Button>
-      </>
-    );
-  }
 
   return (
     <div className="table-wrapper">
-      <table className="data-table data-table--stack">
+      <table className="data-table data-table--stack-wide">
         <caption>{caption}</caption>
         <thead>
           <tr>
@@ -69,6 +22,9 @@ export default function SavingsGoalTable({ caption, goals, onEdit, onDelete }) {
             <th scope="col">{t('savingsGoals.fields.deadline')}</th>
             <th scope="col" className="numeric">
               {t('savingsGoals.fields.savedAmount')}
+            </th>
+            <th scope="col" className="numeric">
+              {t('savingsGoals.fields.targetAmount')}
             </th>
             <th scope="col" className="numeric">
               {t('savingsGoals.fields.progress')}
@@ -92,15 +48,33 @@ export default function SavingsGoalTable({ caption, goals, onEdit, onDelete }) {
                 )}
               </td>
               <td data-label={t('savingsGoals.fields.savedAmount')} className="numeric">
-                {t('savingsGoals.list.savedOfTarget', {
-                  saved: formatAmount(goal.savedAmount),
-                  target: formatAmount(goal.targetAmount),
-                })}
+                {formatAmount(goal.savedAmount)}
+              </td>
+              <td data-label={t('savingsGoals.fields.targetAmount')} className="numeric">
+                {formatAmount(goal.targetAmount)}
               </td>
               <td data-label={t('savingsGoals.fields.progress')} className="numeric">
                 {formatPercentage(goal.progressPercentage / 100)}
               </td>
-              <td data-label={t('savingsGoals.fields.actions')}>{renderActions(goal)}</td>
+              <td>
+                <div className="row-actions">
+                  <Button
+                    variant="secondary"
+                    aria-label={t('savingsGoals.list.editLabel', { name: goal.name })}
+                    onClick={() => onEdit(goal)}
+                  >
+                    {t('savingsGoals.list.edit')}
+                  </Button>
+                  <ConfirmButton
+                    aria-label={t('savingsGoals.list.deleteLabel', { name: goal.name })}
+                    question={t('savingsGoals.list.confirmDelete', { name: goal.name })}
+                    confirmLabel={t('savingsGoals.list.confirmYes')}
+                    onConfirm={() => onDelete(goal)}
+                  >
+                    {t('savingsGoals.list.delete')}
+                  </ConfirmButton>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>

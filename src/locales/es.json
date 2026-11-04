@@ -92,14 +92,12 @@
       "emptyDescription": "Creá una y vas a ver tu avance acá.",
       "emptyAction": "Crear una meta",
       "noDeadline": "Sin fecha límite",
-      "savedOfTarget": "{{saved}} de {{target}}",
       "edit": "Editar",
       "editLabel": "Editar la meta {{name}}",
       "delete": "Borrar",
       "deleteLabel": "Borrar la meta {{name}}",
       "confirmDelete": "¿Borrar la meta {{name}}?",
-      "confirmYes": "Sí, borrar",
-      "confirmNo": "Cancelar"
+      "confirmYes": "Sí, borrar"
     },
     "form": {
       "createTitle": "Nueva meta",

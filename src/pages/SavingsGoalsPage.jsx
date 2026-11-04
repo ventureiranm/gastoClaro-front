@@ -25,6 +25,7 @@ export default function SavingsGoalsPage() {
   const { t } = useTranslation();
   const listTitleId = useId();
   const formTitleId = useId();
+  const listTitleRef = useRef(null);
   const nameFieldRef = useRef(null);
   const savingsGoals = useSavingsGoals();
   const confirmation = useToast();
@@ -45,7 +46,9 @@ export default function SavingsGoalsPage() {
     confirmation.show(t('savingsGoals.messages.updated'));
   }
 
-  // No falla: un error se registra y se avisa, y la meta queda en el listado.
+  // No falla: un error se registra y se avisa, y la meta queda en el listado (ConfirmButton
+  // devuelve el foco a Borrar). Si sale bien, la fila desaparece y el foco pasa al título del
+  // listado para no perderse.
   async function handleDelete(goal) {
     try {
       await savingsGoals.destroy(goal.id);
@@ -59,6 +62,7 @@ export default function SavingsGoalsPage() {
     savingsGoals.discard(goal.id);
     if (editingGoal?.id === goal.id) setEditingGoal(null);
     confirmation.show(t('savingsGoals.messages.deleted'));
+    listTitleRef.current?.focus();
   }
 
   function renderList() {
@@ -102,7 +106,9 @@ export default function SavingsGoalsPage() {
       <PageHeader eyebrow={t('nav.savingsGoals')} title={t('savingsGoals.title')} />
       <div className="dashboard">
         <section aria-labelledby={listTitleId} className="panel">
-          <h2 id={listTitleId}>{t('savingsGoals.list.title')}</h2>
+          <h2 id={listTitleId} ref={listTitleRef} tabIndex={-1}>
+            {t('savingsGoals.list.title')}
+          </h2>
           {renderList()}
         </section>
         <section aria-labelledby={formTitleId} className="panel dashboard__form">
