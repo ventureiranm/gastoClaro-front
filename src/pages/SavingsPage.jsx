@@ -6,6 +6,7 @@ import { useRemoteData } from '../hooks/useRemoteData';
 import { requestErrorMessages } from '../utils/errors';
 import { formatPercentage } from '../utils/format';
 import { groupByYear } from '../utils/savings';
+import { AccumulatedLine, MonthlySavingsBars } from '../components/charts/SavingsCharts';
 import SavingsYearTable from '../components/savings/SavingsYearTable';
 import EmptyState from '../components/ui/EmptyState';
 import FormAlert from '../components/ui/FormAlert';
@@ -36,6 +37,16 @@ export default function SavingsPage() {
     }
     return (
       <>
+        <div className="savings-charts">
+          <section className="panel" aria-labelledby="savings-monthly-title">
+            <h2 id="savings-monthly-title">{t('savings.charts.monthly')}</h2>
+            <MonthlySavingsBars months={data.months} />
+          </section>
+          <section className="panel" aria-labelledby="savings-accumulated-title">
+            <h2 id="savings-accumulated-title">{t('savings.charts.accumulated')}</h2>
+            <AccumulatedLine months={data.months} />
+          </section>
+        </div>
         <p className="muted">{t('savings.note')}</p>
         {groupByYear(data.months).map((year) => (
           <SavingsYearTable key={year.year} year={year} />

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import GoalArt from '../ui/GoalArt';
+import { BANNER_PHOTO } from '../../config/constants';
+import GoalPhoto from '../ui/GoalPhoto';
 
 // Cierre de Inicio: un paisaje con el lema de la marca.
 export default function MottoBanner() {
@@ -7,7 +8,7 @@ export default function MottoBanner() {
 
   return (
     <aside className="motto-banner">
-      <GoalArt scene="mountain" />
+      <GoalPhoto scene="mountain" src={BANNER_PHOTO} />
       <p className="motto-banner__text">{t('brand.motto')}</p>
     </aside>
   );

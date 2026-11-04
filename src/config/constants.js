@@ -84,3 +84,12 @@ export const CHART_SERIES_COLORS = {
 
 // Foto de la pantalla de ingreso (se sirve desde public/images). Si falta, se ve la ilustración.
 export const LOGIN_HERO_IMAGE = '/images/login-hero.webp';
+
+// Fotos de las metas y del cierre de Inicio (se sirven desde public/images). Si alguna falta, se ve
+// la ilustración de esa escena.
+export const GOAL_PHOTOS = {
+  mountain: '/images/goals/mountain.webp',
+  sea: '/images/goals/sea.webp',
+  house: '/images/goals/house.webp',
+};
+export const BANNER_PHOTO = '/images/banner.webp';
