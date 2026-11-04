@@ -7,6 +7,7 @@ import { useToast } from '../hooks/useToast';
 import { requestErrorMessages } from '../utils/errors';
 import { logError } from '../utils/logger';
 import InstallmentForm from '../components/installments/InstallmentForm';
+import InstallmentSummary from '../components/installments/InstallmentSummary';
 import InstallmentTable from '../components/installments/InstallmentTable';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
@@ -104,14 +105,20 @@ export default function InstallmentsPage() {
       );
     }
     return (
-      <InstallmentTable
-        caption={t('installments.list.caption')}
-        purchases={installments.purchases}
-        categories={categories.categories ?? []}
-        onEdit={setEditing}
-        onDelete={handleDelete}
-        editButtonRef={registerEditButton}
-      />
+      <>
+        <InstallmentSummary
+          purchases={installments.purchases}
+          categories={categories.categories ?? []}
+        />
+        <InstallmentTable
+          caption={t('installments.list.caption')}
+          purchases={installments.purchases}
+          categories={categories.categories ?? []}
+          onEdit={setEditing}
+          onDelete={handleDelete}
+          editButtonRef={registerEditButton}
+        />
+      </>
     );
   }
 

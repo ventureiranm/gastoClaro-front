@@ -8,7 +8,7 @@ const MAIN_CONTENT_ID = 'main-content';
 
 export default function Layout() {
   const { t } = useTranslation();
-  const { isAuthenticated, logout } = useSession();
+  const { isAuthenticated, user, logout } = useSession();
   const navigate = useNavigate();
 
   // logout() borra la sesión local al instante; el aviso al servidor sigue en segundo plano.
@@ -46,6 +46,11 @@ export default function Layout() {
                   <li>
                     <NavLink to={ROUTES.SAVINGS_GOALS}>{t('nav.savingsGoals')}</NavLink>
                   </li>
+                  {user?.admin && (
+                    <li>
+                      <NavLink to={ROUTES.CATEGORIES}>{t('nav.categories')}</NavLink>
+                    </li>
+                  )}
                   <li className="app-nav__logout">
                     <Button variant="secondary" onClick={handleLogout}>
                       {t('nav.logout')}

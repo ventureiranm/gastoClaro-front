@@ -195,6 +195,32 @@ describe('Listado de compras en cuotas', () => {
   });
 });
 
+describe('Resumen por tarjeta', () => {
+  it('suma lo que se paga por mes en cada categoría, sin contar las compras ya terminadas', async () => {
+    renderInstallments({
+      'GET /installment_purchases': jsonResponse(200, [
+        apiPurchase(),
+        apiPurchase({ id: 2, description: 'Televisor', installment_amount: '50.0' }),
+        apiPurchase({
+          id: 3,
+          description: 'Bicicleta',
+          category_id: 1,
+          installment_amount: '999.0',
+          remaining_installments: 0,
+        }),
+      ]),
+    });
+
+    const summary = await screen.findByRole('table', { name: es.installments.summary.title });
+    const [, row] = within(summary).getAllByRole('row');
+    expect(row).toHaveTextContent('Electrodomésticos');
+    expect(row).toHaveTextContent('2');
+    expect(row).toHaveTextContent('$ 150,00');
+    // La compra ya terminada no suma ni crea su fila.
+    expect(within(summary).getAllByRole('row')).toHaveLength(2);
+  });
+});
+
 describe('Nueva compra en cuotas', () => {
   it('valida antes de enviar, con el límite de cuotas de la configuración', async () => {
     const { user, fetchMock } = renderInstallments();

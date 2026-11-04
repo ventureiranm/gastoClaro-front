@@ -12,7 +12,8 @@
     "register": "Crear cuenta",
     "logout": "Cerrar sesión",
     "incomes": "Ingresos",
-    "shoppingList": "Gastos fijos"
+    "shoppingList": "Gastos fijos",
+    "categories": "Categorías"
   },
   "auth": {
     "user": "Usuario",
@@ -254,6 +255,46 @@
       "update": "Guardar cambios",
       "submitting": "Guardando…",
       "created": "Compra en cuotas guardada.",
+      "updated": "Cambios guardados."
+    },
+    "summary": {
+      "title": "Por tarjeta",
+      "note": "Lo que pagás por mes en cada categoría (por ejemplo, cada tarjeta) por las compras que todavía tienen cuotas.",
+      "purchases": "Compras",
+      "monthly": "Por mes"
+    }
+  },
+  "categories": {
+    "title": "Categorías",
+    "adminOnly": "Solo el administrador puede ver y editar las categorías.",
+    "fields": {
+      "name": "Nombre",
+      "parent": "Categoría principal"
+    },
+    "list": {
+      "title": "Categorías cargadas",
+      "caption": "Categorías, por nombre",
+      "note": "Las comparten todos los usuarios: acá van, por ejemplo, alimentos, servicios o tarjetas de crédito.",
+      "loading": "Cargando categorías…",
+      "loadError": "No pudimos cargar las categorías.",
+      "noParent": "Es principal",
+      "unknownParent": "No disponible",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "editLabel": "Editar «{{name}}»",
+      "emptyTitle": "Todavía no hay categorías",
+      "emptyDescription": "Creá una y la vas a poder elegir en tus gastos.",
+      "emptyAction": "Crear una categoría"
+    },
+    "form": {
+      "title": "Nueva categoría",
+      "editTitle": "Editar categoría",
+      "parentHint": "Opcional. Si la elegís, esta categoría queda dentro de ella.",
+      "noParent": "Ninguna, es principal",
+      "submit": "Guardar categoría",
+      "update": "Guardar cambios",
+      "submitting": "Guardando…",
+      "created": "Categoría guardada.",
       "updated": "Cambios guardados."
     }
   },
