@@ -12,6 +12,7 @@ export const ROUTES = {
   EXPENSES: '/expenses',
   INSTALLMENTS: '/installments',
   CATEGORIES: '/categories',
+  USERS: '/users',
   SHOPPING_LIST: '/shopping-list',
 };
 

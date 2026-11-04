@@ -15,7 +15,8 @@
     "shoppingList": "Gastos fijos",
     "categories": "Categorías",
     "savings": "Ahorro",
-    "expenses": "Consumos"
+    "expenses": "Consumos",
+    "users": "Usuarios"
   },
   "auth": {
     "user": "Usuario",
@@ -328,6 +329,25 @@
       "created": "Categoría guardada.",
       "updated": "Cambios guardados.",
       "tracksInstallmentsHint": "Marcala en tarjetas como Visa o Mastercard: las compras en cuotas se cargan en estas categorías."
+    }
+  },
+  "users": {
+    "title": "Usuarios",
+    "adminOnly": "Solo el administrador puede ver los usuarios.",
+    "note": "Listado de consulta de los usuarios registrados.",
+    "caption": "Usuarios registrados",
+    "loading": "Cargando usuarios…",
+    "loadError": "No pudimos cargar los usuarios.",
+    "emptyTitle": "Todavía no hay usuarios",
+    "noEmail": "Sin correo",
+    "fields": {
+      "user": "Usuario",
+      "email": "Correo electrónico",
+      "role": "Rol"
+    },
+    "roles": {
+      "admin": "Administrador",
+      "user": "Usuario"
     }
   },
   "shoppingList": {
