@@ -23,7 +23,7 @@ describe('Usuarios', () => {
 
     expect(await screen.findByText(es.users.adminOnly)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: es.nav.users })).not.toBeInTheDocument();
-    expect(fetchCallsTo(fetchMock, 'GET /users')).toHaveLength(1);
+    expect(fetchCallsTo(fetchMock, 'GET /users')).toHaveLength(0);
   });
 
   it('el administrador ve cada usuario con su correo y su rol', async () => {
