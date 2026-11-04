@@ -1,7 +1,10 @@
 # Sistema visual
 
-Estilo plano y editorial: **bordes oscuros marcados, esquinas poco redondeadas, nada de sombras ni
-degradados.** Si aparece una sombra o un degradado, se desvió.
+Estilo natural y cálido: **verde bosque, beige, tarjetas blancas con esquinas redondeadas y
+sombras suaves.** La profundidad la dan una sombra tenue (`--shadow-card`) y bordes claros; los
+bordes oscuros quedan solo en los controles (campos y botones secundarios), para que se vean sobre
+el fondo (contraste de 3:1). Nada de sombras duras ni de degradados llamativos: los únicos
+degradados son los velos verdes que dejan leer el texto sobre una foto.
 
 Los estilos son CSS plano, sin librerías:
 
@@ -11,8 +14,11 @@ Los estilos son CSS plano, sin librerías:
 ## Reglas
 
 1. **Ningún color escrito a mano** fuera de `tokens.css`. Si hace falta uno nuevo, se agrega ahí
-   primero y se verifica el contraste (4.5:1 para texto).
-2. **Nada de sombras ni degradados.** La profundidad la dan los bordes.
+   primero y se verifica el contraste (4.5:1 para texto). Excepción: los colores de las
+   ilustraciones SVG y de los gráficos (`CHART_COLORS`, `GoalArt`, `Logo`), que son parte de la
+   imagen y usan los mismos valores de la paleta.
+2. **Sombra suave y nada más.** Solo `--shadow-card`; un velo verde translúcido sobre una foto es el
+   único degradado permitido.
 3. **Monoespaciada** (`--font-mono`) para montos, fechas, cantidades y rutas de API. En tablas,
    `td.numeric` y `<time>` ya la aplican; en otro lugar, la clase `.mono`.
 4. Montos **alineados a la derecha** (`.numeric`).
@@ -28,20 +34,24 @@ Los estilos son CSS plano, sin librerías:
 
 ## Tokens
 
-| Token                                         | Valor                 | Uso                                  |
-| --------------------------------------------- | --------------------- | ------------------------------------ |
-| `--color-text`                                | `#2B2B2B`             | Texto principal                      |
-| `--color-text-muted`                          | `#5E5E5A`             | Texto secundario                     |
-| `--color-primary`                             | `#2F4F4A`             | Botones, ítem activo, enlaces, foco  |
-| `--color-primary-hover`                       | `#1C302C`             | Hover del verde                      |
-| `--color-border`                              | `#2B2B2B`             | Bordes con identidad propia          |
-| `--color-border-soft`                         | `#CFCFC8`             | Separadores suaves, filas de tabla   |
-| `--color-fill`                                | `#E8E8E3`             | Relleno neutro, hover, deshabilitado |
-| `--color-subdued`                             | `#F4F4F1`             | Barra lateral, código, estado vacío  |
-| `--color-bg`                                  | `#EFEFEA`             | Fondo de la aplicación               |
-| `--color-surface`                             | `#FFFFFF`             | Tarjetas y paneles                   |
-| `--color-warning-bg` / `--color-warning-text` | `#FBF1DD` / `#6B4F1D` | Avisos                               |
-| `--color-error`                               | `#8A3A32`             | Errores                              |
+| Token                                         | Valor                         | Uso                                       |
+| --------------------------------------------- | ----------------------------- | ----------------------------------------- |
+| `--color-text`                                | `#202923`                     | Texto principal                           |
+| `--color-text-muted`                          | `#59665F`                     | Texto secundario                          |
+| `--color-primary`                             | `#1F5B4A`                     | Botones, ítem activo, enlaces, foco       |
+| `--color-primary-hover`                       | `#174738`                     | Hover del verde                           |
+| `--color-border` / `--color-border-soft`      | `#E3E5DF`                     | Bordes de tarjetas y separadores de filas |
+| `--color-border-control`                      | `#6E8277`                     | Borde de campos y botones secundarios     |
+| `--color-fill`                                | `#EAE9E1`                     | Relleno neutro, hover, deshabilitado      |
+| `--color-subdued`                             | `#F1F4EE`                     | Código, estado vacío                      |
+| `--color-bg`                                  | `#F5F3ED`                     | Fondo de la aplicación                    |
+| `--color-surface`                             | `#FFFFFF`                     | Tarjetas y paneles                        |
+| `--color-accent`                              | `#D99A32`                     | Dorado: detalles, consejo, lema           |
+| `--color-green-soft` / `-mid` / `-sage`       | `#DCEBE2` `#3F7D68` `#789889` | Verdes de apoyo                           |
+| `--color-success` / `--color-success-bg`      | `#247A4B` / `#E8F4EC`         | Estados correctos                         |
+| `--color-warning-bg` / `--color-warning-text` | `#FFF2D8` / `#8A5700`         | Avisos                                    |
+| `--color-error` / `--color-error-bg`          | `#B42318` / `#FDEAE8`         | Errores                                   |
+| `--color-sidebar-*`                           | verde oscuro `#174738`        | Barra lateral y saludo de Inicio          |
 
 Tipografía: **Libre Franklin** (`--font-sans`) para todo el texto e **IBM Plex Mono**
 (`--font-mono`) para los números. Vienen de los paquetes `@fontsource/libre-franklin` y
@@ -58,9 +68,13 @@ no dependen de internet.
 | `--font-size-title`   | 22px   | Título de pantalla (h1)                      |
 | `--font-size-figure`  | 28px   | Número de las tarjetas de resumen            |
 
-Formas: `--radius-control` 6px (botones, campos, etiquetas), `--radius-card` 8px (tarjetas y
-paneles), `--radius-pill` 999px (solo píldoras de pestañas). `--border-width` 1.5px en elementos con
-identidad propia y `--border-width-thin` 1px en separadores de filas.
+Formas: `--radius-control` 10px (botones, campos, etiquetas), `--radius-card` 16px (tarjetas y
+paneles), `--radius-pill` 999px (píldoras y barras de avance). `--border-width` 1px. `--shadow-card`
+para la sombra suave de tarjetas.
+
+Imágenes: la foto del ingreso está en `public/images/login-hero.webp`; las de las metas y del cierre
+de Inicio van en `public/images/goals/` y `public/images/banner.webp` (rutas en
+`src/config/constants.js`). Si falta alguna, se muestra su ilustración SVG. Formato WebP, livianas.
 
 ## Componentes
 
@@ -83,7 +97,7 @@ Clases para lo que no tiene componente:
 | Clase                                 | Qué es                                                                                          |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `.page` / `.page--narrow`             | Contenedor de pantalla; `--narrow` es una tarjeta centrada.                                     |
-| `.panel`                              | Tarjeta o panel: blanco, borde oscuro, radio 8px.                                               |
+| `.panel`                              | Tarjeta o panel: blanco, borde claro, radio 16px y sombra suave.                                |
 | `.eyebrow`                            | Línea chica en versales.                                                                        |
 | `.data-table`                         | Tabla: encabezado en versales, filas con línea de 1px.                                          |
 | `.data-table--stack` / `--stack-wide` | Tabla que se apila en tarjetas cuando no entra (ver abajo).                                     |
