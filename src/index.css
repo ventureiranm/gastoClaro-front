@@ -1682,3 +1682,47 @@ time {
   line-height: var(--line-height-tight);
   color: var(--color-on-primary);
 }
+
+/* ---------- Metas, ahorro y cuotas ---------- */
+
+.page-motto {
+  margin: calc(var(--space-2) * -1) 0 var(--space-5);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-green-mid);
+}
+
+.goal-cards--page {
+  margin-bottom: var(--space-6);
+}
+
+.savings-charts {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .savings-charts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.notice {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-5);
+  color: var(--color-primary);
+  background: var(--color-green-soft);
+  border-radius: var(--radius-pill);
+}
+
+.goal-photo {
+  display: block;
+  width: 100%;
+  height: 8rem;
+  object-fit: cover;
+}
+
+.motto-banner .goal-photo {
+  height: 9rem;
+}

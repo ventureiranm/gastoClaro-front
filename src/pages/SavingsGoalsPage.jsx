@@ -6,6 +6,7 @@ import { useToast } from '../hooks/useToast';
 import { statusMessage } from '../utils/errors';
 import { logError } from '../utils/logger';
 import SavingsGoalForm from '../components/savingsGoals/SavingsGoalForm';
+import GoalCard from '../components/savingsGoals/GoalCard';
 import SavingsGoalTable from '../components/savingsGoals/SavingsGoalTable';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
@@ -104,6 +105,14 @@ export default function SavingsGoalsPage() {
   return (
     <section className="page">
       <PageHeader eyebrow={t('nav.savingsGoals')} title={t('savingsGoals.title')} />
+      <p className="page-motto">{t('brand.motto')}</p>
+      {savingsGoals.goals?.length > 0 && (
+        <ul className="goal-cards goal-cards--page">
+          {savingsGoals.goals.map((goal) => (
+            <GoalCard key={goal.id} goal={goal} />
+          ))}
+        </ul>
+      )}
       <div className="dashboard">
         <section aria-labelledby={listTitleId} className="panel">
           <h2 id={listTitleId} ref={listTitleRef} tabIndex={-1}>

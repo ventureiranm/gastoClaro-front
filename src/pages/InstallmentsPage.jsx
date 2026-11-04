@@ -157,6 +157,7 @@ export default function InstallmentsPage() {
   return (
     <section className="page">
       <PageHeader eyebrow={t('nav.installments')} title={t('installments.title')} />
+      <p className="notice">{t('installments.notIncluded')}</p>
       <div className="installments">
         <section aria-labelledby={listTitleId} className="panel">
           <h2 id={listTitleId} ref={listTitleRef} tabIndex={-1}>
