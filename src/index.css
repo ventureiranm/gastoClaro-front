@@ -1016,6 +1016,20 @@ time {
   max-width: 40rem;
 }
 
+.shopping-list {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.shopping-list__form {
+  max-width: 40rem;
+}
+
+.shopping-list__note {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-small);
+}
+
 .installments__note {
   margin-bottom: var(--space-4);
   font-size: var(--font-size-small);

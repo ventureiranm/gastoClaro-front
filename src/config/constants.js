@@ -9,6 +9,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   INCOMES: '/incomes',
   INSTALLMENTS: '/installments',
+  SHOPPING_LIST: '/shopping-list',
 };
 
 export const TOKEN_STORAGE_KEY = 'gastoclaro.token';

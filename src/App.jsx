@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SavingsGoalsPage from './pages/SavingsGoalsPage';
+import ShoppingListPage from './pages/ShoppingListPage';
 import DashboardPage from './pages/DashboardPage';
 import IncomesPage from './pages/IncomesPage';
 import InstallmentsPage from './pages/InstallmentsPage';
@@ -28,6 +29,7 @@ export default function App() {
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.INCOMES} element={<IncomesPage />} />
           <Route path={ROUTES.INSTALLMENTS} element={<InstallmentsPage />} />
+          <Route path={ROUTES.SHOPPING_LIST} element={<ShoppingListPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
