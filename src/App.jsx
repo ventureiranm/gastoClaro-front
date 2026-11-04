@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SavingsGoalsPage from './pages/SavingsGoalsPage';
+import UsersPage from './pages/UsersPage';
 import SavingsPage from './pages/SavingsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import ShoppingListPage from './pages/ShoppingListPage';
@@ -34,6 +35,7 @@ export default function App() {
           <Route path={ROUTES.INCOMES} element={<IncomesPage />} />
           <Route path={ROUTES.INSTALLMENTS} element={<InstallmentsPage />} />
           <Route path={ROUTES.CATEGORIES} element={<CategoriesPage />} />
+          <Route path={ROUTES.USERS} element={<UsersPage />} />
           <Route path={ROUTES.SHOPPING_LIST} element={<ShoppingListPage />} />
         </Route>
 

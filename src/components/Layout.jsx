@@ -57,6 +57,11 @@ export default function Layout() {
                       <NavLink to={ROUTES.CATEGORIES}>{t('nav.categories')}</NavLink>
                     </li>
                   )}
+                  {user?.admin && (
+                    <li>
+                      <NavLink to={ROUTES.USERS}>{t('nav.users')}</NavLink>
+                    </li>
+                  )}
                   <li className="app-nav__logout">
                     <Button variant="secondary" onClick={handleLogout}>
                       {t('nav.logout')}
