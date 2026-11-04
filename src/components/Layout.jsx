@@ -26,6 +26,7 @@ const NAV_GROUPS = [
     items: [
       { route: 'SAVINGS', label: 'savings', icon: 'savings' },
       { route: 'SAVINGS_GOALS', label: 'savingsGoals', icon: 'goals' },
+      { route: 'STATISTICS', label: 'statistics', icon: 'statistics' },
       { route: 'CATEGORIES', label: 'categories', icon: 'categories', admin: true },
     ],
   },

@@ -19,7 +19,12 @@ export default function MonthlyChart({ months }) {
   const plotHeight = HEIGHT - MARGIN.top - MARGIN.bottom;
   const max = Math.max(1, ...months.flatMap((m) => SERIES.map((key) => m[key])));
   const groupWidth = plotWidth / months.length;
-  const clusterWidth = SERIES.length * BAR_WIDTH + (SERIES.length - 1) * BAR_GAP;
+  // Las barras se achican si hay muchos meses (un año entero), para que no se pisen.
+  const barWidth = Math.min(
+    BAR_WIDTH,
+    Math.max(4, (groupWidth * 0.8 - 2 * BAR_GAP) / SERIES.length),
+  );
+  const clusterWidth = SERIES.length * barWidth + (SERIES.length - 1) * BAR_GAP;
   const ticks = [0, 0.5, 1];
   const description = months
     .map(
@@ -69,9 +74,9 @@ export default function MonthlyChart({ months }) {
                 return (
                   <rect
                     key={key}
-                    x={start + i * (BAR_WIDTH + BAR_GAP)}
+                    x={start + i * (barWidth + BAR_GAP)}
                     y={MARGIN.top + plotHeight - height}
-                    width={BAR_WIDTH}
+                    width={barWidth}
                     height={height}
                     rx="6"
                     fill={`url(#${gradientId}-${key})`}

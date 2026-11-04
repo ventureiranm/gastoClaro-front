@@ -1974,6 +1974,11 @@ time {
   background: var(--color-tint-peach);
 }
 
+.title-icon--pink {
+  color: var(--color-pink);
+  background: #fde7ee;
+}
+
 .title-icon--violet {
   color: var(--color-violet);
   background: #ece8fd;
@@ -2220,4 +2225,168 @@ time {
   font-size: var(--font-size-small);
   font-style: italic;
   color: var(--color-violet);
+}
+
+/* ---------- Detalle de categoría, estadísticas y filtro de gastos fijos ---------- */
+
+.comparison-filter,
+.shopping-list__filter,
+.statistics-filters {
+  max-width: 18rem;
+  margin-bottom: var(--space-4);
+}
+
+.statistics-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  max-width: none;
+}
+
+.statistics-filters .form-field {
+  min-width: 12rem;
+}
+
+.comparison-totals {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.comparison-progress {
+  max-width: 28rem;
+  margin-bottom: var(--space-4);
+}
+
+.status-chip {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding: 2px var(--space-3);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-pill);
+}
+
+.status-chip--bought {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.status-chip--unplanned,
+.status-chip--over {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.status-chip--not_bought {
+  color: var(--color-text-muted);
+  background: var(--color-fill);
+}
+
+.rankings,
+.statistics-grid {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+
+@media (min-width: 64rem) {
+  .rankings {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .statistics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.ranking__list,
+.breakdown,
+.breakdown__subs,
+.vendor-list {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ranking__top,
+.breakdown__top,
+.vendor-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ranking__track,
+.share {
+  height: 10px;
+  margin-top: var(--space-1);
+  overflow: hidden;
+  background: var(--color-fill);
+  border-radius: var(--radius-pill);
+}
+
+.ranking__fill,
+.share__fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 600ms ease-out;
+}
+
+.ranking__fill--orange {
+  background: linear-gradient(90deg, #ffc08a, var(--color-orange));
+}
+
+.ranking__fill--blue {
+  background: linear-gradient(90deg, #8db4fb, var(--color-blue));
+}
+
+.ranking__fill--pink {
+  background: linear-gradient(90deg, #f2a6bd, var(--color-pink));
+}
+
+.share__fill {
+  background: linear-gradient(90deg, var(--color-emerald), var(--color-blue));
+}
+
+.breakdown__subs {
+  padding-left: var(--space-6);
+  margin-top: var(--space-2);
+}
+
+.breakdown__subs li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+}
+
+.unplanned-total {
+  font-size: 1.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ranking__fill,
+  .share__fill {
+    transition: none;
+  }
+}
+
+.statistics-chart .monthly-chart svg {
+  max-width: none;
+}
+
+.vendor-list + .table-wrapper,
+.unplanned-total + h4 {
+  margin-top: 1.25rem;
+}
+.vendor-list {
+  margin-bottom: 1.25rem;
 }

@@ -15,7 +15,9 @@ describe('resumen del panel', () => {
           incomes: [
             { id: 1, user: { id: 1, user: 'nico' }, amount: '450000.0', date: '2026-09-01' },
           ],
-          consumption_by_category: [{ category: 'Limpieza', total: '25000.0', planned: '30000.0' }],
+          consumption_by_category: [
+            { category_id: 2, category: 'Limpieza', total: '25000.0', planned: '30000.0' },
+          ],
           monthly_savings: [
             {
               month: '2026-09',
@@ -35,7 +37,9 @@ describe('resumen del panel', () => {
       consumption: 38101,
       savings: 411899,
       savingsGoalPercentage: 10,
-      consumptionByCategory: [{ category: 'Limpieza', total: 25000, planned: 30000 }],
+      consumptionByCategory: [
+        { categoryId: 2, category: 'Limpieza', total: 25000, planned: 30000 },
+      ],
       monthlySavings: [
         {
           month: '2026-09',

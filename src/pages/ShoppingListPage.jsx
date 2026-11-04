@@ -4,13 +4,16 @@ import { TOAST_TONE } from '../config/constants';
 import { useCategories } from '../hooks/useCategories';
 import { useShoppingListItems } from '../hooks/useShoppingListItems';
 import { useToast } from '../hooks/useToast';
+import { isValidPeriod } from '../utils/dates';
 import { requestErrorMessages } from '../utils/errors';
+import { formatPeriod } from '../utils/format';
 import { logError } from '../utils/logger';
 import ShoppingListForm from '../components/shoppingList/ShoppingListForm';
 import ShoppingListTable from '../components/shoppingList/ShoppingListTable';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
 import FormAlert from '../components/ui/FormAlert';
+import FormField from '../components/ui/FormField';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import PageHeader from '../components/ui/PageHeader';
 import Toast from '../components/ui/Toast';
@@ -28,6 +31,8 @@ export default function ShoppingListPage() {
   const editButtonsRef = useRef(new Map());
   // El ítem que se está editando, o null si el formulario es de alta.
   const [editing, setEditing] = useState(null);
+  // El mes por el que se filtra el listado; vacío, se ven todos los meses.
+  const [periodFilter, setPeriodFilter] = useState('');
   const shoppingList = useShoppingListItems();
   const categories = useCategories();
   const notice = useToast();
@@ -76,6 +81,11 @@ export default function ShoppingListPage() {
     listTitleRef.current?.focus();
   }
 
+  const filtering = isValidPeriod(periodFilter);
+  const visibleItems = filtering
+    ? (shoppingList.items ?? []).filter((item) => item.period === periodFilter)
+    : shoppingList.items;
+
   function renderList() {
     // Se espera también a las categorías: cada fila muestra el nombre de la suya.
     if (shoppingList.isLoading || categories.isLoading) {
@@ -103,10 +113,19 @@ export default function ShoppingListPage() {
         />
       );
     }
+    if (visibleItems.length === 0) {
+      return (
+        <EmptyState
+          headingLevel={3}
+          title={t('shoppingList.filter.emptyTitle', { period: formatPeriod(periodFilter) })}
+          description={t('shoppingList.list.emptyDescription')}
+        />
+      );
+    }
     return (
       <ShoppingListTable
         caption={t('shoppingList.list.caption')}
-        items={shoppingList.items}
+        items={visibleItems}
         onEdit={setEditing}
         onDelete={handleDelete}
         editButtonRef={registerEditButton}
@@ -150,6 +169,16 @@ export default function ShoppingListPage() {
             {t('shoppingList.list.title')}
           </h2>
           <p className="muted shopping-list__note">{t('shoppingList.list.note')}</p>
+          <div className="shopping-list__filter">
+            <FormField
+              label={t('shoppingList.filter.label')}
+              hint={t('shoppingList.filter.hint')}
+              name="periodFilter"
+              type="month"
+              value={periodFilter}
+              onChange={(event) => setPeriodFilter(event.target.value)}
+            />
+          </div>
           {renderList()}
         </section>
         <section aria-labelledby={formTitleId} className="panel shopping-list__form">

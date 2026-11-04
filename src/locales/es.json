@@ -22,7 +22,8 @@
       "movements": "Movimientos",
       "planning": "Planificación",
       "admin": "Administración"
-    }
+    },
+    "statistics": "Estadísticas"
   },
   "auth": {
     "user": "Usuario",
@@ -476,6 +477,11 @@
       "submitting": "Guardando…",
       "created": "Gasto fijo guardado.",
       "updated": "Cambios guardados."
+    },
+    "filter": {
+      "label": "Ver un mes",
+      "hint": "Dejalo vacío para ver todos los meses.",
+      "emptyTitle": "No hay gastos fijos en {{period}}"
     }
   },
   "incomes": {
@@ -537,5 +543,70 @@
     "tagline": "Tu dinero, en orden.",
     "motto": "Pequeños hábitos, grandes logros.",
     "mottoQuote": "“Pequeños hábitos, grandes logros”"
+  },
+  "categoryDetail": {
+    "eyebrow": "Detalle de categoría",
+    "title": "Detalle de categoría",
+    "back": "Volver a Inicio",
+    "filter": "Ver el mes",
+    "loading": "Cargando el detalle…",
+    "loadError": "No pudimos cargar el detalle de la categoría.",
+    "emptyTitle": "No hay gastos ni gastos fijos en {{period}}",
+    "emptyDescription": "Cargá gastos fijos para planificar y gastos para compararlos.",
+    "planned": "Estimado",
+    "real": "Real",
+    "subcategories": {
+      "caption": "Estimado y real por subcategoría",
+      "name": "Subcategoría",
+      "progress": "Avance del plan"
+    },
+    "products": {
+      "caption": "Estimado y real por producto",
+      "name": "Producto",
+      "planned": "Estimado",
+      "real": "Real",
+      "status": "Estado",
+      "noPlan": "No estaba planificado",
+      "notBought": "No se compró",
+      "statuses": {
+        "bought": "Comprado",
+        "unplanned": "Gasto hormiga",
+        "not_bought": "No se compró"
+      }
+    }
+  },
+  "statistics": {
+    "title": "Estadísticas",
+    "loading": "Cargando las estadísticas…",
+    "loadError": "No pudimos cargar las estadísticas.",
+    "year": "Año",
+    "month": "Mes",
+    "allYear": "Todo el año",
+    "chartTitle": "Evolución de {{year}}",
+    "rankings": {
+      "consumption": "Meses de mayor consumo",
+      "savings": "Meses de mayor ahorro",
+      "unplanned": "Meses con más gasto hormiga",
+      "empty": "Todavía no hay datos para mostrar."
+    },
+    "byCategory": {
+      "title": "Consumo por categoría",
+      "empty": "Todavía no hay consumo en este período.",
+      "planned": "planificado {{amount}}",
+      "overBudget": "Se pasó de lo planificado"
+    },
+    "unplanned": {
+      "title": "Gasto hormiga",
+      "note": "Productos que se compraron y no estaban en la lista de gastos fijos del mes.",
+      "total": "Total del período:",
+      "empty": "No hay gasto hormiga en este período.",
+      "byVendor": "Por comercio",
+      "noVendor": "Sin comercio",
+      "caption": "Productos del gasto hormiga",
+      "date": "Fecha",
+      "product": "Producto",
+      "vendor": "Comercio",
+      "subtotal": "Subtotal"
+    }
   }
 }

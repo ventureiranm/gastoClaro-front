@@ -15,11 +15,14 @@ function normalizeDashboard(raw) {
     consumption: Number(raw.consumption),
     savings: Number(raw.savings),
     savingsGoalPercentage: raw.savings_goal_percentage,
-    consumptionByCategory: raw.consumption_by_category.map(({ category, total, planned }) => ({
-      category,
-      total: Number(total),
-      planned: Number(planned ?? 0),
-    })),
+    consumptionByCategory: raw.consumption_by_category.map(
+      ({ category_id: categoryId, category, total, planned }) => ({
+        categoryId: categoryId ?? null,
+        category,
+        total: Number(total),
+        planned: Number(planned ?? 0),
+      }),
+    ),
     monthlySavings: raw.monthly_savings.map((month) => ({
       month: month.month,
       income: Number(month.income),

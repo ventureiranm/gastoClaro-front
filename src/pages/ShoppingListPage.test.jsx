@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { saveToken } from '../api/tokenStorage';
 import { ROUTES } from '../config/constants';
 import i18n from '../i18n';
@@ -386,5 +386,33 @@ describe('Borrar un gasto fijo', () => {
     expect(logError).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }));
     expect(await findRows()).toHaveLength(1);
     expect(deleteButton('Arroz')).toHaveFocus();
+  });
+});
+
+describe('Filtro por mes de los gastos fijos', () => {
+  it('muestra todos los meses y, al elegir uno, solo ese', async () => {
+    renderShoppingList({
+      'GET /shopping_list_items': jsonResponse(200, [
+        apiItem({ id: 1, name: 'Arroz', period: '2026-10' }),
+        apiItem({ id: 2, name: 'Fideos', period: '2026-11' }),
+      ]),
+    });
+
+    const table = await findTable();
+    expect(within(table).getByText('Arroz')).toBeInTheDocument();
+    expect(within(table).getByText('Fideos')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(es.shoppingList.filter.label), {
+      target: { value: '2026-11' },
+    });
+
+    expect(within(await findTable()).queryByText('Arroz')).not.toBeInTheDocument();
+    expect(within(await findTable()).getByText('Fideos')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(es.shoppingList.filter.label), {
+      target: { value: '2026-12' },
+    });
+
+    expect(await screen.findByText(/No hay gastos fijos en/)).toBeInTheDocument();
   });
 });

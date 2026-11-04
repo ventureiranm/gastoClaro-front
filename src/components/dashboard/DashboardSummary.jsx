@@ -1,5 +1,7 @@
 import { useId } from 'react';
+import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { categoryDetailPath } from '../../config/constants';
 import { formatAmount, formatPercentage, formatPeriod } from '../../utils/format';
 import AdviceCard from './AdviceCard';
 import BudgetProgress from './BudgetProgress';
@@ -129,12 +131,16 @@ function CategoryBreakdown({ summary, period }) {
               </tr>
             </thead>
             <tbody>
-              {categories.map(({ category, total, planned }) => (
-                <tr key={category}>
+              {categories.map(({ categoryId, category, total, planned }) => (
+                <tr key={categoryId ?? category}>
                   <td data-label={t('expenses.fields.category')}>
                     <span className="category-name">
                       <CategoryIcon name={category} />
-                      {category}
+                      {categoryId ? (
+                        <Link to={categoryDetailPath(categoryId)}>{category}</Link>
+                      ) : (
+                        category
+                      )}
                     </span>
                   </td>
                   <td data-label={t('expenses.fields.amount')} className="numeric">
