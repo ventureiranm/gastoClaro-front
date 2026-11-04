@@ -15,6 +15,7 @@ import {
 import { renderApp } from '../test/renderApp';
 import { todayISO } from '../utils/dates';
 import { formatDate } from '../utils/format';
+import { logError } from '../utils/logger';
 
 function apiIncome(overrides = {}) {
   return {
@@ -69,7 +70,7 @@ describe('Listado de ingresos', () => {
       within(table)
         .getAllByRole('columnheader')
         .map((th) => th.textContent),
-    ).toEqual([es.incomes.fields.date, es.incomes.fields.amount]);
+    ).toEqual([es.incomes.fields.date, es.incomes.fields.amount, es.incomes.list.actions]);
 
     const [, first, second] = within(table).getAllByRole('row');
     expect(first).toHaveTextContent('03/11/2026');
@@ -144,5 +145,132 @@ describe('Nuevo ingreso', () => {
       expect.stringContaining(i18n.t('validation.amountPositive', { min: AMOUNT_MIN_EXCLUSIVE })),
     );
     expect(fetchCallsTo(fetchMock, 'POST /incomes')).toHaveLength(0);
+  });
+});
+
+// Lo que respondería la API al editar el ingreso 1 con el monto y la fecha que se le mandan.
+function updatedIncome({ body }) {
+  return jsonResponse(200, apiIncome({ amount: String(body.amount), date: body.date }));
+}
+
+function findTable() {
+  return screen.findByRole('table', { name: es.incomes.list.caption });
+}
+
+// El aviso (toast) que aparece después de editar o borrar.
+function findNotice(message) {
+  return screen.findByText(message, { selector: '.toast__message' });
+}
+
+// Los botones de la fila del ingreso. Su nombre es, por ejemplo, "Editar el ingreso de $ 450.000,00
+// del 02/11/2026".
+function editButton() {
+  return screen.getByRole('button', { name: /^Editar el ingreso/ });
+}
+
+function deleteButton() {
+  return screen.getByRole('button', { name: /^Borrar el ingreso/ });
+}
+
+describe('Editar un ingreso', () => {
+  it('al editar, el formulario se carga con el ingreso y el cambio se ve enseguida', async () => {
+    const { user, fetchMock } = renderIncomes({
+      'GET /incomes': jsonResponse(200, [apiIncome()]),
+      'PATCH /incomes/1': updatedIncome,
+    });
+    await findTable();
+
+    await user.click(editButton());
+
+    expect(screen.getByRole('heading', { name: es.incomes.form.editTitle })).toBeVisible();
+    expect(screen.getByLabelText(es.incomes.fields.date)).toHaveValue('2026-11-02');
+    const amount = screen.getByLabelText(es.incomes.fields.amount);
+    expect(amount).toHaveValue('450000');
+
+    await user.clear(amount);
+    await user.type(amount, '500000');
+    await user.click(screen.getByRole('button', { name: es.incomes.form.update }));
+
+    await findNotice(es.incomes.form.updated);
+    expect(within(screen.getByRole('table')).getAllByRole('row')[1]).toHaveTextContent(
+      '$ 500.000,00',
+    );
+    const [call] = fetchCallsTo(fetchMock, 'PATCH /incomes/1');
+    expect(call.body).toEqual({ amount: 500000, date: '2026-11-02' });
+    expect(screen.getByRole('heading', { name: es.incomes.form.title })).toBeVisible();
+  });
+
+  it('cancelar la edición vuelve al formulario de alta sin guardar nada', async () => {
+    const { user, fetchMock } = renderIncomes({
+      'GET /incomes': jsonResponse(200, [apiIncome()]),
+    });
+    await findTable();
+
+    await user.click(editButton());
+    await user.click(screen.getByRole('button', { name: es.common.cancel }));
+
+    expect(screen.getByRole('heading', { name: es.incomes.form.title })).toBeVisible();
+    expect(screen.getByLabelText(es.incomes.fields.amount)).toHaveValue('');
+    expect(fetchCallsTo(fetchMock, 'PATCH /incomes/1')).toHaveLength(0);
+  });
+
+  it('muestra el error de la API en el campo del monto y deja el ingreso como estaba', async () => {
+    const message = 'debe ser mayor a 0';
+    const { user } = renderIncomes({
+      'GET /incomes': jsonResponse(200, [apiIncome()]),
+      'PATCH /incomes/1': jsonResponse(422, apiErrors(['amount', message])),
+    });
+    await findTable();
+
+    await user.click(editButton());
+    const amount = screen.getByLabelText(es.incomes.fields.amount);
+    await user.clear(amount);
+    await user.type(amount, '1');
+    await user.click(screen.getByRole('button', { name: es.incomes.form.update }));
+
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(amount).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByRole('table')).toHaveTextContent('$ 450.000,00');
+  });
+});
+
+describe('Borrar un ingreso', () => {
+  it('pide confirmación: cancelar no borra y confirmar sí', async () => {
+    const { user, fetchMock } = renderIncomes({
+      'GET /incomes': jsonResponse(200, [apiIncome()]),
+      'DELETE /incomes/1': jsonResponse(204),
+    });
+    await findTable();
+
+    await user.click(deleteButton());
+    expect(screen.getByText(/^¿Borrar el ingreso/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: es.common.cancel }));
+    expect(fetchCallsTo(fetchMock, 'DELETE /incomes/1')).toHaveLength(0);
+    expect(screen.getByRole('table')).toHaveTextContent('$ 450.000,00');
+
+    await user.click(deleteButton());
+    await user.click(screen.getByRole('button', { name: es.incomes.list.deleteConfirm }));
+
+    await findNotice(es.incomes.list.deleted);
+    expect(fetchCallsTo(fetchMock, 'DELETE /incomes/1')).toHaveLength(1);
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: es.incomes.list.emptyTitle }),
+    ).toBeInTheDocument();
+  });
+
+  it('si el borrado falla, avisa, lo registra y el ingreso queda en el listado', async () => {
+    const { user } = renderIncomes({
+      'GET /incomes': jsonResponse(200, [apiIncome()]),
+      'DELETE /incomes/1': jsonResponse(404, apiErrors()),
+    });
+    await findTable();
+
+    await user.click(deleteButton());
+    await user.click(screen.getByRole('button', { name: es.incomes.list.deleteConfirm }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(es.incomes.list.deleteError);
+    expect(logError).toHaveBeenCalled();
+    expect(screen.getByRole('table')).toHaveTextContent('$ 450.000,00');
   });
 });

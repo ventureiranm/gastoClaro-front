@@ -260,14 +260,27 @@
       "loadError": "No pudimos cargar tus ingresos.",
       "emptyTitle": "Todavía no cargaste ingresos",
       "emptyDescription": "Cargá uno y lo vas a ver acá.",
-      "emptyAction": "Cargar un ingreso"
+      "emptyAction": "Cargar un ingreso",
+      "actions": "Acciones",
+      "incomeName": "el ingreso de {{amount}} del {{date}}",
+      "edit": "Editar",
+      "editLabel": "Editar {{name}}",
+      "delete": "Borrar",
+      "deleteLabel": "Borrar {{name}}",
+      "deleteQuestion": "¿Borrar {{name}}?",
+      "deleteConfirm": "Sí, borrar",
+      "deleteError": "No pudimos borrar el ingreso.",
+      "deleted": "Ingreso borrado."
     },
     "form": {
       "title": "Nuevo ingreso",
       "amountHint": "Sin separador de miles y con hasta {{count}} decimales. Por ejemplo: 450000,50",
       "submit": "Guardar ingreso",
       "submitting": "Guardando…",
-      "success": "Ingreso guardado."
+      "success": "Ingreso guardado.",
+      "editTitle": "Editar ingreso",
+      "update": "Guardar cambios",
+      "updated": "Cambios guardados."
     }
   },
   "notFound": {
