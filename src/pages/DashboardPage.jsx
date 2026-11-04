@@ -4,6 +4,7 @@ import { HTTP_STATUS, TOAST_TONE } from '../config/constants';
 import { useCategories } from '../hooks/useCategories';
 import { useDashboard } from '../hooks/useDashboard';
 import { useExpenses } from '../hooks/useExpenses';
+import { useSavingsGoals } from '../hooks/useSavingsGoals';
 import { useToast } from '../hooks/useToast';
 import { currentPeriod, isValidPeriod, periodOf } from '../utils/dates';
 import { requestErrorMessages } from '../utils/errors';
@@ -43,6 +44,7 @@ export default function DashboardPage({ expensesOnly = false }) {
   const expenses = useExpenses(period);
   const categories = useCategories();
   const dashboard = useDashboard();
+  const savingsGoals = useSavingsGoals();
   const confirmation = useToast();
 
   // Al elegir un gasto para editar, el foco va al formulario (que puede estar más abajo).
@@ -140,7 +142,7 @@ export default function DashboardPage({ expensesOnly = false }) {
         />
       );
     }
-    return <DashboardSummary summary={dashboard.summary} />;
+    return <DashboardSummary summary={dashboard.summary} goals={savingsGoals.goals} />;
   }
 
   function renderList() {
@@ -217,7 +219,7 @@ export default function DashboardPage({ expensesOnly = false }) {
           {renderSummary()}
         </section>
       )}
-      {!expensesOnly && <FeaturedGoals />}
+      {!expensesOnly && <FeaturedGoals goals={savingsGoals.goals} />}
       <div className="dashboard">
         <section aria-labelledby={listTitleId} className="panel">
           <h2 id={listTitleId} ref={listTitleRef} tabIndex={-1}>

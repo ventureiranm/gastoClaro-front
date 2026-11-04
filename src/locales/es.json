@@ -91,10 +91,11 @@
         "month": "Mes",
         "accumulated": "Ahorro acumulado"
       },
-      "ofIncome": "{{percentage}} de tus ingresos"
+      "ofIncome": "{{percentage}} de tus ingresos",
+      "incomeContext": "Total del mes"
     },
     "greeting": "Hola, {{name}}",
-    "greetingSubtitle": "Este es tu resumen financiero.",
+    "greetingSubtitle": "Este es tu resumen financiero de este mes.",
     "donut": {
       "title": "Dónde se va la plata",
       "others": "Otras categorías",
@@ -115,12 +116,49 @@
       "completed": "¡Meta cumplida!",
       "progress": "{{percentage}} completado"
     },
-    "tips": {
+    "ring": {
+      "title": "Tu ahorro, en camino",
+      "goal": "Meta: {{name}}",
+      "see": "Ver metas"
+    },
+    "advice": {
       "title": "Consejo de GastoClaro",
-      "over": "Superaste lo planificado en {{categories}}. Revisá esos gastos para volver al plan.",
+      "badge": {
+        "success": "¡Vas muy bien!",
+        "warning": "Atención",
+        "alert": "Ojo con el plan",
+        "info": "Para tener en cuenta"
+      },
+      "over": "Superaste lo planificado en {{categories}}. Identificá qué gastos hicieron que te pasaras y volvé al plan.",
       "near": "Estás cerca del monto planificado en {{categories}}. Con un poco de atención llegás bien a fin de mes.",
+      "highConsumption": "Tu consumo ya es el {{percentage}} de tus ingresos. Revisá qué categorías concentran la mayor parte de tus gastos.",
+      "goodSavings": "Ahorraste {{amount}} este mes ({{percentage}} de tus ingresos). Mantené la constancia: tu progreso también cuenta.",
+      "noGoals": "Todavía no tenés metas de ahorro. Elegí un objetivo que te motive y comenzá a planificarlo.",
       "saving": "Este mes ahorraste {{amount}}. Pequeños hábitos, grandes logros.",
-      "empty": "Cargá tus gastos fijos del mes y vas a ver cuánto te queda disponible."
+      "empty": "Cargá tus movimientos para obtener una visión más clara de tus finanzas."
+    },
+    "tipCard": {
+      "title": "Un consejo para vos",
+      "phrase": "Tu dinero, tus decisiones, tus proyectos.",
+      "items": [
+        "No necesitás ganar más para empezar a organizarte. Necesitás saber dónde va tu dinero.",
+        "Pequeños ahorros sostenidos pueden convertirse en grandes oportunidades.",
+        "Antes de comprar, preguntate: ¿lo necesito, lo quiero o puedo esperar?",
+        "Registrar tus gastos es el primer paso para tomar mejores decisiones.",
+        "La constancia vale más que un ahorro extraordinario de vez en cuando.",
+        "Ahorrar no es dejar de disfrutar, es elegir cómo querés disfrutar.",
+        "Pagate primero: reservá una parte de tus ingresos antes de comenzar a gastar.",
+        "Los pequeños gastos también cuentan. Revisalos antes de que se acumulen.",
+        "Esperar 24 horas antes de una compra impulsiva puede ayudarte a decidir mejor.",
+        "Antes de financiarte, calculá cuánto terminarás pagando.",
+        "Cada peso que ahorrás te acerca un poquito más a tus proyectos.",
+        "No compares tu progreso con el de otras personas. Cada economía tiene su propio ritmo."
+      ]
+    },
+    "trend": {
+      "up": "{{amount}} más que el mes pasado",
+      "down": "{{amount}} menos que el mes pasado",
+      "same": "Igual que el mes pasado"
     }
   },
   "savings": {
@@ -497,6 +535,7 @@
   },
   "brand": {
     "tagline": "Tu dinero, en orden.",
-    "motto": "Pequeños hábitos, grandes logros."
+    "motto": "Pequeños hábitos, grandes logros.",
+    "mottoQuote": "“Pequeños hábitos, grandes logros”"
   }
 }

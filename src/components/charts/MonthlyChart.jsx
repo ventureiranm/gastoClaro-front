@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CHART_SERIES_COLORS } from '../../config/constants';
 import { formatAmount, formatCompactAmount, formatMonthShort } from '../../utils/format';
@@ -13,6 +14,7 @@ const SERIES = ['income', 'consumption', 'savings'];
 // tabla de al lado tiene los importes exactos). La leyenda dice qué es cada color.
 export default function MonthlyChart({ months }) {
   const { t } = useTranslation();
+  const gradientId = useId();
   const plotWidth = WIDTH - MARGIN.left - MARGIN.right;
   const plotHeight = HEIGHT - MARGIN.top - MARGIN.bottom;
   const max = Math.max(1, ...months.flatMap((m) => SERIES.map((key) => m[key])));
@@ -33,6 +35,14 @@ export default function MonthlyChart({ months }) {
         role="img"
         aria-label={`${t('dashboard.chart.label')}. ${description}`}
       >
+        <defs>
+          {SERIES.map((key) => (
+            <linearGradient key={key} id={`${gradientId}-${key}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor={CHART_SERIES_COLORS[key]} stopOpacity="1" />
+              <stop offset="1" stopColor={CHART_SERIES_COLORS[key]} stopOpacity="0.55" />
+            </linearGradient>
+          ))}
+        </defs>
         {ticks.map((tick) => {
           const y = MARGIN.top + plotHeight * (1 - tick);
           return (
@@ -63,9 +73,12 @@ export default function MonthlyChart({ months }) {
                     y={MARGIN.top + plotHeight - height}
                     width={BAR_WIDTH}
                     height={height}
-                    rx="4"
-                    fill={CHART_SERIES_COLORS[key]}
-                  />
+                    rx="6"
+                    fill={`url(#${gradientId}-${key})`}
+                    className="chart-bar"
+                  >
+                    <title>{`${t(`dashboard.summary.${key}`)}: ${formatAmount(month[key])}`}</title>
+                  </rect>
                 );
               })}
               <text

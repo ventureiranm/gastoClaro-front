@@ -5,7 +5,11 @@ import AdviceCard from './AdviceCard';
 import BudgetProgress from './BudgetProgress';
 import CategoryDonut from '../charts/CategoryDonut';
 import MonthlyChart from '../charts/MonthlyChart';
+import CategoryIcon from '../ui/CategoryIcon';
 import EmptyState from '../ui/EmptyState';
+import SavingsRing from './SavingsRing';
+import TipCard from './TipCard';
+import TitleIcon from '../ui/TitleIcon';
 
 // Un mes tuvo movimientos si entró o salió plata.
 function hasActivity({ income, consumption }) {
@@ -22,8 +26,8 @@ function TotalIcon({ name }) {
   return (
     <svg
       className="summary-total__icon"
-      width="22"
-      height="22"
+      width="26"
+      height="26"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -55,6 +59,7 @@ function SummaryTotals({ summary }) {
           {t('dashboard.summary.income')}
         </dt>
         <dd className="summary-total__amount">{formatAmount(income)}</dd>
+        <dd className="muted summary-total__context">{t('dashboard.summary.incomeContext')}</dd>
       </div>
       <div className="summary-total summary-total--consumption">
         <dt>
@@ -99,7 +104,10 @@ function CategoryBreakdown({ summary, period }) {
 
   return (
     <section aria-labelledby={titleId} className="panel">
-      <h3 id={titleId}>{t('dashboard.summary.byCategory.title')}</h3>
+      <h3 id={titleId} className="panel-title">
+        <TitleIcon name="bars" tone="green" />
+        {t('dashboard.summary.byCategory.title')}
+      </h3>
       {categories.length === 0 ? (
         <p className="muted">{t('dashboard.summary.byCategory.empty', { period })}</p>
       ) : (
@@ -123,7 +131,12 @@ function CategoryBreakdown({ summary, period }) {
             <tbody>
               {categories.map(({ category, total, planned }) => (
                 <tr key={category}>
-                  <td data-label={t('expenses.fields.category')}>{category}</td>
+                  <td data-label={t('expenses.fields.category')}>
+                    <span className="category-name">
+                      <CategoryIcon name={category} />
+                      {category}
+                    </span>
+                  </td>
                   <td data-label={t('expenses.fields.amount')} className="numeric">
                     {formatAmount(total)}
                   </td>
@@ -146,6 +159,21 @@ function CategoryBreakdown({ summary, period }) {
   );
 }
 
+// Cuánto cambió el ahorro del último mes respecto del anterior, para leerlo de un vistazo.
+function SavingsTrend({ months }) {
+  const { t } = useTranslation();
+  if (months.length < 2) return null;
+  const delta = months.at(-1).savings - months.at(-2).savings;
+  const tone = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
+  const arrow = { up: '▲', down: '▼', same: '●' }[tone];
+  return (
+    <p className={`trend-chip trend-chip--${tone}`}>
+      <span aria-hidden="true">{arrow}</span>
+      {t(`dashboard.trend.${tone}`, { amount: formatAmount(Math.abs(delta)) })}
+    </p>
+  );
+}
+
 function MonthlySavings({ months }) {
   const { t } = useTranslation();
   const titleId = useId();
@@ -153,7 +181,11 @@ function MonthlySavings({ months }) {
 
   return (
     <section aria-labelledby={titleId} className="panel">
-      <h3 id={titleId}>{t('dashboard.summary.monthly.title')}</h3>
+      <h3 id={titleId} className="panel-title">
+        <TitleIcon name="trend" tone="blue" />
+        {t('dashboard.summary.monthly.title')}
+      </h3>
+      <SavingsTrend months={months} />
       <MonthlyChart months={months} />
       <p id={hintId} className="muted">
         {t('dashboard.summary.monthly.hint')}
@@ -211,7 +243,7 @@ function MonthlySavings({ months }) {
 
 // Resumen del mes en curso que arma GET /dashboard. Si el mes no tuvo movimientos, lo dice en lugar
 // de mostrar todo en cero; la evolución de los últimos meses aparece si alguno tuvo.
-export default function DashboardSummary({ summary }) {
+export default function DashboardSummary({ summary, goals }) {
   const { t } = useTranslation();
   const donutTitleId = useId();
   const period = formatPeriod(summary.period);
@@ -222,27 +254,45 @@ export default function DashboardSummary({ summary }) {
       {hasActivity(summary) ? (
         <>
           <SummaryTotals summary={summary} />
-          <div className="insights">
-            <section className="panel" aria-labelledby={donutTitleId}>
-              <h3 id={donutTitleId}>{t('dashboard.donut.title')}</h3>
-              <CategoryDonut
-                categories={summary.consumptionByCategory}
-                total={summary.consumption}
-              />
-            </section>
-            <AdviceCard summary={summary} />
+          <div className="home-grid">
+            <div className="home-grid__main">
+              <CategoryBreakdown summary={summary} period={period} />
+            </div>
+            <div className="home-grid__side">
+              <SavingsRing goal={goals?.[0]} />
+              <AdviceCard summary={summary} goals={goals} />
+            </div>
+            <div className="home-grid__main">
+              {summary.monthlySavings.some(hasActivity) && (
+                <MonthlySavings months={summary.monthlySavings} />
+              )}
+            </div>
+            <div className="home-grid__side">
+              <section className="panel" aria-labelledby={donutTitleId}>
+                <h3 id={donutTitleId} className="panel-title">
+                  <TitleIcon name="pie" tone="orange" />
+                  {t('dashboard.donut.title')}
+                </h3>
+                <CategoryDonut
+                  categories={summary.consumptionByCategory}
+                  total={summary.consumption}
+                />
+              </section>
+              <TipCard />
+            </div>
           </div>
-          <CategoryBreakdown summary={summary} period={period} />
         </>
       ) : (
-        <EmptyState
-          headingLevel={3}
-          title={t('dashboard.summary.emptyTitle', { period })}
-          description={t('dashboard.summary.emptyDescription')}
-        />
-      )}
-      {summary.monthlySavings.some(hasActivity) && (
-        <MonthlySavings months={summary.monthlySavings} />
+        <>
+          <EmptyState
+            headingLevel={3}
+            title={t('dashboard.summary.emptyTitle', { period })}
+            description={t('dashboard.summary.emptyDescription')}
+          />
+          {summary.monthlySavings.some(hasActivity) && (
+            <MonthlySavings months={summary.monthlySavings} />
+          )}
+        </>
       )}
     </>
   );

@@ -1,50 +1,26 @@
 import { useTranslation } from 'react-i18next';
-import { BUDGET_STATUS, budgetStatus } from '../../utils/budget';
-import { formatAmount } from '../../utils/format';
+import { pickAdvice } from '../../utils/advice';
+import TitleIcon from '../ui/TitleIcon';
 
-// Un consejo corto según cómo viene el mes. Se arma con lo que ya trae el resumen (lo consumido y
-// lo planificado por categoría): no hay un pedido aparte.
-function pickTip(summary, t) {
-  const withStatus = summary.consumptionByCategory.map(({ category, total, planned }) => ({
-    category,
-    status: budgetStatus(total, planned),
-  }));
-  const names = (status) =>
-    withStatus
-      .filter((item) => item.status === status)
-      .map(({ category }) => category)
-      .join(', ');
+const TONE_ICON = { success: 'check', warning: 'warning', alert: 'alert', info: 'bulb' };
 
-  if (names(BUDGET_STATUS.OVER)) {
-    return t('dashboard.tips.over', { categories: names(BUDGET_STATUS.OVER) });
-  }
-  if (names(BUDGET_STATUS.NEAR)) {
-    return t('dashboard.tips.near', { categories: names(BUDGET_STATUS.NEAR) });
-  }
-  if (summary.savings > 0) {
-    return t('dashboard.tips.saving', { amount: formatAmount(summary.savings) });
-  }
-  return t('dashboard.tips.empty');
-}
-
-export default function AdviceCard({ summary }) {
+export default function AdviceCard({ summary, goals }) {
   const { t } = useTranslation();
+  const { tone, text } = pickAdvice(summary, goals, t);
 
   return (
-    <aside className="advice-card">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3Z"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <div>
-        <h3>{t('dashboard.tips.title')}</h3>
-        <p>{pickTip(summary, t)}</p>
+    <aside className={`advice-card advice-card--${tone}`}>
+      <TitleIcon name={TONE_ICON[tone]} tone={tone} />
+      <div className="advice-card__body">
+        <p className="advice-card__badge">{t(`dashboard.advice.badge.${tone}`)}</p>
+        <h3>{t('dashboard.advice.title')}</h3>
+        <p>{text}</p>
       </div>
+      <svg className="advice-card__leaves" viewBox="0 0 80 90" aria-hidden="true" focusable="false">
+        <path d="M40 90C40 60 40 40 44 12" fill="none" stroke="currentColor" strokeWidth="2" />
+        <path d="M42 62C22 62 10 50 8 32c22-2 36 8 34 30Z" fill="currentColor" opacity="0.55" />
+        <path d="M43 40c0-20 12-32 32-32 2 22-10 34-32 32Z" fill="currentColor" opacity="0.8" />
+      </svg>
     </aside>
   );
 }

@@ -17,6 +17,20 @@
   --color-bg: #f5f3ed;
   --color-surface: #ffffff;
   --color-accent: #d99a32;
+  --color-gold: #f4b400;
+  --color-peach: #f6b76b;
+  --color-tint-green: #e3f2e8;
+  --color-tint-peach: #fdeed9;
+  --color-green-bright: #81a98b;
+  --color-emerald: #2fae7a;
+  --color-orange: #ff9f5a;
+  --color-orange-dark: #c2571a;
+  --color-blue: #3b82f6;
+  --color-blue-dark: #1d4ed8;
+  --color-blue-soft: #e4edff;
+  --color-yellow: #f5c542;
+  --color-pink: #e5648a;
+  --color-violet: #7c5ce6;
   --color-green-soft: #dcebe2;
   --color-green-mid: #3f7d68;
   --color-green-sage: #789889;
@@ -32,7 +46,7 @@
   --color-sidebar-bg: #174738;
   --color-sidebar-text: #e6f0ea;
   --color-sidebar-muted: #a9c4b7;
-  --color-sidebar-active-bg: #dcebe2;
+  --color-sidebar-active-bg: #bfe3c9;
   --color-sidebar-active-text: #174738;
   --color-sidebar-hover-bg: #1f5b4a;
 
@@ -40,6 +54,7 @@
   --shadow-card: 0 1px 2px rgb(23 71 56 / 6%), 0 6px 16px rgb(23 71 56 / 6%);
 
   /* Tipografía */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --font-sans: 'Libre Franklin', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
