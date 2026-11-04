@@ -3,6 +3,8 @@ import es from '../locales/es.json';
 import {
   formatAmount,
   formatDate,
+  formatCompactAmount,
+  formatMonthShort,
   formatPercentage,
   formatPeriod,
   formatPurchaseChannel,
@@ -36,5 +38,12 @@ describe('formato', () => {
   it('traduce el canal de compra y muestra tal cual un código desconocido', () => {
     expect(formatPurchaseChannel('retiro', i18n.t)).toBe(es.expenses.channels.retiro);
     expect(formatPurchaseChannel('online', i18n.t)).toBe('online');
+  });
+
+  it('muestra el mes abreviado y los importes en forma compacta para los gráficos', () => {
+    expect(formatMonthShort('2026-06')).toBe('jun');
+    expect(formatCompactAmount(600000)).toBe('$ 600 mil');
+    expect(formatCompactAmount(1250000)).toBe('$ 1,3 M');
+    expect(formatCompactAmount(850)).toBe('$ 850');
   });
 });

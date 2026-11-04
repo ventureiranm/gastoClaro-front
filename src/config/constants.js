@@ -73,5 +73,14 @@ export const PURCHASE_CHANNELS = ['presencial', 'delivery', 'retiro'];
 export const ITEM_UNITS = ['unidad', 'kg', 'g'];
 export const ITEM_QUANTITY_MIN = 1;
 
+// Colores de los gráficos. Son valores de la paleta (ver styles/tokens.css); se usan acá porque los
+// atributos de un SVG no leen variables de CSS en todos los navegadores.
+export const CHART_COLORS = ['#1f5b4a', '#d99a32', '#3f7d68', '#789889', '#b86b2b', '#a9c4b7'];
+export const CHART_SERIES_COLORS = {
+  income: '#789889',
+  consumption: '#d99a32',
+  savings: '#1f5b4a',
+};
+
 // Foto de la pantalla de ingreso (se sirve desde public/images). Si falta, se ve la ilustración.
 export const LOGIN_HERO_IMAGE = '/images/login-hero.webp';
