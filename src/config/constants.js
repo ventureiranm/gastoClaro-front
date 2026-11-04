@@ -9,6 +9,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   INCOMES: '/incomes',
   INSTALLMENTS: '/installments',
+  CATEGORIES: '/categories',
   SHOPPING_LIST: '/shopping-list',
 };
 
