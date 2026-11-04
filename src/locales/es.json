@@ -11,7 +11,8 @@
     "login": "Iniciar sesión",
     "register": "Crear cuenta",
     "logout": "Cerrar sesión",
-    "incomes": "Ingresos"
+    "incomes": "Ingresos",
+    "shoppingList": "Gastos fijos"
   },
   "auth": {
     "user": "Usuario",
@@ -253,6 +254,55 @@
       "update": "Guardar cambios",
       "submitting": "Guardando…",
       "created": "Compra en cuotas guardada.",
+      "updated": "Cambios guardados."
+    }
+  },
+  "shoppingList": {
+    "title": "Lista de gastos fijos",
+    "fields": {
+      "name": "Qué se planifica",
+      "category": "Categoría",
+      "period": "Mes",
+      "quantity": "Cantidad",
+      "estimatedUnitPrice": "Precio unitario estimado",
+      "subtotal": "Subtotal"
+    },
+    "list": {
+      "title": "Gastos planificados",
+      "caption": "Gastos planificados, por mes y por nombre",
+      "note": "Lo que planificás acá se compara con lo que consumís en el resumen de Inicio.",
+      "loading": "Cargando la lista de gastos fijos…",
+      "loadError": "No pudimos cargar tu lista de gastos fijos.",
+      "unknownCategory": "No disponible",
+      "noQuantity": "Sin cantidad",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "editLabel": "Editar «{{name}}»",
+      "delete": "Borrar",
+      "deleteLabel": "Borrar «{{name}}»",
+      "deleteQuestion": "¿Borrar «{{name}}»?",
+      "deleteConfirm": "Sí, borrar",
+      "deleteError": "No pudimos borrar el ítem.",
+      "deleted": "Ítem borrado.",
+      "emptyTitle": "Todavía no planificaste gastos fijos",
+      "emptyDescription": "Cargá uno y vas a ver acá cuánto planificaste por mes.",
+      "emptyAction": "Cargar un gasto"
+    },
+    "form": {
+      "title": "Nuevo gasto fijo",
+      "editTitle": "Editar gasto fijo",
+      "categoryPlaceholder": "Elegí una categoría",
+      "noCategoriesOption": "No hay categorías",
+      "noCategories": "Todavía no hay categorías cargadas, así que no se pueden guardar gastos.",
+      "loadingCategories": "Cargando categorías…",
+      "categoriesError": "No pudimos cargar las categorías.",
+      "periodPlaceholder": "AAAA-MM",
+      "quantityHint": "Opcional. Con hasta 2 decimales.",
+      "amountHint": "Sin separador de miles y con hasta {{count}} decimales. Por ejemplo: 1500,50",
+      "submit": "Guardar gasto",
+      "update": "Guardar cambios",
+      "submitting": "Guardando…",
+      "created": "Gasto fijo guardado.",
       "updated": "Cambios guardados."
     }
   },
