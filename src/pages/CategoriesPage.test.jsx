@@ -31,6 +31,10 @@ async function findRows() {
   return within(table).getAllByRole('row').slice(1);
 }
 
+function deleteButton(name) {
+  return screen.getByRole('button', { name: i18n.t('categories.list.deleteLabel', { name }) });
+}
+
 function editButton(name) {
   return screen.getByRole('button', { name: i18n.t('categories.list.editLabel', { name }) });
 }
@@ -85,9 +89,11 @@ describe('Categorías', () => {
     expect(await screen.findByText(es.categories.form.created)).toBeInTheDocument();
     const rows = await findRows();
     expect(rows).toHaveLength(2);
-    expect(rows[0]).toHaveTextContent('Mastercard');
+    // La subcategoría nueva queda debajo de su categoría principal.
+    expect(rows[0]).toHaveTextContent('Tarjetas');
+    expect(rows[1]).toHaveTextContent('Mastercard');
     const [call] = fetchCallsTo(fetchMock, 'POST /categories');
-    expect(call.body).toEqual({ name: 'Mastercard', parent_id: 1 });
+    expect(call.body).toEqual({ name: 'Mastercard', parent_id: 1, tracks_installments: false });
     expect(field('name')).toHaveValue('');
   });
 
@@ -133,6 +139,86 @@ describe('Categorías', () => {
     expect(row).toHaveTextContent('Tarjetas de crédito');
     expect(editButton('Tarjetas de crédito')).toHaveFocus();
     const [call] = fetchCallsTo(fetchMock, 'PATCH /categories/1');
-    expect(call.body).toEqual({ name: 'Tarjetas de crédito', parent_id: null });
+    expect(call.body).toEqual({
+      name: 'Tarjetas de crédito',
+      parent_id: null,
+      tracks_installments: false,
+    });
+  });
+
+  it('muestra las subcategorías agrupadas debajo de su categoría principal', async () => {
+    renderCategories({
+      'GET /categories': jsonResponse(200, [
+        apiCategory({ id: 3, name: 'Visa', parent_id: 1 }),
+        apiCategory({ id: 2, name: 'Servicios' }),
+        apiCategory(),
+        apiCategory({ id: 4, name: 'Mastercard', parent_id: 1 }),
+      ]),
+    });
+
+    const rows = await findRows();
+
+    expect(rows.map((row) => within(row).getAllByRole('cell')[0].textContent)).toEqual([
+      'Servicios',
+      'Tarjetas',
+      'Mastercard',
+      'Visa',
+    ]);
+  });
+
+  it('marca una categoría como tarjeta y lo muestra en el listado', async () => {
+    const { user, fetchMock } = renderCategories({
+      'POST /categories': ({ body }) =>
+        jsonResponse(
+          201,
+          apiCategory({ id: 9, name: body.name, tracks_installments: body.tracks_installments }),
+        ),
+    });
+    await screen.findByRole('heading', { name: es.categories.list.emptyTitle });
+
+    await user.type(field('name'), 'Visa');
+    await user.click(field('tracksInstallments'));
+    await user.click(screen.getByRole('button', { name: es.categories.form.submit }));
+
+    await screen.findByText(es.categories.form.created);
+    const [call] = fetchCallsTo(fetchMock, 'POST /categories');
+    expect(call.body.tracks_installments).toBe(true);
+    const [row] = await findRows();
+    expect(row).toHaveTextContent(es.categories.list.isCard);
+  });
+
+  it('borra una categoría después de confirmar', async () => {
+    const { user, fetchMock } = renderCategories({
+      'GET /categories': jsonResponse(200, [
+        apiCategory(),
+        apiCategory({ id: 2, name: 'Sobrante' }),
+      ]),
+      'DELETE /categories/2': jsonResponse(204),
+    });
+    await findRows();
+
+    await user.click(deleteButton('Sobrante'));
+    await user.click(screen.getByRole('button', { name: es.categories.list.deleteConfirm }));
+
+    expect(await screen.findByText(es.categories.list.deleted)).toBeInTheDocument();
+    expect(await findRows()).toHaveLength(1);
+    expect(fetchCallsTo(fetchMock, 'DELETE /categories/2')).toHaveLength(1);
+  });
+
+  it('si la API no la puede borrar, avisa el motivo y la categoría queda', async () => {
+    const reason = 'No se puede borrar: tiene gastos';
+    const { user } = renderCategories({
+      'GET /categories': jsonResponse(200, [apiCategory()]),
+      'DELETE /categories/1': jsonResponse(422, apiErrors(['base', reason])),
+    });
+    await findRows();
+
+    await user.click(deleteButton('Tarjetas'));
+    await user.click(screen.getByRole('button', { name: es.categories.list.deleteConfirm }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(es.categories.list.deleteError);
+    expect(alert).toHaveTextContent(reason);
+    expect(await findRows()).toHaveLength(1);
   });
 });

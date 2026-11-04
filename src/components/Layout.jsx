@@ -35,6 +35,9 @@ export default function Layout() {
                     <NavLink to={ROUTES.DASHBOARD}>{t('nav.dashboard')}</NavLink>
                   </li>
                   <li>
+                    <NavLink to={ROUTES.EXPENSES}>{t('nav.expenses')}</NavLink>
+                  </li>
+                  <li>
                     <NavLink to={ROUTES.INCOMES}>{t('nav.incomes')}</NavLink>
                   </li>
                   <li>

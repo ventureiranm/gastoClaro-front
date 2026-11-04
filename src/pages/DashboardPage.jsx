@@ -20,7 +20,9 @@ import LoadingIndicator from '../components/ui/LoadingIndicator';
 import PageHeader from '../components/ui/PageHeader';
 import Toast from '../components/ui/Toast';
 
-export default function DashboardPage() {
+// `expensesOnly` es la pantalla de Consumos: el mismo listado y formulario de gastos, sin el resumen
+// del mes. Sin él, es Inicio: el resumen y, debajo, los gastos.
+export default function DashboardPage({ expensesOnly = false }) {
   const { t } = useTranslation();
   const summaryTitleId = useId();
   const listTitleId = useId();
@@ -201,11 +203,16 @@ export default function DashboardPage() {
 
   return (
     <section className="page">
-      <PageHeader eyebrow={t('nav.dashboard')} title={t('dashboard.title')} />
-      <section aria-labelledby={summaryTitleId} className="dashboard-summary">
-        <h2 id={summaryTitleId}>{t('dashboard.summary.title')}</h2>
-        {renderSummary()}
-      </section>
+      <PageHeader
+        eyebrow={expensesOnly ? t('nav.expenses') : t('nav.dashboard')}
+        title={expensesOnly ? t('expenses.title') : t('dashboard.title')}
+      />
+      {!expensesOnly && (
+        <section aria-labelledby={summaryTitleId} className="dashboard-summary">
+          <h2 id={summaryTitleId}>{t('dashboard.summary.title')}</h2>
+          {renderSummary()}
+        </section>
+      )}
       <div className="dashboard">
         <section aria-labelledby={listTitleId} className="panel">
           <h2 id={listTitleId} ref={listTitleRef} tabIndex={-1}>

@@ -30,6 +30,7 @@ export default function App() {
           <Route path={ROUTES.SAVINGS} element={<SavingsPage />} />
           <Route path={ROUTES.SAVINGS_GOALS} element={<SavingsGoalsPage />} />
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+          <Route path={ROUTES.EXPENSES} element={<DashboardPage expensesOnly />} />
           <Route path={ROUTES.INCOMES} element={<IncomesPage />} />
           <Route path={ROUTES.INSTALLMENTS} element={<InstallmentsPage />} />
           <Route path={ROUTES.CATEGORIES} element={<CategoriesPage />} />

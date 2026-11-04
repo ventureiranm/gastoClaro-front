@@ -163,6 +163,8 @@ describe('categorías', () => {
       jsonResponse(200, [{ id: 3, name: 'Servicios', parent_id: null, tracks_installments: null }]),
     );
 
-    expect(await listCategories()).toEqual([{ id: 3, name: 'Servicios' }]);
+    expect(await listCategories()).toEqual([
+      { id: 3, name: 'Servicios', tracksInstallments: false },
+    ]);
   });
 });

@@ -8,7 +8,7 @@ import FormField from '../ui/FormField';
 import LoadingIndicator from '../ui/LoadingIndicator';
 
 // Nombres de campo de la API que no coinciden con los del formulario.
-const API_FIELDS = { parent_id: 'parentId' };
+const API_FIELDS = { parent_id: 'parentId', tracks_installments: 'tracksInstallments' };
 
 // Alta o edición de una categoría. Con `category`, el formulario arranca con sus datos y ofrece
 // cancelar (onCancel); sin ella, es un alta que se vacía después de guardar y lleva el foco a
@@ -39,7 +39,9 @@ export default function CategoryForm({
     formRef,
     alertRef,
   } = useForm({
-    initialValues: isEditing ? toCategoryFormValues(category) : { name: '', parentId: '' },
+    initialValues: isEditing
+      ? toCategoryFormValues(category)
+      : { name: '', parentId: '', tracksInstallments: false },
     validate: (formValues) => validateCategory(formValues, t),
     onSubmit: (formValues) => onSubmit(toCategory(formValues)),
     apiFields: API_FIELDS,
@@ -85,6 +87,15 @@ export default function CategoryForm({
           </option>
         ))}
       </FormField>
+      <FormField
+        label={t('categories.fields.tracksInstallments')}
+        name="tracksInstallments"
+        type="checkbox"
+        hint={t('categories.form.tracksInstallmentsHint')}
+        checked={values.tracksInstallments}
+        onChange={handleChange}
+        errors={fieldErrors.tracksInstallments}
+      />
       <div className="form__actions">
         <Button type="submit" isLoading={isSubmitting}>
           {isEditing ? t('categories.form.update') : t('categories.form.submit')}
