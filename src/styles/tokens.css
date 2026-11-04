@@ -4,21 +4,40 @@
 
 :root {
   /* Color */
-  --color-text: #2b2b2b;
-  --color-text-muted: #5e5e5a;
-  --color-primary: #2f4f4a;
-  --color-primary-hover: #1c302c;
+  --color-text: #202923;
+  --color-text-muted: #59665f;
+  --color-primary: #1f5b4a;
+  --color-primary-hover: #174738;
   --color-on-primary: #ffffff;
-  --color-border: #2b2b2b;
-  --color-border-soft: #cfcfc8;
-  --color-fill: #e8e8e3;
-  --color-subdued: #f4f4f1;
-  --color-bg: #efefea;
+  --color-border: #e3e5df;
+  --color-border-control: #6e8277;
+  --color-border-soft: #e3e5df;
+  --color-fill: #eae9e1;
+  --color-subdued: #f1f4ee;
+  --color-bg: #f5f3ed;
   --color-surface: #ffffff;
-  --color-warning-bg: #fbf1dd;
-  --color-warning-text: #6b4f1d;
-  --color-error: #8a3a32;
+  --color-accent: #d99a32;
+  --color-green-soft: #dcebe2;
+  --color-green-mid: #3f7d68;
+  --color-green-sage: #789889;
+  --color-success: #247a4b;
+  --color-success-bg: #e8f4ec;
+  --color-warning-bg: #fff2d8;
+  --color-warning-text: #8a5700;
+  --color-error: #b42318;
+  --color-error-bg: #fdeae8;
   --color-focus: var(--color-primary);
+
+  /* Barra lateral oscura */
+  --color-sidebar-bg: #174738;
+  --color-sidebar-text: #e6f0ea;
+  --color-sidebar-muted: #a9c4b7;
+  --color-sidebar-active-bg: #dcebe2;
+  --color-sidebar-active-text: #174738;
+  --color-sidebar-hover-bg: #1f5b4a;
+
+  /* Profundidad: sombras suaves y verdosas */
+  --shadow-card: 0 1px 2px rgb(23 71 56 / 6%), 0 6px 16px rgb(23 71 56 / 6%);
 
   /* Tipografía */
   --font-sans: 'Libre Franklin', system-ui, sans-serif;
@@ -54,10 +73,10 @@
   --space-12: 3rem; /* 48px */
 
   /* Formas */
-  --radius-control: 6px;
-  --radius-card: 8px;
+  --radius-control: 10px;
+  --radius-card: 16px;
   --radius-pill: 999px;
-  --border-width: 1.5px;
+  --border-width: 1px;
   --border-width-thin: 1px;
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
@@ -66,7 +85,7 @@
   --control-height: 2.5rem; /* 40px */
 
   /* Anchos */
-  --sidebar-width: 15rem;
+  --sidebar-width: 16rem;
   --content-max-width: 64rem;
   --content-narrow-width: 26rem;
   --form-panel-width: 20rem;
