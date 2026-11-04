@@ -10,6 +10,9 @@ import { requestErrorMessages } from '../utils/errors';
 import { formatPeriod } from '../utils/format';
 import { logError } from '../utils/logger';
 import DashboardSummary from '../components/dashboard/DashboardSummary';
+import FeaturedGoals from '../components/dashboard/FeaturedGoals';
+import MottoBanner from '../components/dashboard/MottoBanner';
+import GreetingBanner from '../components/dashboard/GreetingBanner';
 import ExpenseForm from '../components/expenses/ExpenseForm';
 import ExpenseTable from '../components/expenses/ExpenseTable';
 import Button from '../components/ui/Button';
@@ -207,12 +210,14 @@ export default function DashboardPage({ expensesOnly = false }) {
         eyebrow={expensesOnly ? t('nav.expenses') : t('nav.dashboard')}
         title={expensesOnly ? t('expenses.title') : t('dashboard.title')}
       />
+      {!expensesOnly && <GreetingBanner />}
       {!expensesOnly && (
         <section aria-labelledby={summaryTitleId} className="dashboard-summary">
           <h2 id={summaryTitleId}>{t('dashboard.summary.title')}</h2>
           {renderSummary()}
         </section>
       )}
+      {!expensesOnly && <FeaturedGoals />}
       <div className="dashboard">
         <section aria-labelledby={listTitleId} className="panel">
           <h2 id={listTitleId} ref={listTitleRef} tabIndex={-1}>
@@ -238,6 +243,7 @@ export default function DashboardPage({ expensesOnly = false }) {
           {renderForm()}
         </section>
       </div>
+      {!expensesOnly && <MottoBanner />}
       <Toast
         toast={confirmation.toast}
         onClose={confirmation.close}

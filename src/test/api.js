@@ -62,6 +62,7 @@ export function emptyDashboardRoutes() {
     'GET /dashboard': jsonResponse(200, apiDashboard()),
     'GET /categories': jsonResponse(200, []),
     'GET /expenses': jsonResponse(200, []),
+    'GET /savings_goals': jsonResponse(200, []),
   };
 }
 

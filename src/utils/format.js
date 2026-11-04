@@ -53,3 +53,25 @@ export function formatShortPeriod(period) {
 export function formatPurchaseChannel(code, t) {
   return PURCHASE_CHANNELS.includes(code) ? t(`expenses.channels.${code}`) : code;
 }
+
+const monthShortFormat = new Intl.DateTimeFormat(LOCALE, { month: 'short', timeZone: 'UTC' });
+
+// '2026-06' → "jun"
+export function formatMonthShort(period) {
+  const [year, month] = period.split('-').map(Number);
+  return monthShortFormat.format(Date.UTC(year, month - 1, 1)).replace('.', '');
+}
+
+// 600000 → "$ 600 mil"; 1250000 → "$ 1,3 M". Para los ejes de los gráficos, donde no entra el
+// importe completo.
+export function formatCompactAmount(amount) {
+  const sign = amount < 0 ? '-' : '';
+  const abs = Math.abs(amount);
+  if (abs >= 1_000_000) {
+    return `${sign}$ ${(abs / 1_000_000).toLocaleString(LOCALE, { maximumFractionDigits: 1 })} M`;
+  }
+  if (abs >= 1_000) {
+    return `${sign}$ ${Math.round(abs / 1_000).toLocaleString(LOCALE)} mil`;
+  }
+  return `${sign}$ ${Math.round(abs).toLocaleString(LOCALE)}`;
+}

@@ -60,7 +60,7 @@
     "goToLogin": "Iniciá sesión"
   },
   "dashboard": {
-    "title": "Mis gastos",
+    "title": "Mi resumen",
     "summary": {
       "title": "Resumen del mes",
       "loading": "Cargando el resumen…",
@@ -90,7 +90,37 @@
         "hint": "El ahorro acumulado suma el de estos 6 meses, no el de toda la historia.",
         "month": "Mes",
         "accumulated": "Ahorro acumulado"
-      }
+      },
+      "ofIncome": "{{percentage}} de tus ingresos"
+    },
+    "greeting": "Hola, {{name}}",
+    "greetingSubtitle": "Este es tu resumen financiero.",
+    "donut": {
+      "title": "Dónde se va la plata",
+      "others": "Otras categorías",
+      "center": "Consumo del mes",
+      "label": "Consumo por categoría: {{items}}"
+    },
+    "chart": {
+      "title": "Evolución de los últimos 6 meses",
+      "label": "Ingresos, consumo y ahorro de los últimos 6 meses",
+      "showTable": "Ver el detalle en una tabla"
+    },
+    "goals": {
+      "title": "Tus metas de ahorro",
+      "seeAll": "Ver todas las metas",
+      "saved": "Ahorrado",
+      "target": "Objetivo",
+      "missing": "Faltan {{amount}}",
+      "completed": "¡Meta cumplida!",
+      "progress": "{{percentage}} completado"
+    },
+    "tips": {
+      "title": "Consejo de GastoClaro",
+      "over": "Superaste lo planificado en {{categories}}. Revisá esos gastos para volver al plan.",
+      "near": "Estás cerca del monto planificado en {{categories}}. Con un poco de atención llegás bien a fin de mes.",
+      "saving": "Este mes ahorraste {{amount}}. Pequeños hábitos, grandes logros.",
+      "empty": "Cargá tus gastos fijos del mes y vas a ver cuánto te queda disponible."
     }
   },
   "savings": {
