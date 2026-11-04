@@ -44,6 +44,9 @@ export default function Layout() {
                     <NavLink to={ROUTES.SHOPPING_LIST}>{t('nav.shoppingList')}</NavLink>
                   </li>
                   <li>
+                    <NavLink to={ROUTES.SAVINGS}>{t('nav.savings')}</NavLink>
+                  </li>
+                  <li>
                     <NavLink to={ROUTES.SAVINGS_GOALS}>{t('nav.savingsGoals')}</NavLink>
                   </li>
                   {user?.admin && (
