@@ -26,3 +26,14 @@ export async function listIncomes({ signal } = {}) {
 export async function createIncome({ amount, date }) {
   return normalizeIncome(await api.post(ENDPOINTS.INCOMES, { amount, date }));
 }
+
+// Cambia un ingreso: recibe los mismos campos que createIncome y devuelve el ingreso actualizado.
+// La API responde 404 si ya no existe o no es del usuario.
+export async function updateIncome(id, { amount, date }) {
+  return normalizeIncome(await api.patch(`${ENDPOINTS.INCOMES}/${id}`, { amount, date }));
+}
+
+// Borra un ingreso. La API responde 204, sin cuerpo.
+export async function deleteIncome(id) {
+  await api.delete(`${ENDPOINTS.INCOMES}/${id}`);
+}

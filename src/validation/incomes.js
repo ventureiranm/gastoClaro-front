@@ -27,3 +27,8 @@ export function validateIncome({ date, amount }, t) {
 export function toNewIncome({ amount, date }) {
   return { amount: parseAmount(amount), date };
 }
+
+// Pasa un ingreso (con los tipos de la app) a los valores de texto del formulario, para editarlo.
+export function toIncomeFormValues({ amount, date }) {
+  return { amount: String(amount), date };
+}
