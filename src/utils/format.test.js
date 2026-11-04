@@ -4,6 +4,7 @@ import {
   formatAmount,
   formatDate,
   formatCompactAmount,
+  formatMonthName,
   formatMonthShort,
   formatPercentage,
   formatPeriod,
@@ -42,6 +43,7 @@ describe('formato', () => {
 
   it('muestra el mes abreviado y los importes en forma compacta para los gráficos', () => {
     expect(formatMonthShort('2026-06')).toBe('jun');
+    expect(formatMonthName(9)).toBe('septiembre');
     expect(formatCompactAmount(600000)).toBe('$ 600 mil');
     expect(formatCompactAmount(1250000)).toBe('$ 1,3 M');
     expect(formatCompactAmount(850)).toBe('$ 850');

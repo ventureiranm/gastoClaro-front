@@ -14,7 +14,14 @@ export const ROUTES = {
   CATEGORIES: '/categories',
   USERS: '/users',
   SHOPPING_LIST: '/shopping-list',
+  STATISTICS: '/statistics',
+  CATEGORY_DETAIL: '/category-detail/:categoryId',
 };
+
+// La ruta del detalle de una categoría, con su id.
+export function categoryDetailPath(categoryId) {
+  return ROUTES.CATEGORY_DETAIL.replace(':categoryId', String(categoryId));
+}
 
 export const TOKEN_STORAGE_KEY = 'gastoclaro.token';
 

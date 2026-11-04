@@ -9,7 +9,9 @@ import SavingsGoalsPage from './pages/SavingsGoalsPage';
 import UsersPage from './pages/UsersPage';
 import SavingsPage from './pages/SavingsPage';
 import CategoriesPage from './pages/CategoriesPage';
+import CategoryDetailPage from './pages/CategoryDetailPage';
 import ShoppingListPage from './pages/ShoppingListPage';
+import StatisticsPage from './pages/StatisticsPage';
 import DashboardPage from './pages/DashboardPage';
 import IncomesPage from './pages/IncomesPage';
 import InstallmentsPage from './pages/InstallmentsPage';
@@ -37,6 +39,8 @@ export default function App() {
           <Route path={ROUTES.CATEGORIES} element={<CategoriesPage />} />
           <Route path={ROUTES.USERS} element={<UsersPage />} />
           <Route path={ROUTES.SHOPPING_LIST} element={<ShoppingListPage />} />
+          <Route path={ROUTES.STATISTICS} element={<StatisticsPage />} />
+          <Route path={ROUTES.CATEGORY_DETAIL} element={<CategoryDetailPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

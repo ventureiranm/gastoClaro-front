@@ -75,3 +75,10 @@ export function formatCompactAmount(amount) {
   }
   return `${sign}$ ${Math.round(abs).toLocaleString(LOCALE)}`;
 }
+
+const monthNameFormat = new Intl.DateTimeFormat(LOCALE, { month: 'long', timeZone: 'UTC' });
+
+// 9 → "septiembre"
+export function formatMonthName(month) {
+  return monthNameFormat.format(Date.UTC(2026, month - 1, 1));
+}
