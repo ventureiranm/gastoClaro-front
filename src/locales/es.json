@@ -13,7 +13,8 @@
     "logout": "Cerrar sesión",
     "incomes": "Ingresos",
     "shoppingList": "Gastos fijos",
-    "categories": "Categorías"
+    "categories": "Categorías",
+    "savings": "Ahorro"
   },
   "auth": {
     "user": "Usuario",
@@ -82,6 +83,24 @@
         "month": "Mes",
         "accumulated": "Ahorro acumulado"
       }
+    }
+  },
+  "savings": {
+    "title": "Mi ahorro",
+    "note": "El ahorro acumulado suma mes a mes desde tu primer movimiento.",
+    "goalPercentage": "Meta de ahorro configurada: {{percentage}} de los ingresos",
+    "goalsLink": "Ver y editar mis metas de ahorro",
+    "loading": "Cargando el ahorro…",
+    "loadError": "No pudimos cargar tu ahorro.",
+    "emptyTitle": "Todavía no hay movimientos",
+    "emptyDescription": "Cuando cargues ingresos o gastos, vas a ver acá tu ahorro mes a mes.",
+    "total": "Total {{year}}",
+    "fields": {
+      "month": "Mes",
+      "income": "Ingresos",
+      "consumption": "Consumo",
+      "savings": "Ahorro",
+      "accumulated": "Acumulado"
     }
   },
   "savingsGoals": {
