@@ -978,6 +978,50 @@ time {
   color: var(--color-error);
 }
 
+/* Avance del consumo de una categoría sobre lo planificado: la barra se completa con el consumo y
+   cambia de color al acercarse al monto o superarlo; además, el estado se dice con texto. */
+.budget-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 9rem;
+}
+
+.budget-progress__track {
+  height: 0.5rem;
+  overflow: hidden;
+  background: var(--color-fill);
+  border: var(--border-width-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-pill);
+}
+
+.budget-progress__fill {
+  height: 100%;
+  background: var(--color-primary);
+}
+
+.budget-progress__text {
+  font-size: var(--font-size-small);
+}
+
+.budget-progress--near .budget-progress__fill {
+  background: var(--color-warning-text);
+}
+
+.budget-progress--near .budget-progress__text {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-warning-text);
+}
+
+.budget-progress--over .budget-progress__fill {
+  background: var(--color-error);
+}
+
+.budget-progress--over .budget-progress__text {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error);
+}
+
 /* Listado y alta: uno debajo del otro, y en dos columnas cuando hay lugar para la tabla. */
 .dashboard {
   display: grid;

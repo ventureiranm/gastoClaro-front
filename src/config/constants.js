@@ -56,6 +56,10 @@ export const LOCALE = 'es-AR';
 export const CURRENCY = 'ARS';
 export const AMOUNT_MAX_DECIMALS = 2;
 
+// Desde qué parte de lo planificado de una categoría (0 a 1) el panel avisa que el consumo está
+// cerca del monto.
+export const BUDGET_WARNING_RATIO = 0.8;
+
 // Códigos de canal de compra que acepta la API. Las etiquetas visibles están en es.json.
 export const PURCHASE_CHANNELS = ['presencial', 'delivery', 'retiro'];
 

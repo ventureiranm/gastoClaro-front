@@ -63,7 +63,16 @@
       "byCategory": {
         "title": "Consumo por categoría",
         "share": "Parte del consumo",
-        "empty": "Todavía no hay gastos en {{period}}."
+        "empty": "Todavía no hay gastos en {{period}}.",
+        "planned": "Planificado",
+        "progress": "Avance del plan",
+        "noPlan": "Sin plan",
+        "progressText": "{{percentage}} · {{status}}",
+        "status": {
+          "ok": "Dentro de lo planificado",
+          "near": "Cerca del monto planificado",
+          "over": "Superaste lo planificado"
+        }
       },
       "monthly": {
         "title": "Últimos 6 meses",
