@@ -103,5 +103,13 @@ export const GOAL_PHOTOS = {
   mountain: '/images/goals/mountain.webp',
   sea: '/images/goals/sea.webp',
   house: '/images/goals/house.webp',
+  // Fotos opcionales: si el archivo no está en public/images/goals, se muestra la ilustración.
+  car: '/images/goals/car.jpg',
+  laptop: '/images/goals/laptop.jpg',
+  phone: '/images/goals/phone.jpg',
+  bike: '/images/goals/bike.jpg',
+  study: '/images/goals/study.jpg',
+  shield: '/images/goals/shield.jpg',
+  gift: '/images/goals/gift.jpg',
 };
 export const BANNER_PHOTO = '/images/banner.webp';
