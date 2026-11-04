@@ -72,3 +72,6 @@ export const PURCHASE_CHANNELS = ['presencial', 'delivery', 'retiro'];
 // La API recorta una cantidad con decimales sin avisar, así que se valida antes de enviar.
 export const ITEM_UNITS = ['unidad', 'kg', 'g'];
 export const ITEM_QUANTITY_MIN = 1;
+
+// Foto de la pantalla de ingreso (se sirve desde public/images). Si falta, se ve la ilustración.
+export const LOGIN_HERO_IMAGE = '/images/login-hero.webp';

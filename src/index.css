@@ -382,6 +382,107 @@ time {
   }
 }
 
+/* ---------- Ingreso y registro ---------- */
+
+.auth-layout {
+  display: grid;
+  gap: var(--space-6);
+  align-items: stretch;
+}
+
+.auth-layout__content {
+  display: grid;
+  align-content: center;
+}
+
+.auth-layout__content .page--narrow {
+  width: 100%;
+}
+
+.auth-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 14rem;
+  padding: var(--space-8);
+  overflow: hidden;
+  color: #ffffff;
+  background: var(--color-green-mid);
+  border-radius: var(--radius-card);
+}
+
+.auth-hero__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-hero__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left bottom;
+}
+
+/* Velo verde para que el lema se lea sobre la foto. */
+.auth-hero:has(.auth-hero__photo)::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(180deg, rgb(23 71 56 / 70%) 0%, rgb(23 71 56 / 0%) 55%);
+}
+
+.auth-hero__text {
+  z-index: 1;
+  position: relative;
+  max-width: 22rem;
+}
+
+.auth-hero:has(.auth-hero__photo) .auth-hero__text {
+  align-self: flex-end;
+  max-width: 17rem;
+  margin-top: var(--space-4);
+}
+
+.auth-hero__tagline {
+  margin: 0 0 var(--space-2);
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.auth-hero__motto {
+  margin: 0;
+  font-size: var(--font-size-section);
+  color: var(--color-green-soft);
+}
+
+@media (min-width: 56rem) {
+  .auth-layout {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    min-height: calc(100vh - 8rem);
+  }
+
+  .auth-hero {
+    min-height: 32rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .auth-hero {
+    min-height: 11rem;
+    padding: var(--space-5);
+  }
+
+  .auth-hero__tagline {
+    font-size: 1.375rem;
+  }
+}
+
 /* ---------- Páginas ---------- */
 
 .page {
